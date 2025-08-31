@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { FileText, Download, Edit, RotateCcw, CheckCircle, Copy, Check } from 'lucide-react';
+import { FileText, CheckCircle } from 'lucide-react';
 import { GeneratedContent } from '../lib/types';
 
 interface ContentGeneratorProps {
@@ -27,7 +27,6 @@ export function ContentGenerator({
 }: ContentGeneratorProps) {
     const contentRef = useRef<HTMLDivElement>(null);
     const [displayContent, setDisplayContent] = useState('');
-    const [copied, setCopied] = useState(false);
 
     // Handle streaming content updates
     useEffect(() => {
@@ -65,24 +64,12 @@ export function ContentGenerator({
         return 'Content';
     };
 
-    const handleCopy = async () => {
-        try {
-            await navigator.clipboard.writeText(displayContent);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        } catch (err) {
-            console.error('Failed to copy text: ', err);
-        }
-    };
-
     if (!content && !isGenerating) {
         return null;
     }
 
     return (
         <div className={`h-full flex flex-col ${className}`}>
-
-
             {/* Content Area */}
             <div className="flex-1 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
                 {/* Content Header */}
@@ -95,23 +82,6 @@ export function ContentGenerator({
                             </span>
                         </div>
                         <div className="flex items-center gap-3">
-                            {/* Copy Button */}
-                            <button
-                                onClick={handleCopy}
-                                className="flex items-center gap-2 px-3 py-1 text-xs bg-white text-gray-700 rounded border border-gray-300 hover:bg-gray-50 transition-colors"
-                            >
-                                {copied ? (
-                                    <>
-                                        <Check className="w-3 h-3 text-green-600" />
-                                        Copied!
-                                    </>
-                                ) : (
-                                    <>
-                                        <Copy className="w-3 h-3" />
-                                        Copy
-                                    </>
-                                )}
-                            </button>
                             <div className="text-xs text-gray-600">
                                 {content.metadata.wordCount} words • {content.metadata.estimatedReadTime} min read
                             </div>
@@ -122,7 +92,7 @@ export function ContentGenerator({
                 {/* Main Content */}
                 <div
                     ref={contentRef}
-                    className="p-6 min-h-[400px] max-h-[600px] overflow-y-auto"
+                    className="flex-1 p-6 overflow-y-auto"
                 >
                     {isGenerating ? (
                         <div className="space-y-6">
@@ -157,42 +127,9 @@ export function ContentGenerator({
                     ) : null}
                 </div>
 
-                {/* Footer with Actions */}
+                {/* Action Buttons at Bottom - All buttons removed */}
                 {content && !isGenerating && (
-                    <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                                <span className="text-sm text-gray-600">Download as:</span>
-                                <div className="flex gap-2">
-                                    {content.exportOptions.map((option) => (
-                                        <button
-                                            key={option.type}
-                                            onClick={() => onDownload(option.type)}
-                                            className="flex items-center gap-1 px-3 py-1 text-xs bg-white border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors"
-                                        >
-                                            <Download className="w-3 h-3" />
-                                            {option.type.toUpperCase()}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <button
-                                    onClick={onEdit}
-                                    className="flex items-center gap-1 px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
-                                >
-                                    <Edit className="w-3 h-3" />
-                                    Edit
-                                </button>
-                                <button
-                                    onClick={onRegenerate}
-                                    className="flex items-center gap-1 px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
-                                >
-                                    <RotateCcw className="w-3 h-3" />
-                                    Regenerate
-                                </button>
-                            </div>
-                        </div>
+                    <div className="px-6 pb-6">
                         {content.metadata.atsOptimized && (
                             <div className="flex items-center gap-1 text-xs text-green-600 mt-2">
                                 <CheckCircle className="w-3 h-3" />
