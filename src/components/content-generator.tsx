@@ -30,6 +30,7 @@ export function ContentGenerator({
     const contentRef = useRef<HTMLDivElement>(null);
     const [displayContent, setDisplayContent] = useState('');
     const [localProgress, setLocalProgress] = useState(0);
+    const [isCopied, setIsCopied] = useState(false);
 
     // Clear display content and reset progress when generation type changes (new generation starts)
     useEffect(() => {
@@ -121,7 +122,11 @@ export function ContentGenerator({
         if (content) {
             try {
                 await navigator.clipboard.writeText(content.content);
-                // You could add a toast notification here if desired
+                setIsCopied(true);
+                // Reset the copied state after 2 seconds
+                setTimeout(() => {
+                    setIsCopied(false);
+                }, 2000);
             } catch (err) {
                 console.error('Failed to copy content:', err);
             }
@@ -151,8 +156,14 @@ export function ContentGenerator({
                                 className="flex items-center gap-1.5 px-2 py-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-md transition-colors duration-200"
                                 title="Copy content to clipboard"
                             >
-                                <Copy className="w-3.5 h-3.5" />
-                                <span className="text-xs font-medium">Copy</span>
+                                {isCopied ? (
+                                    <CheckCircle className="w-3.5 h-3.5 text-green-600" />
+                                ) : (
+                                    <Copy className="w-3.5 h-3.5" />
+                                )}
+                                <span className="text-xs font-medium">
+                                    {isCopied ? 'Copied!' : 'Copy'}
+                                </span>
                             </button>
                             <div className="text-xs text-gray-600">
                                 {content.metadata.wordCount} words • {content.metadata.estimatedReadTime} min read
