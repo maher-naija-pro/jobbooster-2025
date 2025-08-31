@@ -100,17 +100,7 @@ export function ActionButtons({
                 </button>
             </div>
 
-            {/* Requirements Message */}
-            {(!isCVUploaded || !isJobOfferProvided) && (
-                <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                    <p className="text-sm text-amber-800">
-                        <strong>Requirements:</strong>
-                        {!isCVUploaded && !isJobOfferProvided && " Upload your CV and provide a job offer description"}
-                        {!isCVUploaded && isJobOfferProvided && " Upload your CV to get started"}
-                        {isCVUploaded && !isJobOfferProvided && " Provide a job offer description to continue"}
-                    </p>
-                </div>
-            )}
+
 
             {/* Progress Indicator */}
             {isGenerating && (
