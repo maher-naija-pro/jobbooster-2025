@@ -1,0 +1,34 @@
+# Tailwind CSS Development Rules and Best Practices
+
+## Core Tailwind Principles
+
+### 1. **Utility-First Approach**
+- **Single Responsibility**: Each utility class has one specific purpose
+- **Composable**: Combine utilities to create complex designs
+- **Consistent**: Use predefined design tokens for spacing, colors, and typography
+- **Responsive**: Build mobile-first responsive designs
+
+### 2. **Design System Integration**
+- **Custom Properties**: Extend Tailwind with your design system
+- **Component Library**: Create reusable component patterns
+- **Token Consistency**: Maintain consistent spacing, colors, and typography scales
+- **Accessibility**: Ensure proper contrast ratios and focus states
+
+### 3. **Performance Considerations**
+- **Purge CSS**: Remove unused utilities in production
+- **JIT Mode**: Use Just-In-Time compilation for faster builds
+- **Bundle Size**: Monitor CSS bundle size and optimize
+- **Critical CSS**: Extract critical styles for above-the-fold content
+
+1. **Use utility-first approach** for consistent design
+2. **Extend theme configuration** with your design system
+3. **Implement mobile-first responsive design**
+4. **Create reusable component patterns**
+5. **Ensure proper accessibility** with focus states
+6. **Optimize performance** with purge CSS
+7. **Use semantic class names** for maintainability
+8. **Maintain consistent spacing** and typography scales
+9. **Implement proper error states** and loading indicators
+10. **Test across different screen sizes** and devices
+alwaysApply: false
+---

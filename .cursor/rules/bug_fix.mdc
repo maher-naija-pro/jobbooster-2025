@@ -1,0 +1,8 @@
+fix bug with min of modification
+show me the plan and ask me for confirmation
+dont add any new componant or feature
+---
+description:
+globs:
+alwaysApply: false
+---

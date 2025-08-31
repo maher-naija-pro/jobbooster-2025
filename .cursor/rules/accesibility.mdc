@@ -1,0 +1,26 @@
+# Accessibility Development Rules
+
+## Core Principles
+- **Follow WCAG 2.1 AA standards** for all components and pages
+- **Implement semantic HTML structure** with proper heading hierarchy
+- **Ensure keyboard navigation support** for all interactive elements
+- **Provide proper ARIA labels and descriptions** for complex components
+- **Test with screen readers and assistive technologies** regularly
+- **Support reduced motion preferences** and accessibility features
+
+## Compliance and Standards
+
+### WCAG 2.1 AA Requirements
+- **Perceivable**: Content is available to all users
+- **Operable**: Interface is navigable by all users
+- **Understandable**: Content and operation are clear
+- **Robust**: Content works with assistive technologies
+
+### Legal and Business Requirements
+- Ensure compliance with accessibility laws (ADA, Section 508)
+- Include accessibility in design system documentation
+- Provide accessibility training for development team
+- Regular accessibility audits and updates
+
+alwaysApply: false
+---

@@ -1,0 +1,11 @@
+# Documentation Development Rules
+
+## Core Principles
+- **Use clear, concise language** - avoid jargon and technical debt
+- **Include examples and use cases** - show, don't just tell
+- **Document the "why" not just the "what"** - explain decisions and trade-offs
+- [ ] **Dependencies**: All dependencies and imports are documented
+
+globs:
+alwaysApply: false
+---

@@ -1,0 +1,12 @@
+# Top 10 Best Practices for Readable and Maintainable Code
+
+1. **Use Clear, Descriptive Names**  
+   Name variables, functions, and classes so their purpose is obvious. Avoid abbreviations and single-letter names (except for loop counters).
+
+4. **Extract Magic Numbers and Strings to Constants**  
+   Replace hard-coded values with named constants to clarify their meaning and make updates easier.
+
+
+description:
+globs:
+alwaysApply: true

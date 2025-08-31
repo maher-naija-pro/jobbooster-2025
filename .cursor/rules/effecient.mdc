@@ -1,0 +1,84 @@
+# Efficiency Development Rules
+
+## Code Quality & Redundancy Prevention
+
+analyse first
+
+plan execution steps 
+
+ask user to confirm
+
+exceute steps
+
+execute code linters  at the end of task
+
+when terminal is executed dont wait more than 8 seconds 
+
+### Before Writing Code
+- implement just need code asked for  
+- check all page sub componants
+- **ALWAYS** search the codebase first to check if similar functionality already exists
+- Look for existing utility functions, components, or patterns that can be reused
+- Check for duplicate code blocks delete duplicated
+- Verify if a library or dependency already provides the needed functionality
+
+
+## Dependency Management
+
+### Before Adding New Dependencies
+- **MUST** check if the functionality exists in current dependencies
+- Search for existing packages in `package.json` and `package-lock.json`
+- Verify if a built-in Node.js/React/Next.js feature can be used instead
+- Check if the functionality can be implemented with existing libraries
+
+### Dependency Addition Rules
+- Only add dependencies when absolutely necessary
+- Prefer lightweight, well-maintained packages
+- Check bundle size impact before adding
+- Ensure the dependency doesn't conflict with existing ones
+- Verify the dependency is actively maintained and secure
+
+### Clean Dependency Management
+- Remove unused dependencies regularly
+- Update dependencies to latest stable versions
+- Consolidate similar functionality into fewer packages
+- Use dependency analysis tools to identify bloat
+
+## Library & Framework Usage
+
+### Existing Library Check
+- **ALWAYS** check what's available in the current tech stack:
+  - React hooks and utilities
+  - Next.js built-in features
+  - Tailwind CSS utilities
+  - shadcn/ui components
+  - Existing utility functions
+  - TypeScript built-in types
+
+### Code Generation Guidelines
+- Generate code that leverages existing patterns and conventions
+- Use established component libraries and design systems
+- Follow the project's established architecture and folder structure
+- Implement consistent error handling and loading states
+
+
+
+## File Organization
+
+### Structure Guidelines
+- Place reusable utilities in shared directories
+- Use index files for clean imports
+- Follow consistent naming conventions
+- Group related functionality together
+- Avoid deeply nested folder structures
+
+### Import Optimization
+- Use absolute imports when possible
+- Group imports logically (external, internal, relative)
+- Remove unused imports immediately
+- Use barrel exports for related functionality
+
+
+description:
+globs:
+alwaysApply: true

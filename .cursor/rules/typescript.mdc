@@ -1,0 +1,26 @@
+# TypeScript Development Rules and Best Practices
+
+## Core TypeScript Principles
+
+### 1. **Type Safety First**
+- **Strict Mode**: Always use strict TypeScript configuration
+- **Type Inference**: Leverage TypeScript's type inference when possible
+- **Explicit Types**: Use explicit types for public APIs and complex logic
+- **Type Guards**: Implement proper type guards for runtime type checking
+
+### 2. **Code Organization**
+- **Interface over Type**: Prefer interfaces for object shapes, types for unions/primitives
+- **Barrel Exports**: Use index files for clean imports
+- **Separation of Concerns**: Keep types, interfaces, and implementations separate
+- **Module Boundaries**: Define clear module boundaries with proper exports
+
+### 3. **Type Definitions**
+- **Generic Types**: Use generics for reusable, type-safe components
+- **Utility Types**: Leverage built-in utility types (Partial, Pick, Omit, etc.)
+- **Conditional Types**: Use conditional types for advanced type logic
+- **Template Literal Types**: Use for string literal unions and patterns
+
+ating overly complex union types
+
+alwaysApply: false
+---

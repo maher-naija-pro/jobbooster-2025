@@ -1,0 +1,30 @@
+# Next.js Development Rules and Best Practices
+
+## Core Next.js Principles
+
+### 1. **App Router vs Pages Router**
+- **App Router**: Use for new projects 
+- **Pages Router**: Legacy approach, maintain existing projects
+
+### 2. **File-Based Routing**
+- **Convention**: Files in `app/` or `pages/` become routes
+- **Dynamic Routes**: Use `[param]` folders for dynamic segments
+- **Nested Routes**: Create nested folder structures for complex routing
+- **Route Groups**: Use `(group)` folders for organization without affecting URLs
+
+### 3. **Server vs Client Components**
+- **Server Components**: Default in App Router, render on server
+- **Client Components**: Use `'use client'` directive for interactivity
+- **Hydration**: Minimize client-side JavaScript for better performance
+- **Component Strategy**: Start with Server Components, add Client Components as needed
+
+## Best Practices Summary
+
+2. **Leverage Server Components** for better performance
+3. **Implement proper error handling** with error boundaries
+6. **Implement proper metadata** for SEO
+7. **Validate inputs** with schemas
+8. **Handle loading states** gracefully
+10. **Follow Next.js conventions** and patterns
+alwaysApply: false
+---

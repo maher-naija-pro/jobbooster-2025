@@ -1,0 +1,43 @@
+# Testing Server Management Rule
+
+## Always Applied Rule for Development Server
+
+**Rule Name:** `testing-server-management`
+
+### Core Principles:
+1. **Always check if testing server is already running** before attempting to start a new one
+2. **Restart the existing server** after any feature modifications instead of starting a new instance
+3. **Never start multiple Next.js servers** simultaneously
+4. **Use the existing server** when possible to maintain development state
+
+### Implementation Guidelines:
+
+#### Before Starting Server:
+- Check if port 3000 (or configured port) is already in use
+- Verify if a Next.js development server is running
+- Look for existing `npm run dev` or `yarn dev` processes
+
+#### After Feature Modifications:
+- **Restart the existing server** using `Ctrl+C` then restart
+- **Don't start a new server** - this causes port conflicts and wasted resources
+- Use hot reload when possible for minor changes
+
+#### Server Management Commands:
+```bash
+# Check if server is running
+lsof -i :3000
+ps aux | grep "next"
+
+# Kill existing server if needed
+pkill -f "next"
+pkill -f "npm run dev"
+
+# Restart server
+npm run dev
+# or
+yarn dev
+```
+
+globs:
+alwaysApply: false
+---

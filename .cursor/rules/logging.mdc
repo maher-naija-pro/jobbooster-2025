@@ -1,0 +1,27 @@
+---
+alwaysApply: false
+---
+rules:
+
+# Logging Development Rules
+
+## Core Principles
+add max logs 
+- **Use structured logging** for all server-side operations
+
+- **Include correlation IDs** for request tracing and debugging
+- **Use appropriate log levels** based on severity and context
+- **Ensure logs are searchable and analyzable** in production environments
+
+## Log Levels and Usage
+
+### Log Level Hierarchy
+1. **ERROR**: Application errors, exceptions, and failures
+2. **WARN**: Warning conditions that don't stop execution
+3. **INFO**: General application flow and important events
+4. **DEBUG**: Detailed debugging information
+5. **TRACE**: Very detailed debugging information
+
+
+
+

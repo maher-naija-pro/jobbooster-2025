@@ -1,0 +1,47 @@
+---
+alwaysApply: false
+
+rules:
+  # Core Environment Variable Access
+  - All environment variables must be accessed using process.env and never hardcoded in the codebase.
+  - Use TypeScript types or runtime checks to validate the presence and format of required environment variables in server code.
+  - Implement proper error handling for missing environment variables with clear, actionable error messages.
+
+  # Client-Side Security
+  - Never expose secrets or sensitive environment variables to the client-side code.
+  - Only variables prefixed with NEXT_PUBLIC_ may be used in client-side code.
+  - Be extremely selective about what gets the NEXT_PUBLIC_ prefix - prefer server-side API calls over exposing config.
+  - Validate that NEXT_PUBLIC_ variables don't contain sensitive information before deployment.
+
+  # Documentation and Examples
+  - Document all required environment variables in .env.example (not .env-example) and keep it up to date.
+  - Include type information, default values, and usage examples in the .env.example file.
+  - Add comments explaining what each environment variable is used for.
+  - Document any environment variable dependencies or relationships.
+
+  # Security Best Practices
+  - Do not log or leak the values of secrets or sensitive environment variables in server logs or error messages.
+  - Use environment-specific .env files (.env.local, .env.development, .env.production) appropriately.
+  - Never commit .env files containing real secrets to version control.
+  - Use strong, unique values for secrets across different environments.
+  - Rotate secrets regularly and have a process for updating them.
+
+  # Validation and Error Handling
+  - Implement runtime validation of environment variables using libraries like zod or joi.
+  - Fail gracefully and return clear, user-friendly error messages if required environment variables are missing.
+  - Log which environment variables are missing without revealing their expected values.
+  - Provide helpful debugging information for development environments.
+
+  # Development Workflow
+  - Use .env.local for local development overrides.
+  - Provide clear setup instructions in README.md for required environment variables.
+  - Consider using a configuration validation script that runs during startup.
+  - Test that the application fails gracefully when required environment variables are missing.
+
+  # Production Considerations
+  - Use proper secret management services in production (AWS Secrets Manager, Azure Key Vault, etc.).
+  - Implement health checks that verify critical environment variables are accessible.
+  - Monitor for environment variable access failures in production logs.
+  - Have a rollback strategy for environment variable changes.
+
+---

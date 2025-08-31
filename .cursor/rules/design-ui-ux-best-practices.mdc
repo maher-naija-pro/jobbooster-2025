@@ -1,0 +1,24 @@
+
+
+perience**: Maintain design consistency across all touchpoints
+
+- **Typography Scale**: Use consistent font sizes and weights for hierarchy
+
+- **Mobile-First Approach**: Design for mobile devices first, then scale up
+- **Flexible Layouts**: Use CSS Grid and Flexbox for adaptable designs
+- **Touch-Friendly**: Ensure touch targets are at least 44x44px
+- **Cross-Device Consistency**: Maintain experience quality across all screen sizes
+
+2. **Maintain consistency** - Use design systems and patterns
+3. **Prioritize accessibility** - Follow WCAG guidelines
+4. **Optimize for performance** - Minimize CSS and optimize assets
+5. **Test across devices** - Ensure responsive behavior
+6. **Use semantic HTML** - Structure content meaningfully
+7. **Implement proper focus states** - Support keyboard navigation
+8. **Create clear visual hierarchy** - Guide user attention
+9. **Optimize for touch** - Design for mobile interactions
+10. **Validate designs** - Test with real users and tools
+description:
+globs:
+alwaysApply: false
+---

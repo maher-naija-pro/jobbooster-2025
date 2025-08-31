@@ -1,0 +1,44 @@
+---
+alwaysApply: false
+---
+
+- Always use the `cn()` utility function for conditional class merging
+- Follow the shadcn/ui component pattern with proper TypeScript interfaces
+- Use forwardRef for components that need ref forwarding
+- Implement proper accessibility attributes (aria-* props)
+- Include proper JSDoc comments for component props
+- Use the `Slot` component from @radix-ui/react-slot for polymorphic components
+
+- Use Tailwind CSS classes consistently
+- Prefer semantic color tokens (e.g., `bg-primary`, `text-muted-foreground`)
+- Use CSS variables for theme customization when possible
+- Implement responsive design with Tailwind breakpoint prefixes
+- Follow the design system spacing scale (4px increments)
+- Use `clamp()` for fluid typography and spacing
+
+- Define clear, descriptive prop interfaces
+- Use union types for variant props (e.g., `variant: "default" | "destructive"`)
+- Implement proper default values for optional props
+- Use discriminated unions for complex prop combinations
+- Include proper prop validation and error handling
+- Extend HTML element props when appropriate
+
+### Class Merging
+```tsx
+// Always use cn() utility for class merging
+import { cn } from "@/lib/utils"
+
+const Component = ({ className, ...props }) => (
+  <div className={cn("base-classes", className)} {...props} />
+)
+```
+## Best Practices
+
+### Component Design
+- Keep components focused and single-responsibility
+- Separate component logic from presentation
+- Use compound component pattern when appropriate
+- Implement proper event handling with TypeScript
+- Use the `asChild` pattern for polymorphic components
+
+
