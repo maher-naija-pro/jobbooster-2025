@@ -399,6 +399,7 @@ export default function Home() {
                     content={state.generatedContent}
                     isGenerating={state.isGenerating}
                     generationType={state.generationType}
+                    generationProgress={state.generationProgress}
                     streamingContent={streamingContent}
                     onEdit={handleEdit}
                     onRegenerate={handleRegenerate}

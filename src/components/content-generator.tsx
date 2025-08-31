@@ -8,6 +8,7 @@ interface ContentGeneratorProps {
     content: GeneratedContent | null;
     isGenerating: boolean;
     generationType: 'cover-letter' | 'email' | null;
+    generationProgress: number;
     streamingContent: string;
     onEdit: () => void;
     onRegenerate: () => void;
@@ -19,6 +20,7 @@ export function ContentGenerator({
     content,
     isGenerating,
     generationType,
+    generationProgress,
     streamingContent,
     onEdit,
     onRegenerate,
@@ -27,6 +29,33 @@ export function ContentGenerator({
 }: ContentGeneratorProps) {
     const contentRef = useRef<HTMLDivElement>(null);
     const [displayContent, setDisplayContent] = useState('');
+    const [localProgress, setLocalProgress] = useState(0);
+
+    // Simulate progress when generating
+    useEffect(() => {
+        let progressInterval: NodeJS.Timeout;
+        
+        if (isGenerating) {
+            setLocalProgress(0);
+            progressInterval = setInterval(() => {
+                setLocalProgress(prev => {
+                    if (prev >= 90) return prev; // Cap at 90% until complete
+                    return prev + Math.random() * 15; // Random increment
+                });
+            }, 1000);
+        } else {
+            setLocalProgress(100);
+        }
+
+        return () => {
+            if (progressInterval) {
+                clearInterval(progressInterval);
+            }
+        };
+    }, [isGenerating]);
+
+    // Use local progress if generation progress is not provided
+    const currentProgress = generationProgress > 0 ? generationProgress : localProgress;
 
     // Handle streaming content updates
     useEffect(() => {
@@ -121,14 +150,37 @@ export function ContentGenerator({
                                     <h4 className="text-base font-medium text-gray-900">
                                         {generationType === 'cover-letter' ? 'Generating Cover Letter' : 'Generating Email'}
                                     </h4>
-                                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                                    {/* LED Indicator */}
+                                    <div className="flex items-center gap-2">
+                                        <div 
+                                            className={`w-3 h-3 rounded-full shadow-sm ${
+                                                isGenerating 
+                                                    ? 'bg-orange-500 animate-pulse' 
+                                                    : content 
+                                                        ? 'bg-green-500' 
+                                                        : 'bg-gray-400'
+                                            }`}
+                                            title={isGenerating ? 'Generating...' : content ? 'Generation Complete' : 'Ready'}
+                                        ></div>
+                                        {isGenerating && (
+                                            <span className="text-xs text-gray-500">Generating...</span>
+                                        )}
+                                    </div>
                                 </div>
                                 <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                                    <div className="bg-blue-500 h-2 rounded-full animate-pulse transition-all duration-1000" style={{ width: '70%' }}></div>
+                                    <div 
+                                        className="bg-blue-500 h-2 rounded-full transition-all duration-1000" 
+                                        style={{ width: `${currentProgress}%` }}
+                                    ></div>
                                 </div>
-                                <p className="text-sm text-gray-600 mt-2">
-                                    AI is analyzing your CV and job requirements to create personalized content
-                                </p>
+                                <div className="flex items-center justify-between mt-2">
+                                    <p className="text-sm text-gray-600">
+                                        AI is analyzing your CV and job requirements to create personalized content
+                                    </p>
+                                    <span className="text-sm text-blue-600 font-medium">
+                                        {Math.round(currentProgress)}% Complete
+                                    </span>
+                                </div>
                             </div>
 
                             {/* Content Preview */}

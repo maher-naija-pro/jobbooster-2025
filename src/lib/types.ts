@@ -67,6 +67,7 @@ export interface AppState {
   generatedContent: GeneratedContent | null;
   isGenerating: boolean;
   generationType: 'cover-letter' | 'email' | null;
+  generationProgress: number;
   error: string | null;
   uploadProgress: number;
   isUploading: boolean;
@@ -83,6 +84,7 @@ export type AppAction =
   | { type: 'CLEAR_GENERATED_CONTENT' }
   | { type: 'START_GENERATION'; payload: 'cover-letter' | 'email' }
   | { type: 'STOP_GENERATION' }
+  | { type: 'SET_GENERATION_PROGRESS'; payload: number }
   | { type: 'SET_ERROR'; payload: string }
   | { type: 'CLEAR_ERROR' }
   | { type: 'START_UPLOAD' }

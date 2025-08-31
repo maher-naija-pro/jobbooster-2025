@@ -11,6 +11,7 @@ const initialState: AppState = {
     generatedContent: null,
     isGenerating: false,
     generationType: null,
+    generationProgress: 0,
     error: null,
     uploadProgress: 0,
     isUploading: false,
@@ -35,9 +36,11 @@ function appReducer(state: AppState, action: AppAction): AppState {
         case 'CLEAR_GENERATED_CONTENT':
             return { ...state, generatedContent: null };
         case 'START_GENERATION':
-            return { ...state, isGenerating: true, generationType: action.payload, error: null };
+            return { ...state, isGenerating: true, generationType: action.payload, generationProgress: 0, error: null };
         case 'STOP_GENERATION':
-            return { ...state, isGenerating: false, generationType: null };
+            return { ...state, isGenerating: false, generationType: null, generationProgress: 0 };
+        case 'SET_GENERATION_PROGRESS':
+            return { ...state, generationProgress: action.payload };
         case 'SET_ERROR':
             return { ...state, error: action.payload, isGenerating: false };
         case 'CLEAR_ERROR':

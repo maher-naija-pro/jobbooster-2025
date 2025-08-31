@@ -46,12 +46,6 @@ export default function RootLayout({
                   <Link href="/" className="text-gray-900 hover:text-blue-600 font-medium">
                     Home
                   </Link>
-                  <Link href="/support" className="text-gray-600 hover:text-blue-600">
-                    Support
-                  </Link>
-                  <Link href="/pricing" className="text-gray-600 hover:text-blue-600">
-                    Pricing
-                  </Link>
                 </nav>
 
                 <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
