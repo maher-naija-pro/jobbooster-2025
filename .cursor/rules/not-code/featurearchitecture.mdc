@@ -1,0 +1,106 @@
+# Feature Architecture Development Standards
+
+## Core Principles
+- **Separation of Concerns**: Each feature should be self-contained with clear boundaries
+- **Scalability**: Architecture should support growth and new feature additions
+- **Maintainability**: Features should be easy to understand, modify, and extend
+- **Reusability**: Common functionality should be shared across features
+- **Testability**: Features should be independently testable
+
+## Implementation Guidelines
+
+### 1. Feature Directory Structure
+```
+src/
+├── features/
+│     ├── components/
+│     ├── hooks/
+│     ├── services/
+│     ├── types/
+│     ├── utils/
+│     └── index.ts
+
+```
+
+## Best Practices
+
+### 1. **Feature Isolation**
+- Keep feature dependencies minimal and explicit
+- Use dependency injection for external services
+- Avoid importing from other features directly
+- Share common functionality through the `shared` module
+
+### 2. **API Integration**
+- Feature services should handle their own API calls
+- Use proper error handling and loading states
+- Implement retry logic and caching where appropriate
+- Keep API contracts in feature types
+
+### 3. **Routing and Navigation**
+- Feature routes should be self-contained
+- Use lazy loading for feature modules
+- Implement proper route guards and permissions
+- Keep navigation logic within features
+
+### 4. **Testing Strategy**
+- Unit test feature logic independently
+- Mock external dependencies properly
+- Test feature boundaries and integration points
+- Use feature-specific test utilities
+
+
+
+## Verification Checklist
+
+### Feature Structure
+- [ ] Feature has dedicated directory with clear organization
+- [ ] Components are properly separated by responsibility
+- [ ] Hooks encapsulate feature-specific logic
+- [ ] Services handle external API calls
+- [ ] Types are well-defined and exported
+- [ ] Utils contain reusable helper functions
+
+### Feature Boundaries
+- [ ] No direct imports from other features
+- [ ] Shared functionality goes through `shared` module
+- [ ] Feature state is isolated and self-contained
+- [ ] External dependencies are properly injected
+- [ ] No circular dependencies exist
+
+### Code Quality
+- [ ] Feature follows consistent naming conventions
+- [ ] Proper error handling implemented
+- [ ] Loading states are managed appropriately
+- [ ] Components are properly typed with TypeScript
+- [ ] Hooks follow React best practices
+
+### Testing Coverage
+- [ ] Feature logic is unit tested
+- [ ] Components are tested in isolation
+- [ ] External dependencies are properly mocked
+- [ ] Feature boundaries are tested
+- [ ] Integration points are validated
+
+## Advanced Patterns
+
+
+```
+
+
+
+## Performance Considerations
+
+### 1. **Code Splitting**
+- Implement proper lazy loading
+- Bundle features independently when possible
+
+### 2. **State Optimization**
+- Use proper memoization for expensive computations
+- Implement selective re-rendering
+- Avoid unnecessary state updates
+
+
+description:
+globs:
+alwaysApply: false
+---

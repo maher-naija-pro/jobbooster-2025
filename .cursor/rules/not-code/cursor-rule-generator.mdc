@@ -1,0 +1,390 @@
+---
+description: "Clear, concise description of what this rule accomplishes"
+globs: tsx}"]  # File patterns where rule applies
+alwaysApply: false
+---
+```
+
+### 2. **Content Organization**
+```markdown
+# Rule Title
+
+## Core Principles
+[Fundamental concepts and approach]
+
+## Implementation Guidelines
+[Specific instructions and examples]
+
+## Best Practices
+[Recommended approaches and patterns]
+
+## Common Anti-Patterns
+[What to avoid and why]
+
+## Verification Checklist
+[How to verify rule compliance]
+```
+
+## Rule Generation Templates
+
+### 1. **Development Standards Rules**
+```markdown
+# [Technology] Development Standards
+
+## Core Principles
+- **Consistency**: Maintain uniform patterns across the codebase
+- **Quality**: Ensure high code quality and maintainability
+- **Performance**: Optimize for efficiency and user experience
+- **Accessibility**: Design for all users
+
+## Implementation Guidelines
+```[language]
+// ✅ Good example
+function example() {
+  // Implementation
+}
+
+// ❌ Bad example
+function badExample() {
+  // Implementation
+}
+```
+
+## Best Practices
+1. **Practice 1** - Description
+2. **Practice 2** - Description
+3. **Practice 3** - Description
+
+## Common Anti-Patterns
+- ❌ **Anti-pattern 1** - Why it's bad
+- ❌ **Anti-pattern 2** - Why it's bad
+
+## Verification Checklist
+- [ ] Code follows naming conventions
+- [ ] Proper error handling implemented
+- [ ] Performance considerations addressed
+- [ ] Accessibility requirements met
+```
+
+### 2. **Content Generation Rules**
+```markdown
+# [Content Type] Generation Guidelines
+
+## Required Structure
+[Exact content organization requirements]
+
+## Content Standards
+- **Tone**: Professional, helpful, clear
+- **Length**: Appropriate for content type
+- **Format**: Consistent markdown structure
+- **Quality**: Accurate, up-to-date information
+
+## Template Examples
+```markdown
+# Title
+
+## Introduction
+[Content introduction]
+
+## Main Content
+[Main content sections]
+
+## Conclusion
+[Summary and next steps]
+```
+
+## Quality Checklist
+- [ ] Content follows required structure
+- [ ] Information is accurate and current
+- [ ] Tone is appropriate for audience
+- [ ] Formatting is consistent
+```
+
+### 3. **Process and Workflow Rules**
+```markdown
+# [Process Name] Workflow Guidelines
+
+## Process Overview
+[High-level process description]
+
+## Step-by-Step Instructions
+1. **Step 1** - Detailed description
+2. **Step 2** - Detailed description
+3. **Step 3** - Detailed description
+
+## Required Deliverables
+- [ ] Deliverable 1 - Description
+- [ ] Deliverable 2 - Description
+
+## Quality Gates
+- [ ] Quality check 1
+- [ ] Quality check 2
+
+## Common Pitfalls
+- ❌ **Pitfall 1** - How to avoid
+- ❌ **Pitfall 2** - How to avoid
+```
+
+## Rule Content Guidelines
+
+### 1. **Writing Effective Rules**
+```markdown
+## ✅ Good Rule Writing
+
+- **Be Specific**: "Use camelCase for variables" not "Use good naming"
+- **Provide Examples**: Show both good and bad implementations
+- **Explain Why**: Help developers understand the reasoning
+- **Use Actionable Language**: "Must", "Should", "Avoid" instead of vague terms
+
+## ❌ Poor Rule Writing
+
+- **Vague Instructions**: "Write good code" or "Be consistent"
+- **No Examples**: Rules without practical demonstrations
+- **Missing Context**: Rules that don't explain when to apply
+- **Overly Complex**: Rules that are hard to understand or follow
+```
+
+### 2. **Code Example Standards**
+```markdown
+## Code Example Requirements
+
+- **Realistic**: Use practical, realistic examples
+- **Complete**: Provide enough context to understand
+- **Consistent**: Use consistent naming and formatting
+- **Annotated**: Add comments explaining key points
+- **Testable**: Examples should work when implemented
+
+## Example Format
+```[language]
+// ✅ Good - Clear, documented example
+function processUserData(user: User): ProcessedUser {
+  // Validate user data before processing
+  if (!user.id || !user.name) {
+    throw new Error('Invalid user data');
+  }
+  
+  // Transform user data
+  return {
+    id: user.id,
+    name: user.name.trim(),
+    processedAt: new Date(),
+    status: 'active'
+  };
+}
+```
+```
+
+## Rule Application Strategy
+
+### 1. **Always Apply Rules**
+```yaml
+alwaysApply: true
+```
+**Use for:**
+- Core development standards (React, TypeScript, etc.)
+- Code quality requirements (naming, formatting)
+- Security and accessibility standards
+- Performance optimization guidelines
+
+**Examples:**
+- React component guidelines
+- TypeScript type safety rules
+- Accessibility requirements
+- Code formatting standards
+
+### 2. **Intelligent Apply Rules**
+```yaml
+alwaysApply: false
+```
+**Use for:**
+- Context-specific guidelines (content generation, testing)
+- Process workflows (deployment, documentation)
+- Feature-specific requirements
+- Creative or innovation tasks
+
+**Examples:**
+- Benchmark generation rules
+- Tutorial creation guidelines
+- Feature development processes
+- Creative thinking frameworks
+
+## Rule Maintenance and Updates
+
+### 1. **Regular Review Schedule**
+- **Monthly**: Review rule effectiveness and usage
+- **Quarterly**: Update rules based on new technologies or practices
+- **Annually**: Comprehensive rule audit and reorganization
+
+### 2. **Update Triggers**
+- New technology adoption
+- Process changes or improvements
+- Feedback from development teams
+- Performance or quality issues
+- Industry best practice updates
+
+### 3. **Version Control**
+```markdown
+## Rule Version History
+
+### v2.1 (2024-01-15)
+- Added accessibility guidelines
+- Updated TypeScript examples
+- Improved error handling patterns
+
+### v2.0 (2023-12-01)
+- Complete rewrite for clarity
+- Added practical examples
+- Restructured organization
+
+### v1.0 (2023-06-01)
+- Initial rule creation
+- Basic development standards
+- Core quality guidelines
+```
+
+## Rule Testing and Validation
+
+### 1. **Rule Effectiveness Testing**
+```markdown
+## Testing Checklist
+
+- [ ] **Clarity Test**: Can a new developer understand the rule?
+- [ ] **Actionability Test**: Does the rule provide clear next steps?
+- [ ] **Consistency Test**: Does the rule align with other rules?
+- [ ] **Completeness Test**: Does the rule cover all necessary aspects?
+- [ ] **Maintainability Test**: Is the rule easy to update?
+```
+
+### 2. **Rule Compliance Verification**
+```markdown
+## Compliance Verification
+
+### Automated Checks
+- [ ] Linting rules configured
+- [ ] Pre-commit hooks active
+- [ ] CI/CD pipeline validation
+
+### Manual Reviews
+- [ ] Code review checklist
+- [ ] Architecture review process
+- [ ] Quality assurance testing
+```
+
+## Advanced Rule Features
+
+### 1. **Conditional Rules**
+```yaml
+---
+description: "Conditional rule application based on context"
+globs: ["**/*.{js,ts,jsx,tsx}"]
+alwaysApply: false
+conditions:
+  - when: "file contains 'test' or 'spec'"
+    apply: "testing guidelines"
+  - when: "file contains 'api' or 'service'"
+    apply: "API design standards"
+---
+```
+
+### 2. **Rule Dependencies**
+```yaml
+---
+description: "Rule that depends on other rules"
+globs: ["**/*.{js,ts,jsx,tsx}"]
+alwaysApply: false
+dependencies:
+  - "typescript-standards"
+  - "react-guidelines"
+---
+```
+
+### 3. **Rule Priority System**
+```yaml
+---
+description: "High-priority rule for critical standards"
+globs: ["**/*.{js,ts,jsx,tsx}"]
+alwaysApply: true
+priority: "high"
+categories: ["security", "performance"]
+---
+```
+
+## Rule Generation Best Practices
+
+### 1. **Content Quality Standards**
+- **Accuracy**: Ensure all information is correct and current
+- **Completeness**: Cover all necessary aspects of the topic
+- **Clarity**: Write in clear, understandable language
+- **Consistency**: Maintain consistent formatting and style
+- **Actionability**: Provide specific, implementable guidance
+
+### 2. **Organization Principles**
+- **Logical Flow**: Organize from general to specific
+- **Grouping**: Group related concepts together
+- **Cross-References**: Link related rules and concepts
+- **Examples**: Include practical, real-world examples
+- **Checklists**: Provide verification and compliance tools
+
+### 3. **Maintenance Considerations**
+- **Modularity**: Design rules that can be updated independently
+- **Versioning**: Include version information and change history
+- **Feedback Loops**: Design rules that can receive and incorporate feedback
+- **Scalability**: Ensure rules can grow with the project
+- **Documentation**: Document rule purpose, usage, and maintenance
+
+## Rule Generation Checklist
+
+### Before Creating a Rule
+- [ ] **Need Identified**: Clear problem or requirement exists
+- [ ] **Scope Defined**: Rule boundaries are clear and appropriate
+- [ ] **Stakeholders Consulted**: Relevant teams and individuals involved
+- [ ] **Research Completed**: Best practices and standards researched
+- [ ] **Examples Collected**: Good and bad examples identified
+
+### During Rule Creation
+- [ ] **Structure Planned**: Logical organization determined
+- [ ] **Content Written**: Clear, actionable content created
+- [ ] **Examples Included**: Practical examples provided
+- [ ] **Anti-Patterns Identified**: Common mistakes documented
+- [ ] **Checklist Created**: Verification steps defined
+
+### After Rule Creation
+- [ ] **Review Completed**: Content reviewed by stakeholders
+- [ ] **Testing Done**: Rule tested for clarity and effectiveness
+- [ ] **Documentation Updated**: Related documentation reflects new rule
+- [ ] **Team Trained**: Development team educated on new rule
+- [ ] **Feedback Collected**: Initial feedback gathered and incorporated
+
+## Success Metrics for Rules
+
+### 1. **Adoption Metrics**
+- **Usage Rate**: Percentage of applicable files where rule is followed
+- **Compliance Rate**: Percentage of code reviews passing rule checks
+- **Violation Rate**: Frequency of rule violations over time
+
+### 2. **Quality Metrics**
+- **Bug Reduction**: Decrease in bugs related to rule-covered areas
+- **Code Review Efficiency**: Faster, more consistent code reviews
+- **Developer Satisfaction**: Team feedback on rule usefulness
+
+### 3. **Maintenance Metrics**
+- **Update Frequency**: How often rules need updates
+- **Clarity Issues**: Frequency of questions about rule interpretation
+- **Rule Conflicts**: Instances where rules contradict each other
+
+## Best Practices Summary
+
+1. **Start with clear purpose** - Define what the rule should accomplish
+2. **Use consistent structure** - Follow established rule organization patterns
+3. **Include practical examples** - Show both good and bad implementations
+4. **Explain the reasoning** - Help developers understand why rules exist
+5. **Make rules actionable** - Provide clear, specific guidance
+6. **Consider rule interactions** - Ensure rules work together harmoniously
+7. **Plan for maintenance** - Design rules that can evolve over time
+8. **Test rule effectiveness** - Validate that rules achieve their goals
+9. **Collect feedback** - Continuously improve rules based on usage
+10. **Document thoroughly** - Provide comprehensive guidance and examples
+description:
+globs:
+alwaysApply: false
+---
