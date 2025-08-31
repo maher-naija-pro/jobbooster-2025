@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useRef } from 'react';
-import { Upload, FileText, X, CheckCircle, AlertCircle, Loader } from 'lucide-react';
+import { Upload, FileText, Trash2, CheckCircle, AlertCircle, Loader } from 'lucide-react';
 import { cn, validateFile, formatFileSize } from '../lib/utils';
 import { CVData } from '../lib/types';
 import { UploadProgress } from './upload-progress';
@@ -71,6 +71,10 @@ export function CVUpload({
         const files = e.target.files;
         if (files && files.length > 0) {
             await processFile(files[0]);
+            // Reset the file input to prevent issues with multiple selections
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
         }
     }, [processFile]);
 
@@ -87,7 +91,31 @@ export function CVUpload({
     };
 
     return (
-        <div className={cn("space-y-4", className)}>
+        <div className={cn("space-y-6", className)}>
+            {/* Main Header with Title and Description */}
+            <div className="text-center mb-6">
+                <div className="flex justify-center gap-4 mb-4">
+                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                        <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                        <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                    </div>
+                </div>
+                <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                    Job Application Enhancer
+                </h2>
+                <p className="text-gray-600 max-w-2xl mx-auto">
+                    All tools to create tailored job application kit aligned with your job description
+                    and your unique skills.
+                </p>
+            </div>
+
+            {/* CV Upload Section Header */}
             <div className="flex items-center gap-2">
                 <FileText className="w-5 h-5 text-gray-600" />
                 <h3 className="text-lg font-semibold text-gray-900">CV/Resume Upload</h3>
@@ -113,7 +141,7 @@ export function CVUpload({
                         type="file"
                         accept=".pdf,.doc,.docx"
                         onChange={handleFileSelect}
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        className="hidden"
                     />
 
                     <div className="flex flex-col items-center gap-4">
@@ -179,10 +207,10 @@ export function CVUpload({
                         </div>
                         <button
                             onClick={handleRemove}
-                            className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                            className="p-1 text-red-500 hover:text-red-700 transition-colors"
                             title="Remove file"
                         >
-                            <X className="w-4 h-4" />
+                            <Trash2 className="w-4 h-4" />
                         </button>
                     </div>
                 </div>
