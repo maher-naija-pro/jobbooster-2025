@@ -13,6 +13,9 @@ export default function Home() {
   const { state, dispatch } = useApp();
   const [streamingContent, setStreamingContent] = useState('');
 
+  // Store the current abort controller for cancellation
+  const [currentAbortController, setCurrentAbortController] = useState<AbortController | null>(null);
+
   const handleFileUpload = async (file: File) => {
     try {
       dispatch({ type: 'CLEAR_ERROR' });
@@ -117,6 +120,12 @@ export default function Home() {
     dispatch({ type: 'START_GENERATION', payload: type });
     setStreamingContent('');
 
+    // Create AbortController for this request
+    const abortController = new AbortController();
+
+    // Store the abort controller so we can cancel it later
+    setCurrentAbortController(abortController);
+
     try {
       const endpoint = type === 'cover-letter' ? '/api/generate-letter' : '/api/generate-email';
 
@@ -138,6 +147,7 @@ export default function Home() {
           language: state.language,
           type: type === 'email' ? 'application' : undefined,
         }),
+        signal: abortController.signal, // Add abort signal
       });
 
       if (!response.ok) {
@@ -152,61 +162,87 @@ export default function Home() {
       if (reader) {
         let fullContent = '';
 
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
 
-          const chunk = decoder.decode(value);
-          const lines = chunk.split('\n');
+            const chunk = decoder.decode(value);
+            const lines = chunk.split('\n');
 
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              try {
-                const data = JSON.parse(line.slice(6));
-                if (data.content) {
-                  fullContent += data.content;
-                  setStreamingContent(fullContent);
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                try {
+                  const data = JSON.parse(line.slice(6));
+                  if (data.content) {
+                    fullContent += data.content;
+                    setStreamingContent(fullContent);
+                  }
+                  if (data.done) {
+                    // Create generated content object
+                    const generatedContent = {
+                      id: `gen_${Date.now()}`,
+                      type,
+                      language: state.language.code,
+                      content: fullContent,
+                      metadata: {
+                        wordCount: fullContent.split(' ').length,
+                        estimatedReadTime: Math.ceil(fullContent.split(' ').length / 200),
+                        atsOptimized: true,
+                      },
+                      exportOptions: [
+                        { type: 'pdf' as const, filename: `${type}-generated.pdf`, downloadUrl: '#' },
+                        { type: 'docx' as const, filename: `${type}-generated.docx`, downloadUrl: '#' },
+                        { type: 'txt' as const, filename: `${type}-generated.txt`, downloadUrl: '#' },
+                      ],
+                    };
+
+                    dispatch({ type: 'SET_GENERATED_CONTENT', payload: generatedContent });
+                    break;
+                  }
+                } catch {
+                  // Skip malformed JSON
                 }
-                if (data.done) {
-                  // Create generated content object
-                  const generatedContent = {
-                    id: `gen_${Date.now()}`,
-                    type,
-                    language: state.language.code,
-                    content: fullContent,
-                    metadata: {
-                      wordCount: fullContent.split(' ').length,
-                      estimatedReadTime: Math.ceil(fullContent.split(' ').length / 200),
-                      atsOptimized: true,
-                    },
-                    exportOptions: [
-                      { type: 'pdf' as const, filename: `${type}-generated.pdf`, downloadUrl: '#' },
-                      { type: 'docx' as const, filename: `${type}-generated.docx`, downloadUrl: '#' },
-                      { type: 'txt' as const, filename: `${type}-generated.txt`, downloadUrl: '#' },
-                    ],
-                  };
-
-                  dispatch({ type: 'SET_GENERATED_CONTENT', payload: generatedContent });
-                  break;
-                }
-              } catch {
-                // Skip malformed JSON
               }
             }
           }
+        } catch (error) {
+          // Check if this is an abort error
+          if (error instanceof Error && error.name === 'AbortError') {
+            console.log('Generation was aborted by user');
+            return; // Exit gracefully without setting error
+          }
+          throw error; // Re-throw other errors
+        } finally {
+          reader.releaseLock();
         }
       }
     } catch (error) {
+      // Check if this is an abort error
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.log('Generation was aborted by user');
+        return; // Exit gracefully without setting error
+      }
+
       console.error('Generation failed:', error);
       dispatch({ type: 'SET_ERROR', payload: 'Failed to generate content. Please try again.' });
+    } finally {
+      // Clean up the abort controller reference
+      setCurrentAbortController(null);
     }
   };
 
   const handleGenerateLetter = () => {
+    // Clear any existing generated content before starting new generation
+    dispatch({ type: 'CLEAR_GENERATED_CONTENT' });
+    setStreamingContent('');
     handleStreamingGeneration('cover-letter');
   };
 
   const handleGenerateMail = () => {
+    // Clear any existing generated content before starting new generation
+    dispatch({ type: 'CLEAR_GENERATED_CONTENT' });
+    setStreamingContent('');
     handleStreamingGeneration('email');
   };
 
@@ -228,10 +264,36 @@ export default function Home() {
 
   const handleStopGeneration = () => {
     if (state.isGenerating) {
+      // Abort the current fetch request if it exists
+      if (currentAbortController) {
+        currentAbortController.abort();
+      }
+
       // Stop the current generation process
       dispatch({ type: 'STOP_GENERATION' });
-      setStreamingContent('');
-      // Note: In a real implementation, you would also need to abort the fetch request
+
+      // Preserve the content that was already generated by converting streaming content to generated content
+      if (streamingContent.trim() && state.generationType) {
+        const partialContent = {
+          id: `gen_${Date.now()}_partial`,
+          type: state.generationType,
+          language: state.language.code,
+          content: streamingContent.trim(),
+          metadata: {
+            wordCount: streamingContent.trim().split(' ').length,
+            estimatedReadTime: Math.ceil(streamingContent.trim().split(' ').length / 200),
+            atsOptimized: false, // Mark as partial since it was stopped
+          },
+          exportOptions: [
+            { type: 'pdf' as const, filename: `${state.generationType}-partial.pdf`, downloadUrl: '#' },
+            { type: 'docx' as const, filename: `${state.generationType}-partial.docx`, downloadUrl: '#' },
+            { type: 'txt' as const, filename: `${state.generationType}-partial.txt`, downloadUrl: '#' },
+          ],
+        };
+
+        dispatch({ type: 'SET_GENERATED_CONTENT', payload: partialContent });
+      }
+
       console.log('Generation stopped by user');
     }
   };
@@ -267,7 +329,8 @@ export default function Home() {
             {/* Two Column Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Left Column - Input Form */}
-              <div className="bg-gray-50 rounded-lg p-6 sm:p-8">
+              <div className={`bg-gray-50 rounded-lg p-6 sm:p-8 transition-all duration-500 ${(state.isGenerating || state.generatedContent) ? 'lg:col-span-1' : 'lg:col-span-2'
+                }`}>
                 <div className="space-y-8">
                   {/* CV Upload */}
                   <CVUpload
@@ -308,8 +371,8 @@ export default function Home() {
               </div>
 
               {/* Right Column - Content Display */}
-              <div className="bg-white">
-                {(state.isGenerating || state.generatedContent) ? (
+              {(state.isGenerating || state.generatedContent) ? (
+                <div className="bg-white transition-all duration-500">
                   <ContentGenerator
                     content={state.generatedContent}
                     isGenerating={state.isGenerating}
@@ -319,19 +382,20 @@ export default function Home() {
                     onRegenerate={handleRegenerate}
                     onDownload={handleDownload}
                   />
-                ) : (
-                  <div className="h-full flex items-center justify-center text-gray-400">
-                    <div className="text-center">
-                      <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                        <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                      </div>
-                      <p className="text-sm">Generated content will appear here</p>
+                </div>
+              ) : (
+                <div className="bg-white border-2 border-dashed border-gray-200 rounded-lg flex items-center justify-center min-h-[400px] transition-all duration-500">
+                  <div className="text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                      <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
                     </div>
+                    <p className="text-sm text-gray-500">Generated content will appear here</p>
+                    <p className="text-xs text-gray-400 mt-1">Upload CV and provide job description to get started</p>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

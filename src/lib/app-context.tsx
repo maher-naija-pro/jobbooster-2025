@@ -32,6 +32,8 @@ function appReducer(state: AppState, action: AppAction): AppState {
             return { ...state, jobAnalysis: action.payload };
         case 'SET_GENERATED_CONTENT':
             return { ...state, generatedContent: action.payload, isGenerating: false, generationType: null };
+        case 'CLEAR_GENERATED_CONTENT':
+            return { ...state, generatedContent: null };
         case 'START_GENERATION':
             return { ...state, isGenerating: true, generationType: action.payload, error: null };
         case 'STOP_GENERATION':

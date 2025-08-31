@@ -80,6 +80,7 @@ export type AppAction =
   | { type: 'CLEAR_JOB_OFFER' }
   | { type: 'SET_JOB_ANALYSIS'; payload: JobAnalysis }
   | { type: 'SET_GENERATED_CONTENT'; payload: GeneratedContent }
+  | { type: 'CLEAR_GENERATED_CONTENT' }
   | { type: 'START_GENERATION'; payload: 'cover-letter' | 'email' }
   | { type: 'STOP_GENERATION' }
   | { type: 'SET_ERROR'; payload: string }

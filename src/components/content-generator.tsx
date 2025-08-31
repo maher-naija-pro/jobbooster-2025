@@ -86,7 +86,7 @@ export function ContentGenerator({
                 <div className="flex items-center gap-2">
                     <FileText className="w-5 h-5 text-gray-600" />
                     <h3 className="text-lg font-semibold text-gray-900">
-                        {isGenerating ? `Generating ${getContentTypeLabel()}` : 'Generated Content'}
+                        {isGenerating ? `Generating ${getContentTypeLabel()}` : `${getContentTypeLabel()} Generated`}
                     </h3>
                 </div>
 
@@ -111,7 +111,7 @@ export function ContentGenerator({
             </div>
 
             {/* Content Area */}
-            <div className="flex-1 bg-white border border-gray-200 rounded-lg overflow-hidden">
+            <div className="flex-1 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
                 {/* Content Header */}
                 {content && !isGenerating && (
                     <div className="bg-gray-50 px-4 py-3 border-b border-gray-200 flex items-center justify-between">
@@ -136,7 +136,7 @@ export function ContentGenerator({
                         <div className="space-y-4">
                             <div className="flex items-center gap-2 text-blue-600 mb-4">
                                 <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
-                                <span className="text-sm font-medium">Generating content...</span>
+                                <span className="text-sm font-medium">Generating {getContentTypeLabel().toLowerCase()}...</span>
                             </div>
                             <div className="text-gray-900 leading-relaxed">
                                 {formatContent(displayContent)}

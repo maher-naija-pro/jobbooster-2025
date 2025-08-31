@@ -47,21 +47,23 @@ export function ActionButtons({
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Generate Cover Letter Button */}
+                {/* Generate Cover Letter Button / Stop Generation Button */}
                 <button
-                    onClick={handleGenerateLetter}
-                    disabled={!isCVUploaded || !isJobOfferProvided || generationType === 'cover-letter'}
+                    onClick={isGenerating && generationType === 'cover-letter' ? onStopGeneration : handleGenerateLetter}
+                    disabled={!isCVUploaded || !isJobOfferProvided || (isGenerating && generationType !== 'cover-letter')}
                     className={cn(
                         "flex items-center justify-center gap-3 px-6 py-4 rounded-lg font-medium transition-all duration-200",
-                        isCVUploaded && isJobOfferProvided && generationType !== 'cover-letter'
-                            ? "bg-blue-600 text-white hover:bg-blue-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                            : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        isGenerating && generationType === 'cover-letter'
+                            ? "bg-red-600 text-white hover:bg-red-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                            : isCVUploaded && isJobOfferProvided && generationType !== 'cover-letter'
+                                ? "bg-blue-600 text-white hover:bg-blue-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                                : "bg-gray-100 text-gray-400 cursor-not-allowed"
                     )}
                 >
                     {isGenerating && generationType === 'cover-letter' ? (
                         <>
-                            <Loader className="w-5 h-5 animate-spin text-blue-200" />
-                            <span className="animate-pulse">Generating Letter...</span>
+                            <Square className="w-5 h-5 fill-current" />
+                            Stop Generation
                         </>
                     ) : (
                         <>
@@ -71,52 +73,28 @@ export function ActionButtons({
                     )}
                 </button>
 
-                {/* Generate Email Button */}
+                {/* Generate Email Button / Stop Generation Button */}
                 <button
-                    onClick={handleGenerateMail}
-                    disabled={!isCVUploaded || !isJobOfferProvided || generationType === 'email'}
+                    onClick={isGenerating && generationType === 'email' ? onStopGeneration : handleGenerateMail}
+                    disabled={!isCVUploaded || !isJobOfferProvided || (isGenerating && generationType !== 'email')}
                     className={cn(
                         "flex items-center justify-center gap-3 px-6 py-4 rounded-lg font-medium transition-all duration-200",
-                        isCVUploaded && isJobOfferProvided && generationType !== 'email'
-                            ? "bg-green-600 text-white hover:bg-green-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                            : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        isGenerating && generationType === 'email'
+                            ? "bg-red-600 text-white hover:bg-red-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                            : isCVUploaded && isJobOfferProvided && generationType !== 'email'
+                                ? "bg-green-600 text-white hover:bg-green-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                                : "bg-gray-100 text-gray-400 cursor-not-allowed"
                     )}
                 >
                     {isGenerating && generationType === 'email' ? (
-                        <>
-                            <Loader className="w-5 h-5 animate-spin text-green-200" />
-                            <span className="animate-pulse">Generating Email...</span>
-                        </>
-                    ) : (
-                        <>
-                            <Mail className="w-5 h-5" />
-                            Generate Mail
-                        </>
-                    )}
-                </button>
-            </div>
-
-            {/* Stop Generation Button */}
-            <div className="mt-4 flex justify-center">
-                <button
-                    onClick={onStopGeneration}
-                    disabled={!isGenerating}
-                    className={cn(
-                        "flex items-center justify-center gap-3 px-6 py-3 rounded-lg font-medium transition-all duration-200 min-w-[200px]",
-                        isGenerating
-                            ? "bg-red-600 text-white hover:bg-red-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                            : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    )}
-                >
-                    {isGenerating ? (
                         <>
                             <Square className="w-5 h-5 fill-current" />
                             Stop Generation
                         </>
                     ) : (
                         <>
-                            <Square className="w-5 h-5" />
-                            Stop Generation
+                            <Mail className="w-5 h-5" />
+                            Generate Mail
                         </>
                     )}
                 </button>
