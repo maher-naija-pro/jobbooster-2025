@@ -68,6 +68,8 @@ export interface AppState {
   isGenerating: boolean;
   generationType: 'cover-letter' | 'email' | null;
   error: string | null;
+  uploadProgress: number;
+  isUploading: boolean;
 }
 
 export type AppAction =
@@ -81,7 +83,10 @@ export type AppAction =
   | { type: 'START_GENERATION'; payload: 'cover-letter' | 'email' }
   | { type: 'STOP_GENERATION' }
   | { type: 'SET_ERROR'; payload: string }
-  | { type: 'CLEAR_ERROR' };
+  | { type: 'CLEAR_ERROR' }
+  | { type: 'START_UPLOAD' }
+  | { type: 'SET_UPLOAD_PROGRESS'; payload: number }
+  | { type: 'COMPLETE_UPLOAD' };
 
 export const SUPPORTED_LANGUAGES: Language[] = [
   { code: 'en', name: 'English', nativeName: 'English', flag: '🇺🇸', isRTL: false },

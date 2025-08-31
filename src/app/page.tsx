@@ -16,30 +16,79 @@ export default function Home() {
   const handleFileUpload = async (file: File) => {
     try {
       dispatch({ type: 'CLEAR_ERROR' });
+      dispatch({ type: 'START_UPLOAD' });
 
-      const formData = new FormData();
-      formData.append('file', file);
+      return new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        const formData = new FormData();
+        formData.append('file', file);
 
-      const response = await fetch('/api/upload-cv', {
-        method: 'POST',
-        body: formData,
+        // Track upload progress
+        xhr.upload.addEventListener('progress', (event) => {
+          if (event.lengthComputable) {
+            const progress = Math.round((event.loaded / event.total) * 100);
+            dispatch({ type: 'SET_UPLOAD_PROGRESS', payload: progress });
+          }
+        });
+
+        // Handle response
+        xhr.addEventListener('load', async () => {
+          if (xhr.status === 200) {
+            try {
+              const result = JSON.parse(xhr.responseText);
+
+              // Create CVData object
+              const cvData = {
+                ...result.cvData,
+                uploadDate: new Date(result.cvData.uploadDate),
+                status: 'processing' as const,
+              };
+
+              dispatch({ type: 'COMPLETE_UPLOAD' });
+              dispatch({ type: 'SET_CV_DATA', payload: cvData });
+
+              // Simulate processing time (in real app, this would be actual processing)
+              setTimeout(() => {
+                dispatch({
+                  type: 'SET_CV_DATA',
+                  payload: { ...cvData, status: 'completed' as const }
+                });
+              }, 2000);
+              resolve();
+            } catch (error) {
+              console.error('Failed to parse response:', error);
+              dispatch({ type: 'SET_ERROR', payload: 'Failed to process uploaded file. Please try again.' });
+              reject(error);
+            }
+          } else {
+            try {
+              const error = JSON.parse(xhr.responseText);
+              dispatch({ type: 'SET_ERROR', payload: error.error });
+            } catch {
+              dispatch({ type: 'SET_ERROR', payload: 'Upload failed. Please try again.' });
+            }
+            reject(new Error('Upload failed'));
+          }
+        });
+
+        // Handle network errors
+        xhr.addEventListener('error', () => {
+          dispatch({ type: 'SET_ERROR', payload: 'Network error. Please check your connection and try again.' });
+          reject(new Error('Network error'));
+        });
+
+        // Handle timeout
+        xhr.addEventListener('timeout', () => {
+          dispatch({ type: 'SET_ERROR', payload: 'Upload timeout. Please try again.' });
+          reject(new Error('Upload timeout'));
+        });
+
+        // Open and send request
+        xhr.open('POST', '/api/upload-cv');
+        xhr.timeout = 30000; // 30 second timeout
+        xhr.send(formData);
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        dispatch({ type: 'SET_ERROR', payload: error.error });
-        return;
-      }
-
-      const result = await response.json();
-
-      // Create CVData object
-      const cvData = {
-        ...result.cvData,
-        uploadDate: new Date(result.cvData.uploadDate),
-      };
-
-      dispatch({ type: 'SET_CV_DATA', payload: cvData });
     } catch (error) {
       console.error('File upload failed:', error);
       dispatch({ type: 'SET_ERROR', payload: 'Failed to upload file. Please try again.' });
@@ -227,6 +276,8 @@ export default function Home() {
                     cvData={state.cvData}
                     isProcessing={state.cvData?.status === 'processing'}
                     error={state.error}
+                    uploadProgress={state.uploadProgress}
+                    isUploading={state.isUploading}
                   />
 
                   {/* Language Selection */}

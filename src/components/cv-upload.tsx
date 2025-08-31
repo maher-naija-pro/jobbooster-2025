@@ -4,6 +4,7 @@ import React, { useState, useCallback, useRef } from 'react';
 import { Upload, FileText, X, CheckCircle, AlertCircle, Loader } from 'lucide-react';
 import { cn, validateFile, formatFileSize } from '../lib/utils';
 import { CVData } from '../lib/types';
+import { UploadProgress } from './upload-progress';
 
 interface CVUploadProps {
     onFileUpload: (file: File) => Promise<void>;
@@ -12,6 +13,8 @@ interface CVUploadProps {
     isProcessing: boolean;
     error: string | null;
     className?: string;
+    uploadProgress: number;
+    isUploading: boolean;
 }
 
 export function CVUpload({
@@ -20,9 +23,12 @@ export function CVUpload({
     cvData,
     isProcessing,
     error,
-    className
+    className,
+    uploadProgress,
+    isUploading
 }: CVUploadProps) {
     const [isDragOver, setIsDragOver] = useState(false);
+    const [currentFile, setCurrentFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const processFile = useCallback(async (file: File) => {
@@ -32,10 +38,12 @@ export function CVUpload({
             return;
         }
 
+        setCurrentFile(file);
         try {
             await onFileUpload(file);
         } catch (err) {
             console.error('File upload failed:', err);
+            setCurrentFile(null);
         }
     }, [onFileUpload]);
 
@@ -72,6 +80,7 @@ export function CVUpload({
 
     const handleRemove = () => {
         onFileRemove();
+        setCurrentFile(null);
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
@@ -84,7 +93,8 @@ export function CVUpload({
                 <h3 className="text-lg font-semibold text-gray-900">CV/Resume Upload</h3>
             </div>
 
-            {!cvData && !isProcessing && (
+            {/* Upload Area - Show when not uploading, processing, or has CV data */}
+            {!cvData && !isProcessing && !isUploading && (
                 <div
                     className={cn(
                         "relative border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer",
@@ -127,6 +137,18 @@ export function CVUpload({
                 </div>
             )}
 
+            {/* Upload Progress - Show when uploading */}
+            {isUploading && currentFile && (
+                <UploadProgress
+                    progress={uploadProgress}
+                    filename={currentFile.name}
+                    filesize={currentFile.size}
+                    status="uploading"
+                    className="mb-4"
+                />
+            )}
+
+            {/* Processing State - Show when processing after upload */}
             {isProcessing && (
                 <div className="border border-gray-200 rounded-lg p-6 bg-gray-50">
                     <div className="flex items-center gap-3">
@@ -142,7 +164,8 @@ export function CVUpload({
                 </div>
             )}
 
-            {cvData && !isProcessing && (
+            {/* CV Data Display - Show when upload and processing are complete */}
+            {cvData && !isProcessing && !isUploading && (
                 <div className="border border-green-200 rounded-lg p-6 bg-green-50">
                     <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3">
@@ -165,6 +188,7 @@ export function CVUpload({
                 </div>
             )}
 
+            {/* Error Display */}
             {error && (
                 <div className="border border-red-200 rounded-lg p-4 bg-red-50">
                     <div className="flex items-center gap-3">

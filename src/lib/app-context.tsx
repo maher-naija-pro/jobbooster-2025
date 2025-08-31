@@ -12,6 +12,8 @@ const initialState: AppState = {
     isGenerating: false,
     generationType: null,
     error: null,
+    uploadProgress: 0,
+    isUploading: false,
 };
 
 function appReducer(state: AppState, action: AppAction): AppState {
@@ -38,6 +40,12 @@ function appReducer(state: AppState, action: AppAction): AppState {
             return { ...state, error: action.payload, isGenerating: false };
         case 'CLEAR_ERROR':
             return { ...state, error: null };
+        case 'START_UPLOAD':
+            return { ...state, isUploading: true, uploadProgress: 0, error: null };
+        case 'SET_UPLOAD_PROGRESS':
+            return { ...state, uploadProgress: action.payload };
+        case 'COMPLETE_UPLOAD':
+            return { ...state, isUploading: false, uploadProgress: 100 };
         default:
             return state;
     }
