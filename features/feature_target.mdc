@@ -1,0 +1,124 @@
+# Job Application Enhancer - Features Documentation
+
+## Overview
+The Job Application Enhancer is a comprehensive tool designed to help users create tailored job application materials by aligning their CV/resume with specific job descriptions and highlighting their unique skills.
+
+## Core Features
+
+### 1. Document Management
+- **CV/Resume Upload System**
+  - Drag-and-drop PDF upload interface
+  - File validation and processing
+  - Support for multiple document formats (PDF, DOC, DOCX)
+  - Document preview and management
+  - Secure file handling and storage
+
+### 2. Language Support
+- **Multi-language Interface**
+  - Language selection dropdown
+  - Support one of multiple languages (English, French, Spanish, German, etc.)
+
+
+### 3. Job Offer Analysis
+- **Job Description Input**
+  - Large text area for job offer content
+  - Clear input instructions
+  - Content clearing functionality (trash can icon)
+  - Resizable text input area
+  - validation
+
+### 4. Content Generation Engine
+
+#### 4.1 Cover Letter Generation
+- **"Generate Letter" Feature**
+  - AI-powered cover letter creation
+  - Tailored content based on CV and job description
+  - Professional tone and structure
+  - Customizable length and focus areas
+
+#### 4.2 Email Generation
+- **"Generate Mail" Feature**
+  - Professional email templates
+  - Follow-up email generation
+  - Application submission emails
+  - Customizable subject lines and content
+
+#### 4.3 CV Recommendations
+- **"Generating CV Recommendations" Feature**
+  - CV analysis and optimization suggestions
+  - Skills gap identification
+  - Keyword optimization for ATS systems
+  - Format and structure recommendations
+  - Industry-specific customization
+
+### 5. AI-Powered Analysis
+
+#### 5.1 Skills Matching
+- **Skills Alignment Engine**
+  - Automatic skills extraction from CV
+  - Job requirement analysis
+  - Skills gap identification
+  - Skills relevance scoring
+  - Personalized improvement suggestions
+
+#### 5.2 Content Optimization
+- **Smart Content Enhancement**
+  - Keyword optimization for job descriptions
+  - ATS-friendly formatting
+  - Industry-specific terminology
+  - Professional language enhancement
+  - Content length optimization
+
+### 6. User Interface Features
+
+
+#### 6.2 Responsive Design
+- **Cross-platform Compatibility**
+  - Mobile-responsive interface
+
+
+### 7. Output and Export
+
+#### 7.1 Document Formats
+- **Multiple Export Options**
+  - PDF export for all generated content
+  - Word document export
+  - Plain text export
+
+
+
+
+
+
+
+#### 10.2 API Access
+- **Developer Features**
+  - RESTful API for external access
+
+
+## Technical Requirements
+
+### Frontend
+- Next.js 15.5.2 framework
+- React 19.1.0 components
+- Tailwind CSS for styling
+- TypeScript for type safety
+- Responsive design principles
+- chadcn componants 
+
+### Backend
+open ai with costom url 
+use gpt-oss model
+
+
+
+
+
+
+
+
+
+
+
+
+
