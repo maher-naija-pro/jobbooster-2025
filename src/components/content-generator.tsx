@@ -47,6 +47,13 @@ export function ContentGenerator({
         }
     }, [isGenerating, content]);
 
+    // Immediate progress reset when content is cleared (not generating)
+    useEffect(() => {
+        if (!isGenerating && !content) {
+            setLocalProgress(0);
+        }
+    }, [isGenerating, content]);
+
     // Simulate progress when generating
     useEffect(() => {
         let progressInterval: NodeJS.Timeout;
@@ -60,7 +67,8 @@ export function ContentGenerator({
                 });
             }, 5000);
         } else {
-            setLocalProgress(100);
+            // When not generating, set progress to 0 (not 100) to avoid confusion
+            setLocalProgress(0);
         }
 
         return () => {
@@ -184,7 +192,7 @@ export function ContentGenerator({
                                 </div>
                                 <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                                     <div
-                                        className="bg-blue-500 h-2 rounded-full transition-all duration-5000"
+                                        className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                                         style={{ width: `${currentProgress}%` }}
                                     ></div>
                                 </div>
