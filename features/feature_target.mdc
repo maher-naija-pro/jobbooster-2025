@@ -1,7 +1,7 @@
 # Job Application Enhancer - Features Documentation
 
 ## Overview
-The Job Application Enhancer is a comprehensive tool designed to help users create tailored job application materials by aligning their CV/resume with specific job descriptions and highlighting their unique skills.
+The Job Application Enhancer is a comprehensive tool designed to help users create tailored job application materials by aligning their CV/resume with specific job descriptions.
 
 ## Core Features
 
@@ -46,20 +46,13 @@ The Job Application Enhancer is a comprehensive tool designed to help users crea
 #### 4.3 CV Recommendations
 - **"Generating CV Recommendations" Feature**
   - CV analysis and optimization suggestions
-  - Skills gap identification
   - Keyword optimization for ATS systems
   - Format and structure recommendations
   - Industry-specific customization
 
 ### 5. AI-Powered Analysis
 
-#### 5.1 Skills Matching
-- **Skills Alignment Engine**
-  - Automatic skills extraction from CV
-  - Job requirement analysis
-  - Skills gap identification
-  - Skills relevance scoring
-  - Personalized improvement suggestions
+
 
 #### 5.2 Content Optimization
 - **Smart Content Enhancement**

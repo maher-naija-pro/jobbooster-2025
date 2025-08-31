@@ -37,11 +37,11 @@ for await (const chunk of streamResponse) {
 - Reduced perceived wait times
 
 ### 2. **Advanced CV Analysis & Insights**
-**Current State**: Basic skills extraction
+**Current State**: Basic CV analysis
 **Enhancement**: Comprehensive CV analysis with actionable insights
 
 **Features to Add**:
-- Skills gap analysis vs job requirements
+
 - Career progression insights
 - ATS optimization scoring
 - Resume quality assessment
@@ -50,11 +50,6 @@ for await (const chunk of streamResponse) {
 **API Enhancement**:
 ```typescript
 interface CVAnalysisResult {
-  skillsGap: {
-    missing: string[];
-    matched: string[];
-    recommended: string[];
-  };
   atsScore: number;
   industryFit: number;
   suggestions: string[];

@@ -39,7 +39,7 @@ This document outlines the technical architecture and implementation details for
 │  • Content Generation Engine                                  │
 
 └─────────────────────────────────────────────────────────────────┘
-                                │
+                                 │
                                 ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                    Storage & File Management                   │
@@ -68,7 +68,7 @@ interface CVData {
   filename: string;
   size: number;
   uploadDate: Date;
-  extractedSkills: string[];
+
   experience: Experience[];
   education: Education[];
   processedContent: string;
@@ -79,7 +79,7 @@ interface CVData {
 - Drag-and-drop interface with visual feedback
 - File validation (format, size, content)
 - PDF/DOC/DOCX processing
-- Skills extraction using open ai endpoint
+
 - Mobile-responsive design 
 - Comprehensive logging for debugging and monitoring
 
@@ -134,7 +134,7 @@ interface JobOfferInputProps {
 }
 
 interface JobAnalysis {
-  skills: string[];
+
   experienceLevel: 'entry' | 'mid' | 'senior' | 'lead';
   industry: string;
   requirements: string[];
@@ -149,7 +149,7 @@ interface JobAnalysis {
 - Large text area with resizable interface
 - Content validation (minimum length, content quality)
 -  job analysis using open ai endpoint
-- Skills extraction and matching
+
 - Clear functionality with trash icon
 - Mobile-optimized input methods
 
@@ -157,7 +157,7 @@ interface JobAnalysis {
 1. **Empty**: Placeholder text and instructions
 2. **Typing**: Real-time validation and character count
 3. **Analyzing**: AI processing with progress indicators
-4. **Complete**: Analysis results and skill identification
+4. **Complete**: Analysis results
 5. **Error**: Validation errors with improvement suggestions
 
 ### 4. Content Generation Engine
@@ -182,7 +182,7 @@ interface GeneratedContent {
   metadata: {
     wordCount: number;
     estimatedReadTime: number;
-    skillsHighlighted: string[];
+
     atsOptimized: boolean;
   };
   exportOptions: ExportFormat[];
@@ -200,7 +200,7 @@ interface ExportFormat {
 - GPT-OSS model support
 - Multi-language content generation
 - ATS optimization
-- Skills-based personalization
+
 - Professional tone and structure
 - Export in multiple formats
 - Comprehensive logging for AI operations and performance monitoring
@@ -213,7 +213,7 @@ interface CoverLetterGenerator {
     jobAnalysis: JobAnalysis;
     language: Language;
     tone: 'professional' | 'friendly' | 'formal';
-    focus: 'skills' | 'experience' | 'achievements';
+    focus: 'experience' | 'achievements';
     length: 'short' | 'medium' | 'long';
   }): Promise<GeneratedContent>;
 }
@@ -297,7 +297,7 @@ Response:
   "success": boolean;
   "cvData": CVData;
   "processingTime": number;
-  "extractedSkills": string[];
+
 }
 ```
 
