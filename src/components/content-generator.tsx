@@ -31,6 +31,22 @@ export function ContentGenerator({
     const [displayContent, setDisplayContent] = useState('');
     const [localProgress, setLocalProgress] = useState(0);
 
+    // Clear display content and reset progress when generation type changes (new generation starts)
+    useEffect(() => {
+        if (generationType) {
+            setDisplayContent('');
+            setLocalProgress(0);
+        }
+    }, [generationType]);
+
+    // Also clear when generation starts and reset progress
+    useEffect(() => {
+        if (isGenerating && !content) {
+            setDisplayContent('');
+            setLocalProgress(0);
+        }
+    }, [isGenerating, content]);
+
     // Simulate progress when generating
     useEffect(() => {
         let progressInterval: NodeJS.Timeout;

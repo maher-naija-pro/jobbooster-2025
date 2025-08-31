@@ -29,6 +29,16 @@ export function ActionButtons({
     const isGeneratingLetter = isGenerating && generationType === 'cover-letter';
     const isGeneratingEmail = isGenerating && generationType === 'email';
 
+    const handleGenerateLetterClick = () => {
+        // Clear any existing content immediately before starting generation
+        onGenerateLetter();
+    };
+
+    const handleGenerateMailClick = () => {
+        // Clear any existing content immediately before starting generation
+        onGenerateMail();
+    };
+
     return (
         <div className={className}>
             <div className="flex items-center gap-2 mb-4">
@@ -40,7 +50,7 @@ export function ActionButtons({
             <div className="space-y-3">
                 {/* Generate Cover Letter Button */}
                 <button
-                    onClick={onGenerateLetter}
+                    onClick={handleGenerateLetterClick}
                     disabled={isDisabled || isGenerating}
                     className={cn(
                         "w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg font-medium transition-all duration-200",
@@ -66,7 +76,7 @@ export function ActionButtons({
 
                 {/* Generate Email Button */}
                 <button
-                    onClick={onGenerateMail}
+                    onClick={handleGenerateMailClick}
                     disabled={isDisabled || isGenerating}
                     className={cn(
                         "w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg font-medium transition-all duration-200",
