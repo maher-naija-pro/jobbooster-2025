@@ -34,7 +34,7 @@ export function ContentGenerator({
     // Simulate progress when generating
     useEffect(() => {
         let progressInterval: NodeJS.Timeout;
-        
+
         if (isGenerating) {
             setLocalProgress(0);
             progressInterval = setInterval(() => {
@@ -42,7 +42,7 @@ export function ContentGenerator({
                     if (prev >= 90) return prev; // Cap at 90% until complete
                     return prev + Math.random() * 15; // Random increment
                 });
-            }, 1000);
+            }, 5000);
         } else {
             setLocalProgress(100);
         }
@@ -152,14 +152,13 @@ export function ContentGenerator({
                                     </h4>
                                     {/* LED Indicator */}
                                     <div className="flex items-center gap-2">
-                                        <div 
-                                            className={`w-3 h-3 rounded-full shadow-sm ${
-                                                isGenerating 
-                                                    ? 'bg-orange-500 animate-pulse' 
-                                                    : content 
-                                                        ? 'bg-green-500' 
-                                                        : 'bg-gray-400'
-                                            }`}
+                                        <div
+                                            className={`w-3 h-3 rounded-full shadow-sm ${isGenerating
+                                                ? 'bg-orange-500 animate-pulse'
+                                                : content
+                                                    ? 'bg-green-500'
+                                                    : 'bg-gray-400'
+                                                }`}
                                             title={isGenerating ? 'Generating...' : content ? 'Generation Complete' : 'Ready'}
                                         ></div>
                                         {isGenerating && (
@@ -168,8 +167,8 @@ export function ContentGenerator({
                                     </div>
                                 </div>
                                 <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                                    <div 
-                                        className="bg-blue-500 h-2 rounded-full transition-all duration-1000" 
+                                    <div
+                                        className="bg-blue-500 h-2 rounded-full transition-all duration-5000"
                                         style={{ width: `${currentProgress}%` }}
                                     ></div>
                                 </div>
