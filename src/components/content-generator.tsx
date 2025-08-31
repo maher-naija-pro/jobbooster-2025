@@ -81,34 +81,7 @@ export function ContentGenerator({
 
     return (
         <div className={`h-full flex flex-col ${className}`}>
-            {/* Header with Copy Button */}
-            <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-gray-600" />
-                    <h3 className="text-lg font-semibold text-gray-900">
-                        {isGenerating ? `Generating ${getContentTypeLabel()}` : `${getContentTypeLabel()} Generated`}
-                    </h3>
-                </div>
 
-                {content && !isGenerating && (
-                    <button
-                        onClick={handleCopy}
-                        className="flex items-center gap-2 px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                    >
-                        {copied ? (
-                            <>
-                                <Check className="w-4 h-4 text-green-600" />
-                                Copied!
-                            </>
-                        ) : (
-                            <>
-                                <Copy className="w-4 h-4" />
-                                Copy
-                            </>
-                        )}
-                    </button>
-                )}
-            </div>
 
             {/* Content Area */}
             <div className="flex-1 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
@@ -121,8 +94,27 @@ export function ContentGenerator({
                                 {content.type === 'cover-letter' ? 'Cover Letter' : 'Email'} Generated Successfully
                             </span>
                         </div>
-                        <div className="text-xs text-gray-600">
-                            {content.metadata.wordCount} words • {content.metadata.estimatedReadTime} min read
+                        <div className="flex items-center gap-3">
+                            {/* Copy Button */}
+                            <button
+                                onClick={handleCopy}
+                                className="flex items-center gap-2 px-3 py-1 text-xs bg-white text-gray-700 rounded border border-gray-300 hover:bg-gray-50 transition-colors"
+                            >
+                                {copied ? (
+                                    <>
+                                        <Check className="w-3 h-3 text-green-600" />
+                                        Copied!
+                                    </>
+                                ) : (
+                                    <>
+                                        <Copy className="w-3 h-3" />
+                                        Copy
+                                    </>
+                                )}
+                            </button>
+                            <div className="text-xs text-gray-600">
+                                {content.metadata.wordCount} words • {content.metadata.estimatedReadTime} min read
+                            </div>
                         </div>
                     </div>
                 )}

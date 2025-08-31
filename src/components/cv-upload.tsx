@@ -123,43 +123,54 @@ export function CVUpload({
 
             {/* Upload Area - Show when not uploading, processing, or has CV data */}
             {!cvData && !isProcessing && !isUploading && (
-                <div
-                    className={cn(
-                        "relative border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer",
-                        isDragOver
-                            ? "border-blue-400 bg-blue-50"
-                            : "border-gray-300 hover:border-gray-400",
-                        error && "border-red-300 bg-red-50"
-                    )}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                    onClick={handleClick}
-                >
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept=".pdf,.doc,.docx"
-                        onChange={handleFileSelect}
-                        className="hidden"
-                    />
+                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                    {/* Header */}
+                    <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                        <div className="flex items-center gap-2">
+                            <Upload className="w-4 h-4 text-gray-600" />
+                            <span className="text-sm font-medium text-gray-900">Upload CV/Resume</span>
+                        </div>
+                    </div>
 
-                    <div className="flex flex-col items-center gap-3">
-                        <Upload className={cn(
-                            "w-8 h-8",
-                            isDragOver ? "text-blue-500" : "text-gray-400"
-                        )} />
+                    {/* Upload Content */}
+                    <div
+                        className={cn(
+                            "relative border-2 border-dashed rounded-none border-gray-300 p-6 text-center transition-colors cursor-pointer",
+                            isDragOver
+                                ? "border-blue-400 bg-blue-50"
+                                : "hover:border-gray-400",
+                            error && "border-red-300 bg-red-50"
+                        )}
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        onDrop={handleDrop}
+                        onClick={handleClick}
+                    >
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept=".pdf,.doc,.docx"
+                            onChange={handleFileSelect}
+                            className="hidden"
+                        />
 
-                        <div className="space-y-2">
-                            <p className="text-lg font-medium text-gray-900">
-                                {isDragOver ? "Drop your CV here" : "Drop your CV/Resume here"}
-                            </p>
-                            <p className="text-sm text-gray-600">
-                                or <span className="text-blue-600 hover:text-blue-700 font-medium">click to browse</span>
-                            </p>
-                            <p className="text-xs text-gray-500">
-                                Supports PDF, DOC, DOCX files up to 10MB
-                            </p>
+                        <div className="flex flex-col items-center gap-3">
+                            <Upload className={cn(
+                                "w-8 h-8",
+                                isDragOver ? "text-blue-500" : "text-gray-400"
+                            )} />
+
+                            <div className="space-y-2">
+                                <p className="text-lg font-medium text-gray-900">
+                                    {isDragOver ? "Drop your CV here" : "Drop your CV/Resume here"}
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                    or <span className="text-blue-600 hover:text-blue-700 font-medium">click to browse</span>
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                    Supports PDF, DOC, DOCX files up to 10MB
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -178,32 +189,42 @@ export function CVUpload({
 
             {/* Processing State - Show when processing after upload */}
             {isProcessing && (
-                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                    <div className="flex items-center gap-3">
-                        <Loader className="w-5 h-5 text-blue-600 animate-spin" />
-                        <div className="flex-1">
-                            <p className="font-medium text-gray-900">Processing document...</p>
-                            <p className="text-sm text-gray-600">Extracting information from your CV</p>
+                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                    {/* Header */}
+                    <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                        <div className="flex items-center gap-2">
+                            <Loader className="w-4 h-4 text-blue-600 animate-spin" />
+                            <span className="text-sm font-medium text-gray-900">Processing CV</span>
                         </div>
                     </div>
-                    <div className="mt-4 w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-blue-600 h-2 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+
+                    {/* Content */}
+                    <div className="p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                            <Loader className="w-5 h-5 text-blue-600 animate-spin" />
+                            <div className="flex-1">
+                                <p className="font-medium text-gray-900">Processing document...</p>
+                                <p className="text-sm text-gray-600">Extracting information from your CV</p>
+                            </div>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-3">
+                            <div className="bg-blue-600 h-3 rounded-full animate-pulse transition-all duration-1000" style={{ width: '60%' }}></div>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-2">
+                            AI is analyzing your CV content and preparing for content generation
+                        </p>
                     </div>
                 </div>
             )}
 
             {/* CV Data Display - Show when upload and processing are complete */}
             {cvData && !isProcessing && !isUploading && (
-                <div className="border border-green-200 rounded-lg p-4 bg-green-50">
-                    <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-3">
-                            <CheckCircle className="w-5 h-5 text-green-600" />
-                            <div>
-                                <p className="font-medium text-gray-900">{cvData.filename}</p>
-                                <p className="text-sm text-gray-600">
-                                    {formatFileSize(cvData.size)} • Uploaded {cvData.uploadDate.toLocaleDateString()}
-                                </p>
-                            </div>
+                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                    {/* Header */}
+                    <div className="bg-gray-50 px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4 text-green-600" />
+                            <span className="text-sm font-medium text-gray-900">CV Uploaded Successfully</span>
                         </div>
                         <button
                             onClick={handleRemove}
@@ -213,15 +234,42 @@ export function CVUpload({
                             <Trash2 className="w-4 h-4" />
                         </button>
                     </div>
+
+                    {/* Content */}
+                    <div className="p-6">
+                        <div className="flex items-center gap-3 mb-2">
+                            <CheckCircle className="w-5 h-5 text-green-600" />
+                            <div>
+                                <p className="font-medium text-gray-900">{cvData.filename}</p>
+                                <p className="text-sm text-gray-600">
+                                    {formatFileSize(cvData.size)} • Uploaded {cvData.uploadDate.toLocaleDateString()}
+                                </p>
+                            </div>
+                        </div>
+                        <p className="text-xs text-gray-500">
+                            Your CV is ready for content generation
+                        </p>
+                    </div>
                 </div>
             )}
 
             {/* Error Display */}
             {error && (
-                <div className="border border-red-200 rounded-lg p-3 bg-red-50">
-                    <div className="flex items-center gap-3">
-                        <AlertCircle className="w-5 h-5 text-red-600" />
+                <div className="bg-white border border-red-200 rounded-lg overflow-hidden shadow-sm">
+                    {/* Header */}
+                    <div className="bg-red-50 px-4 py-3 border-b border-red-200">
+                        <div className="flex items-center gap-2">
+                            <AlertCircle className="w-4 h-4 text-red-600" />
+                            <span className="text-sm font-medium text-red-900">Upload Error</span>
+                        </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-4">
                         <p className="text-sm text-red-700">{error}</p>
+                        <p className="text-xs text-red-600 mt-2">
+                            Please try uploading a different file or contact support if the issue persists.
+                        </p>
                     </div>
                 </div>
             )}
