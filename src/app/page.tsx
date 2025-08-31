@@ -131,9 +131,9 @@ export default function Home() {
                       atsOptimized: true,
                     },
                     exportOptions: [
-                      { type: 'pdf', filename: `${type}-generated.pdf`, downloadUrl: '#' },
-                      { type: 'docx', filename: `${type}-generated.docx`, downloadUrl: '#' },
-                      { type: 'txt', filename: `${type}-generated.txt`, downloadUrl: '#' },
+                      { type: 'pdf' as const, filename: `${type}-generated.pdf`, downloadUrl: '#' },
+                      { type: 'docx' as const, filename: `${type}-generated.docx`, downloadUrl: '#' },
+                      { type: 'txt' as const, filename: `${type}-generated.txt`, downloadUrl: '#' },
                     ],
                   };
 
@@ -175,6 +175,16 @@ export default function Home() {
   const handleDownload = (format: 'pdf' | 'docx' | 'txt') => {
     // TODO: Implement actual download functionality
     console.log('Download as', format);
+  };
+
+  const handleStopGeneration = () => {
+    if (state.isGenerating) {
+      // Stop the current generation process
+      dispatch({ type: 'STOP_GENERATION' });
+      setStreamingContent('');
+      // Note: In a real implementation, you would also need to abort the fetch request
+      console.log('Generation stopped by user');
+    }
   };
 
   return (
@@ -225,6 +235,7 @@ export default function Home() {
                   isJobOfferProvided={state.jobOffer.length >= 100}
                   onGenerateLetter={handleGenerateLetter}
                   onGenerateMail={handleGenerateMail}
+                  onStopGeneration={handleStopGeneration}
                   isGenerating={state.isGenerating}
                   generationType={state.generationType}
                 />
