@@ -19,7 +19,7 @@ The Job Application Enhancer is a comprehensive tool designed to help users crea
   - Support one of multiple languages (English, French, Spanish, German, etc.)
 
 
-### 3. Job Offer Analysis
+### 3. Job Offer 
 - **Job Description Input**
   - Large text area for job offer content
   - Clear input instructions
@@ -70,7 +70,7 @@ The Job Application Enhancer is a comprehensive tool designed to help users crea
 - TypeScript for type safety
 - Responsive design principles
 - chadcn components
-
+- vercel ai sdk https://ai-sdk.dev/providers/ai-sdk-providers/openai
 ### Backend
 open ai with costom url 
 use gpt-oss model
