@@ -37,7 +37,7 @@ This document outlines the technical architecture and implementation details for
 │  • Custom Endpoint Configuration                              │
 │  • GPT-OSS Model Integration                                  │
 │  • Content Generation Engine                                  │
-│  • Skills Analysis & Matching                                 │
+
 └─────────────────────────────────────────────────────────────────┘
                                 │
                                 ▼

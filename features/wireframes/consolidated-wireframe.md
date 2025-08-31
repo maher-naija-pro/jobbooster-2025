@@ -16,7 +16,7 @@
 │                    │  │  All tools to create tailored  │  │                  │
 │                    │  │  job application kit aligned   │  │                  │
 │                    │  │  with your job description     │  │                  │
-│                    │  │  and your unique skills.       │  │                  │
+│                    │  
 │                    │  └───────────────────────────────┘  │                  │
 │                    │                                     │                  │
 │                    │  ┌───────────────────────────────┐  │                  │
@@ -89,7 +89,6 @@
 │                                                                 │
 │  Empty: [Your job offer...] Character count: 0/5000           │
 │  With Content: [Job description text...] Character count: 150/5000 │
-│  Analyzing: 🔍 Analyzing job requirements... ✅ Skills identified │
 │  Error: ❌ Please provide complete job description (min 100 chars) │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -140,14 +139,14 @@
 
 1. **CV Upload**: Drag & drop PDF/DOC files, max 10MB
 2. **Language Support**: 12+ languages including English, French, Spanish, German, etc.
-3. **Job Analysis**: AI-powered skill extraction and requirement matching
+
 4. **Content Generation**: Cover letters and emails in selected language
 5. **Progress Tracking**: Real-time generation progress with cancel option
 6. **Download Options**: PDF download, copy to clipboard, edit functionality
 
 ## User Flow
 
-1. **Upload CV** → File processing and skill extraction
+1. **Upload CV** → File processing
 2. **Select Language** → Choose content generation language
 3. **Input Job Offer** → Paste job description for analysis
 4. **Generate Content** → AI creates personalized cover letter/email

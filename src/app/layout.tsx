@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
-import { AppProvider } from "../lib/context";
-import { ErrorBoundary } from "../components/ErrorBoundary";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -30,8 +28,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 min-h-screen`}
       >
-        <ErrorBoundary>
-          <AppProvider>
+
             <header className="bg-white border-b border-gray-200 shadow-sm">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
@@ -60,8 +57,7 @@ export default function RootLayout({
             <main className="flex-1">
               {children}
             </main>
-          </AppProvider>
-        </ErrorBoundary>
+
       </body>
     </html>
   );

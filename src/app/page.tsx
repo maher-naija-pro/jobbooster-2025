@@ -1,10 +1,5 @@
 'use client';
 
-import { CVUpload } from '../components/CVUpload';
-import { LanguageSelection } from '../components/LanguageSelection';
-import { JobOfferInput } from '../components/JobOfferInput';
-import { ActionButtons } from '../components/ActionButtons';
-import { useApp } from '../lib/context';
 
 export default function Home() {
   const { state } = useApp();
@@ -25,40 +20,7 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Components Container */}
-            <div className="space-y-6">
-              {/* CV Upload Section */}
-              <CVUpload
-                cvData={state.cvData}
-                uploadState={state.cvUploadState}
-                uploadProgress={state.cvUploadProgress}
-                uploadError={state.cvUploadError}
-              />
 
-              {/* Language Selection */}
-              <LanguageSelection
-                currentLanguage={state.selectedLanguage}
-              />
-
-              {/* Job Offer Input */}
-              <JobOfferInput
-                jobContent={state.jobContent}
-                jobAnalysis={state.jobAnalysis}
-                jobAnalysisState={state.jobAnalysisState}
-                jobAnalysisError={state.jobAnalysisError}
-              />
-
-              {/* Action Buttons */}
-              <ActionButtons
-                isCVUploaded={!!state.cvData}
-                isJobOfferProvided={state.jobContent.trim().length > 0}
-                generationState={state.generationState}
-                generationType={state.generationType}
-                generationProgress={state.generationProgress}
-                generationError={state.generationError}
-                generatedContent={state.generatedContent}
-              />
-            </div>
           </div>
         </div>
       </div>
