@@ -102,31 +102,7 @@ export function ActionButtons({
 
 
 
-            {/* Progress Indicator */}
-            {isGenerating && (
-                <div className="mt-6 p-6 bg-gradient-to-r from-blue-50 to-green-50 border border-blue-200 rounded-lg shadow-sm">
-                    <div className="flex items-center gap-3 mb-3">
-                        <div className="relative">
-                            <Loader className="w-5 h-5 text-blue-600 animate-spin" />
-                            <div className="absolute inset-0 w-5 h-5 border-2 border-blue-300 rounded-full animate-ping opacity-20"></div>
-                        </div>
-                        <p className="text-lg font-semibold text-blue-800">
-                            {generationType === 'cover-letter' ? '✍️ Crafting your cover letter...' : '📧 Composing your email...'}
-                        </p>
-                    </div>
-                    <div className="w-full bg-blue-200 rounded-full h-3 overflow-hidden">
-                        <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full animate-pulse transition-all duration-1000" style={{ width: '70%' }}></div>
-                    </div>
-                    <div className="flex items-center justify-between mt-3">
-                        <p className="text-sm text-blue-700">
-                            AI is analyzing your CV and job requirements to create personalized content
-                        </p>
-                        <div className="text-xs text-blue-600 font-medium">
-                            Please wait...
-                        </div>
-                    </div>
-                </div>
-            )}
+
         </div>
     );
 }

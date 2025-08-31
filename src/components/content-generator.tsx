@@ -133,15 +133,30 @@ export function ContentGenerator({
                     className="p-6 min-h-[400px] max-h-[600px] overflow-y-auto"
                 >
                     {isGenerating ? (
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-2 text-blue-600 mb-4">
-                                <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
-                                <span className="text-sm font-medium">Generating {getContentTypeLabel().toLowerCase()}...</span>
+                        <div className="space-y-6">
+                            {/* Generating Cover Letter Card */}
+                            <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl">
+                                <div className="flex items-center justify-between mb-3">
+                                    <h4 className="text-base font-medium text-gray-900">
+                                        {generationType === 'cover-letter' ? 'Generating Cover Letter' : 'Generating Email'}
+                                    </h4>
+                                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                                    <div className="bg-blue-500 h-2 rounded-full animate-pulse transition-all duration-1000" style={{ width: '70%' }}></div>
+                                </div>
+                                <p className="text-sm text-gray-600 mt-2">
+                                    AI is analyzing your CV and job requirements to create personalized content
+                                </p>
                             </div>
-                            <div className="text-gray-900 leading-relaxed">
-                                {formatContent(displayContent)}
-                                <span className="inline-block w-2 h-5 bg-blue-600 animate-pulse ml-1"></span>
-                            </div>
+
+                            {/* Content Preview */}
+                            {displayContent && (
+                                <div className="text-gray-900 leading-relaxed">
+                                    {formatContent(displayContent)}
+                                    <span className="inline-block w-2 h-5 bg-blue-600 animate-pulse ml-1"></span>
+                                </div>
+                            )}
                         </div>
                     ) : content ? (
                         <div className="text-gray-900 leading-relaxed">
