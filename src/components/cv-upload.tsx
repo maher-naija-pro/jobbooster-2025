@@ -228,7 +228,7 @@ export function CVUpload({
                         </div>
                         <button
                             onClick={handleRemove}
-                            className="p-1 text-red-500 hover:text-red-700 transition-colors"
+                            className="p-2 text-gray-400 hover:text-red-600 transition-colors rounded-lg hover:bg-red-50"
                             title="Remove file"
                         >
                             <Trash2 className="w-4 h-4" />
