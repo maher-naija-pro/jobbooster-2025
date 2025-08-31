@@ -44,7 +44,7 @@ export function JobOfferInput({
 
     return (
         <div className={className}>
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                     <FileText className="w-5 h-5 text-gray-600" />
                     <h3 className="text-lg font-semibold text-gray-900">Job Offer Input</h3>
@@ -60,13 +60,13 @@ export function JobOfferInput({
                 )}
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
                 <div className="relative">
                     <textarea
                         value={value}
                         onChange={handleChange}
                         placeholder="Paste your job offer here...&#10;&#10;Include job title, company name, requirements, responsibilities, and any other relevant details from the job posting."
-                        className={`w-full min-h-[200px] p-4 border rounded-lg resize-vertical focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${error
+                        className={`w-full min-h-[150px] p-3 border rounded-lg resize-vertical focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${error
                             ? 'border-red-300 focus:ring-red-500'
                             : 'border-gray-300 focus:border-blue-500'
                             }`}

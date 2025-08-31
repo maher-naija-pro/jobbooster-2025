@@ -91,25 +91,25 @@ export function CVUpload({
     };
 
     return (
-        <div className={cn("space-y-6", className)}>
+        <div className={cn("space-y-4", className)}>
             {/* Main Header with Title and Description */}
-            <div className="text-center mb-6">
-                <div className="flex justify-center gap-4 mb-4">
-                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                        <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="text-center mb-4">
+                <div className="flex justify-center gap-3 mb-3">
+                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                        <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                     </div>
-                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                        <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                        <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
                     </div>
                 </div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
                     Job Application Enhancer
                 </h2>
-                <p className="text-gray-600 max-w-2xl mx-auto">
+                <p className="text-gray-600 max-w-lg mx-auto text-sm">
                     All tools to create tailored job application kit aligned with your job description
                     and your unique skills.
                 </p>
@@ -125,7 +125,7 @@ export function CVUpload({
             {!cvData && !isProcessing && !isUploading && (
                 <div
                     className={cn(
-                        "relative border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer",
+                        "relative border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer",
                         isDragOver
                             ? "border-blue-400 bg-blue-50"
                             : "border-gray-300 hover:border-gray-400",
@@ -144,9 +144,9 @@ export function CVUpload({
                         className="hidden"
                     />
 
-                    <div className="flex flex-col items-center gap-4">
+                    <div className="flex flex-col items-center gap-3">
                         <Upload className={cn(
-                            "w-12 h-12",
+                            "w-8 h-8",
                             isDragOver ? "text-blue-500" : "text-gray-400"
                         )} />
 
@@ -172,13 +172,13 @@ export function CVUpload({
                     filename={currentFile.name}
                     filesize={currentFile.size}
                     status="uploading"
-                    className="mb-4"
+                    className="mb-3"
                 />
             )}
 
             {/* Processing State - Show when processing after upload */}
             {isProcessing && (
-                <div className="border border-gray-200 rounded-lg p-6 bg-gray-50">
+                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
                     <div className="flex items-center gap-3">
                         <Loader className="w-5 h-5 text-blue-600 animate-spin" />
                         <div className="flex-1">
@@ -194,7 +194,7 @@ export function CVUpload({
 
             {/* CV Data Display - Show when upload and processing are complete */}
             {cvData && !isProcessing && !isUploading && (
-                <div className="border border-green-200 rounded-lg p-6 bg-green-50">
+                <div className="border border-green-200 rounded-lg p-4 bg-green-50">
                     <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3">
                             <CheckCircle className="w-5 h-5 text-green-600" />
@@ -218,7 +218,7 @@ export function CVUpload({
 
             {/* Error Display */}
             {error && (
-                <div className="border border-red-200 rounded-lg p-4 bg-red-50">
+                <div className="border border-red-200 rounded-lg p-3 bg-red-50">
                     <div className="flex items-center gap-3">
                         <AlertCircle className="w-5 h-5 text-red-600" />
                         <p className="text-sm text-red-700">{error}</p>

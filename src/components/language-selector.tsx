@@ -24,7 +24,7 @@ export function LanguageSelector({
 
     return (
         <div className={className}>
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2 mb-3">
                 <Globe className="w-5 h-5 text-gray-600" />
                 <h3 className="text-lg font-semibold text-gray-900">Language Selection</h3>
             </div>
@@ -32,7 +32,7 @@ export function LanguageSelector({
             <div className="relative">
                 <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className="w-full flex items-center justify-between p-4 border border-gray-300 rounded-lg bg-white hover:border-gray-400 transition-colors"
+                    className="w-full flex items-center justify-between p-3 border border-gray-300 rounded-lg bg-white hover:border-gray-400 transition-colors"
                 >
                     <div className="flex items-center gap-3">
                         <span className="text-2xl">{currentLanguage.flag}</span>
@@ -58,7 +58,7 @@ export function LanguageSelector({
                                 <button
                                     key={language.code}
                                     onClick={() => handleLanguageSelect(language)}
-                                    className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors text-left first:rounded-t-lg last:rounded-b-lg"
+                                    className="w-full flex items-center gap-3 p-2 hover:bg-gray-50 transition-colors text-left first:rounded-t-lg last:rounded-b-lg"
                                 >
                                     <span className="text-xl">{language.flag}</span>
                                     <div>

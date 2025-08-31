@@ -307,9 +307,9 @@ export default function Home() {
             {!state.isGenerating && !state.generatedContent ? (
               // Centered layout for initial state
               <div className="flex justify-center">
-                <div className="w-full max-w-2xl">
-                  <div className="bg-gray-50 rounded-lg p-6 sm:p-8">
-                    <div className="space-y-8">
+                <div className="w-full max-w-xl">
+                  <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+                    <div className="space-y-6">
                       {/* CV Upload - Centered */}
                       <CVUpload
                         onFileUpload={handleFileUpload}
@@ -353,8 +353,8 @@ export default function Home() {
               // Two Column Layout when generating content
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Left Column - Input Form */}
-                <div className="bg-gray-50 rounded-lg p-6 sm:p-8">
-                  <div className="space-y-8">
+                <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+                  <div className="space-y-6">
                     {/* CV Upload */}
                     <CVUpload
                       onFileUpload={handleFileUpload}
