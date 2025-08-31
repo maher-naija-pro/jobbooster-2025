@@ -63,7 +63,6 @@ interface CVUploadProps {
   maxFileSize: number;
   supportedFormats: string[];
 }
-
 interface CVData {
   id: string;
   filename: string;
@@ -303,38 +302,7 @@ Response:
 ```
 
 
-## State Management Architecture
 
-### Application State Structure
-```typescript
-interface AppState {
-  // User session
-  user: User | null;
-  language: Language;
-  
-  // Document management
-  cvData: CVData | null;
-  jobOffer: string;
-  jobAnalysis: JobAnalysis | null;
-  
-  // Content generation
-  generatedContent: GeneratedContent[];
-  currentGeneration: {
-    type: string;
-    status: 'idle' | 'processing' | 'complete' | 'error';
-    progress: number;
-    estimatedTime: number;
-  };
-  
-  // UI state
-  ui: {
-    isLoading: boolean;
-    activeTab: string;
-    showPreview: boolean;
-    mobileMenuOpen: boolean;
-  };
-}
-```
 
 ### State Management Implementation
 - **React Context API** for global state
@@ -347,19 +315,7 @@ interface AppState {
 
 ```
 
-## Responsive Design Architecture
 
-### Breakpoint System
-```scss
-// Tailwind CSS breakpoints
-$breakpoints: (
-  'sm': 640px,
-  'md': 768px,
-  'lg': 1024px,
-  'xl': 1280px,
-  '2xl': 1536px
-);
-```
 
 ### Mobile-First Approach
 - Base styles for mobile devices
@@ -469,7 +425,7 @@ The Job Application Enhancer implements comprehensive logging across all major s
 ```
 
 ## OpenAI Library Usage
-open ai content must be streamed real time 
+open ai content must be streamed in real time 
 lib is under src/lib
 ### Installation and Setup
 ```bash

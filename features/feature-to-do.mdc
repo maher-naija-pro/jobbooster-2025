@@ -34,7 +34,7 @@ The Job Application Enhancer is a comprehensive tool designed to help users crea
   - use open ai end poit to generate  cover letter 
   - Tailored content based on CV and job description
   - Professional tone and structure
-
+  - diplay generated letter and give user possibility to edit 
 
 #### 4.2 Email Generation
 - **"Generate Mail" Feature**
@@ -42,7 +42,7 @@ The Job Application Enhancer is a comprehensive tool designed to help users crea
   - Follow-up email generation
   - Application submission emails
   - Customizable subject lines and content
-
+  - diplay generated letter and give user possibility to edit 
 
 
 ### 5. User Interface Features

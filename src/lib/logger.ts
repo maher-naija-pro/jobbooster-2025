@@ -8,11 +8,13 @@ export enum LogLevel {
     TRACE = 'trace',
 }
 
+export type LogContext = Record<string, unknown> | Error | string | number | boolean | null | undefined;
+
 export interface LogEntry {
     timestamp: Date;
     level: LogLevel;
     message: string;
-    context?: any;
+    context?: LogContext;
     userId?: string;
     sessionId?: string;
 }
@@ -30,7 +32,7 @@ class Logger {
         return levels.indexOf(level) <= levels.indexOf(this.level);
     }
 
-    private createLogEntry(level: LogLevel, message: string, context?: any): LogEntry {
+    private createLogEntry(level: LogLevel, message: string, context?: LogContext): LogEntry {
         return {
             timestamp: new Date(),
             level,
@@ -45,7 +47,7 @@ class Logger {
         return `session_${Date.now()}`;
     }
 
-    private log(level: LogLevel, message: string, context?: any): void {
+    private log(level: LogLevel, message: string, context?: LogContext): void {
         if (!this.shouldLog(level)) return;
 
         const entry = this.createLogEntry(level, message, context);
@@ -79,44 +81,44 @@ class Logger {
     }
 
     // Public logging methods
-    error(message: string, context?: any): void {
+    error(message: string, context?: LogContext): void {
         this.log(LogLevel.ERROR, message, context);
     }
 
-    warn(message: string, context?: any): void {
+    warn(message: string, context?: LogContext): void {
         this.log(LogLevel.WARN, message, context);
     }
 
-    info(message: string, context?: any): void {
+    info(message: string, context?: LogContext): void {
         this.log(LogLevel.INFO, message, context);
     }
 
-    debug(message: string, context?: any): void {
+    debug(message: string, context?: LogContext): void {
         this.log(LogLevel.DEBUG, message, context);
     }
 
-    trace(message: string, context?: any): void {
+    trace(message: string, context?: LogContext): void {
         this.log(LogLevel.TRACE, message, context);
     }
 
     // Component-specific logging methods
-    cvUpload(message: string, context?: any): void {
+    cvUpload(message: string, context?: LogContext): void {
         this.info(`[CV Upload] ${message}`, context);
     }
 
-    jobAnalysis(message: string, context?: any): void {
+    jobAnalysis(message: string, context?: LogContext): void {
         this.info(`[Job Analysis] ${message}`, context);
     }
 
-    contentGeneration(message: string, context?: any): void {
+    contentGeneration(message: string, context?: LogContext): void {
         this.info(`[Content Generation] ${message}`, context);
     }
 
-    apiRequest(endpoint: string, method: string, duration: number, context?: any): void {
+    apiRequest(endpoint: string, method: string, duration: number, context?: LogContext): void {
         this.info(`[API] ${method} ${endpoint} - ${duration}ms`, context);
     }
 
-    userAction(action: string, context?: any): void {
+    userAction(action: string, context?: LogContext): void {
         this.info(`[User Action] ${action}`, context);
     }
 
