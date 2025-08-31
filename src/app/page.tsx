@@ -351,9 +351,9 @@ export default function Home() {
               </div>
             ) : (
               // Two Column Layout when generating content
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Left Column - Input Form */}
-                <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Left Column - Input Form (1/3 width) */}
+                <div className="lg:col-span-1 bg-gray-50 rounded-lg p-4 sm:p-6">
                   <div className="space-y-6">
                     {/* CV Upload */}
                     <CVUpload
@@ -393,8 +393,8 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Right Column - Content Display */}
-                <div className="bg-white">
+                {/* Right Column - Content Display (2/3 width) */}
+                <div className="lg:col-span-2 bg-white">
                   <ContentGenerator
                     content={state.generatedContent}
                     isGenerating={state.isGenerating}
