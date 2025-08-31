@@ -29,20 +29,25 @@ The Job Application Enhancer is a comprehensive tool designed to help users crea
 
 ### 4. Content Generation Engine
 
-#### 4.1 Cover Letter Generation
+#### 4.1 Cover Letter Generation with Real-time Streaming
 - **"Generate Letter" Feature**
-  - use open ai end poit to generate  cover letter 
+  - **CRITICAL**: Use OpenAI streaming API endpoint to generate cover letter in real-time
+  - **MANDATORY**: Display content character-by-character as it's generated
   - Tailored content based on CV and job description
   - Professional tone and structure
-  - diplay generated letter and give user possibility to edit 
+  - **Real-time display** with streaming text animation
+  - Give user possibility to edit during and after generation
 
-#### 4.2 Email Generation
+#### 4.2 Email Generation with Real-time Streaming
 - **"Generate Mail" Feature**
-  - Professional email templates
-  - Follow-up email generation
-  - Application submission emails
+  - **CRITICAL**: Use OpenAI streaming API for real-time email generation
+  - **MANDATORY**: Display email content as it's being generated
+  - Professional email templates with streaming responses
+  - Follow-up email generation with live updates
+  - Application submission emails with real-time preview
   - Customizable subject lines and content
-  - diplay generated letter and give user possibility to edit 
+  - **Real-time display** with streaming text animation
+  - Allow editing during streaming and after completion 
 
 
 ### 5. User Interface Features
@@ -71,9 +76,17 @@ The Job Application Enhancer is a comprehensive tool designed to help users crea
 - Responsive design principles
 - chadcn components
 - vercel ai sdk https://ai-sdk.dev/providers/ai-sdk-providers/openai
-### Backend
-open ai with costom url 
-use gpt-oss model
+### Backend - Real-time Streaming Implementation
+**CRITICAL REQUIREMENTS**:
+- **OpenAI with custom URL and streaming support**
+- **MANDATORY**: Use GPT-OSS model with real-time streaming
+- **ESSENTIAL**: Implement streaming API endpoints for live content generation
+- **REQUIRED**: Character-by-character content display during generation
+
+**Streaming API Endpoints**:
+- `/api/generate-letter` - Streaming cover letter generation
+- `/api/generate-email` - Streaming email generation
+- Both endpoints MUST support real-time streaming responses
 
 
 

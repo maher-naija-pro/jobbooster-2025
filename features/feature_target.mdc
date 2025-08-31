@@ -29,19 +29,21 @@ The Job Application Enhancer is a comprehensive tool designed to help users crea
 
 ### 4. Content Generation Engine
 
-#### 4.1 Cover Letter Generation
+#### 4.1 Cover Letter Generation with Real-time Streaming
 - **"Generate Letter" Feature**
-  - AI-powered cover letter creation
+  - **CRITICAL**: AI-powered cover letter creation with OpenAI streaming API
+  - **MANDATORY**: Real-time character-by-character content display
   - Tailored content based on CV and job description
-  - Professional tone and structure
-  - Customizable length and focus areas
+  - Professional tone and structure with live streaming preview
+  - Customizable length and focus areas during generation
 
-#### 4.2 Email Generation
+#### 4.2 Email Generation with Real-time Streaming
 - **"Generate Mail" Feature**
-  - Professional email templates
-  - Follow-up email generation
-  - Application submission emails
-  - Customizable subject lines and content
+  - **CRITICAL**: Professional email templates with OpenAI streaming
+  - **MANDATORY**: Real-time email content display during generation
+  - Follow-up email generation with live streaming updates
+  - Application submission emails with character-by-character preview
+  - Customizable subject lines and content with streaming responses
 
 #### 4.3 CV Recommendations
 - **"Generating CV Recommendations" Feature**
@@ -99,9 +101,19 @@ The Job Application Enhancer is a comprehensive tool designed to help users crea
 - Responsive design principles
 - chadcn componants 
 
-### Backend
-open ai with costom url 
-use gpt-oss model
+### Backend - Real-time Streaming Implementation
+**CRITICAL TECHNICAL REQUIREMENTS**:
+- **OpenAI with custom URL and streaming support**
+- **MANDATORY**: Use GPT-OSS model with real-time streaming capabilities
+- **ESSENTIAL**: Implement streaming API endpoints for live content generation
+- **REQUIRED**: Character-by-character content display during generation
+- **NECESSARY**: Vercel AI SDK integration for streaming responses
+
+**Streaming API Architecture**:
+- `/api/generate-letter` - Streaming cover letter generation endpoint
+- `/api/generate-email` - Streaming email generation endpoint
+- Both endpoints MUST support Server-Sent Events (SSE) or WebSocket streaming
+- Real-time UI updates with each streaming chunk
 
 
 

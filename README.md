@@ -1,36 +1,190 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Job Application Enhancer
 
-## Getting Started
+A comprehensive tool designed to help users create tailored job application materials using AI-powered content generation with real-time streaming.
 
-First, run the development server:
+## Features
 
+### Core Functionality
+- **CV/Resume Upload**: Drag-and-drop PDF upload with file validation
+- **Multi-language Support**: 12+ languages including English, French, Spanish, German, etc.
+- **Job Offer Analysis**: Large text area for job description input with validation
+- **Real-time AI Generation**: Streaming cover letter and email generation with character-by-character display
+- **Export Options**: PDF, Word, and text export functionality
+- **Responsive Design**: Mobile-first approach with touch-friendly interface
+
+### Technical Features
+- **Next.js 15.5.2** with React 19.1.0
+- **TypeScript** for type safety
+- **Tailwind CSS** for styling
+- **OpenAI Integration** with streaming API
+- **Real-time Streaming** content generation
+- **State Management** with React Context
+
+## Setup Instructions
+
+### Prerequisites
+- Node.js 18+
+- npm or yarn
+- OpenAI API key (or Ollama for local AI)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd jobbooster-2025
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Configure environment variables**
+
+   Create a `.env.local` file in the root directory:
+
+   ```bash
+   # OpenAI Configuration (choose one option)
+
+   # Option 1: OpenAI API
+   OPENAI_API_KEY=your_openai_api_key_here
+   OPENAI_BASE_URL=https://api.openai.com/v1
+   OPENAI_MODEL=gpt-4
+
+   # Option 2: Ollama (local AI)
+   OPENAI_API_KEY=ollama
+   OPENAI_BASE_URL=http://localhost:11434/v1
+   OPENAI_MODEL=llama2
+   ```
+
+4. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open your browser**
+
+   Navigate to `http://localhost:3000`
+
+## Usage
+
+### Basic Workflow
+
+1. **Upload CV/Resume**
+   - Drag and drop your PDF, DOC, or DOCX file
+   - File size limit: 10MB
+   - Real-time validation and processing
+
+2. **Select Language**
+   - Choose from 12+ supported languages
+   - Content will be generated in selected language
+
+3. **Input Job Description**
+   - Paste the complete job posting
+   - Minimum 100 characters required
+   - Clear button available for easy reset
+
+4. **Generate Content**
+   - **Generate Letter**: Creates personalized cover letter
+   - **Generate Mail**: Creates professional application email
+   - Real-time streaming with character-by-character display
+
+5. **Download/Export**
+   - PDF format for professional documents
+   - Word document (.docx) for editing
+   - Plain text (.txt) for copying
+
+## API Endpoints
+
+### CV Upload
+```
+POST /api/upload-cv
+```
+- Accepts multipart/form-data with file
+- Validates file type and size
+- Returns processed CV data
+
+### Cover Letter Generation
+```
+POST /api/generate-letter
+```
+- Accepts CV data, job analysis, and language
+- Returns streaming response with generated content
+- Real-time character-by-character streaming
+
+### Email Generation
+```
+POST /api/generate-email
+```
+- Accepts CV data, job analysis, and language
+- Returns streaming response with generated email
+- Supports different email types (application, follow-up, inquiry)
+
+## Component Architecture
+
+### Main Components
+- `CVUpload`: File upload with drag-and-drop
+- `LanguageSelector`: Multi-language dropdown
+- `JobOfferInput`: Text area for job descriptions
+- `ActionButtons`: Generation controls with loading states
+- `ContentGenerator`: Real-time streaming display
+
+### State Management
+- React Context API for global state
+- TypeScript interfaces for type safety
+- Reducer pattern for complex state updates
+
+## Development
+
+### Available Scripts
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run dev      # Start development server
+npm run build    # Build for production
+npm run start    # Start production server
+npm run lint     # Run ESLint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Project Structure
+```
+src/
+├── app/
+│   ├── api/           # API routes
+│   ├── layout.tsx     # Root layout
+│   └── page.tsx       # Main page
+├── components/        # React components
+├── lib/              # Utilities and types
+│   ├── types.ts      # TypeScript interfaces
+│   ├── utils.ts      # Utility functions
+│   ├── openai.ts     # OpenAI configuration
+│   └── app-context.tsx # State management
+└── styles/           # Global styles
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Environment Variables for Production
+```bash
+OPENAI_API_KEY=your_production_api_key
+OPENAI_BASE_URL=https://api.openai.com/v1
+OPENAI_MODEL=gpt-4
+NODE_ENV=production
+```
 
-## Learn More
+### Build Commands
+```bash
+npm run build
+npm run start
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Contributing
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## License
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is licensed under the MIT License.

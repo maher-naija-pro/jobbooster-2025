@@ -160,9 +160,9 @@ interface JobAnalysis {
 4. **Complete**: Analysis results
 5. **Error**: Validation errors with improvement suggestions
 
-### 4. Content Generation Engine
+### 4. Content Generation Engine (Real-time Streaming)
 
-#### AI Content Generation System
+#### AI Content Generation System with Streaming
 ```typescript
 interface ContentGenerationProps {
   cvData: CVData;
@@ -170,8 +170,18 @@ interface ContentGenerationProps {
   language: Language;
   contentType: 'cover-letter' | 'email' | 'cv-recommendations';
   onGenerationStart: () => void;
+  onStreamChunk: (chunk: string) => void;
   onGenerationComplete: (content: GeneratedContent) => void;
   onGenerationError: (error: string) => void;
+}
+
+// Real-time streaming interface
+interface StreamingGenerationProps {
+  messages: OpenAIMessage[];
+  model: string;
+  onChunk: (chunk: string) => void;
+  onComplete: (fullContent: string) => void;
+  onError: (error: string) => void;
 }
 
 interface GeneratedContent {
@@ -196,14 +206,14 @@ interface ExportFormat {
 ```
 
 **Features:**
-- OpenAI API integration with custom endpoints
-- GPT-OSS model support
-- Multi-language content generation
-- ATS optimization
-
-- Professional tone and structure
-- Export in multiple formats
-- Comprehensive logging for AI operations and performance monitoring
+- **Real-time Streaming**: OpenAI API integration with streaming responses for immediate content display
+- **Custom Endpoints**: Configurable OpenAI API endpoints with GPT-OSS model support
+- **Live Content Updates**: Content appears character-by-character as it's generated
+- **Multi-language content generation with real-time translation**
+- **ATS optimization with streaming analysis feedback**
+- **Professional tone and structure with live preview**
+- **Export in multiple formats during and after generation**
+- **Comprehensive logging for AI operations and streaming performance monitoring**
 
 #### Cover Letter Generation
 ```typescript
@@ -424,23 +434,45 @@ The Job Application Enhancer implements comprehensive logging across all major s
 
 ```
 
-## OpenAI Library Usage
-open ai content must be streamed in real time 
-lib is under src/lib
+## OpenAI Library Usage with Real-time Streaming
+**CRITICAL REQUIREMENT**: OpenAI content MUST be streamed in real-time for immediate user feedback
+**Library Location**: Implementation under `src/lib`
+
 ### Installation and Setup
 ```bash
-npm install openai
+npm install openai @ai-sdk/openai @ai-sdk/react
 # or
-yarn add openai
+yarn add openai @ai-sdk/openai @ai-sdk/react
 ```
 
-# .env.local
+### Environment Configuration (.env.local)
+```bash
 OPENAI_API_KEY=your_openai_api_key_here
 OPENAI_API_URL=https://localhost/v1
 OPENAI_MODEL=gpt-oss
 OPENAI_MAX_TOKENS=4000
 OPENAI_TEMPERATURE=0.7
 OPENAI_TIMEOUT=30000
+```
+
+### Streaming Implementation
+```typescript
+// Real-time streaming with OpenAI
+const streamResponse = await openai.chat.completions.create({
+  model: "gpt-oss",
+  messages: [...],
+  stream: true,  // Enable streaming
+  max_tokens: 4000,
+  temperature: 0.7,
+});
+
+for await (const chunk of streamResponse) {
+  const content = chunk.choices[0]?.delta?.content;
+  if (content) {
+    // Update UI in real-time
+    onStreamChunk(content);
+  }
+}
 ```
 
          
