@@ -326,53 +326,98 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Two Column Layout */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Left Column - Input Form */}
-              <div className={`bg-gray-50 rounded-lg p-6 sm:p-8 transition-all duration-500 ${(state.isGenerating || state.generatedContent) ? 'lg:col-span-1' : 'lg:col-span-2'
-                }`}>
-                <div className="space-y-8">
-                  {/* CV Upload */}
-                  <CVUpload
-                    onFileUpload={handleFileUpload}
-                    onFileRemove={handleFileRemove}
-                    cvData={state.cvData}
-                    isProcessing={state.cvData?.status === 'processing'}
-                    error={state.error}
-                    uploadProgress={state.uploadProgress}
-                    isUploading={state.isUploading}
-                  />
+            {/* Conditional Layout - Centered when no content, two-column when generating */}
+            {!state.isGenerating && !state.generatedContent ? (
+              // Centered layout for initial state
+              <div className="flex justify-center">
+                <div className="w-full max-w-2xl">
+                  <div className="bg-gray-50 rounded-lg p-6 sm:p-8">
+                    <div className="space-y-8">
+                      {/* CV Upload - Centered */}
+                      <CVUpload
+                        onFileUpload={handleFileUpload}
+                        onFileRemove={handleFileRemove}
+                        cvData={state.cvData}
+                        isProcessing={state.cvData?.status === 'processing'}
+                        error={state.error}
+                        uploadProgress={state.uploadProgress}
+                        isUploading={state.isUploading}
+                      />
 
-                  {/* Language Selection */}
-                  <LanguageSelector
-                    currentLanguage={state.language}
-                    onLanguageChange={handleLanguageChange}
-                  />
+                      {/* Language Selection */}
+                      <LanguageSelector
+                        currentLanguage={state.language}
+                        onLanguageChange={handleLanguageChange}
+                      />
 
-                  {/* Job Offer Input */}
-                  <JobOfferInput
-                    value={state.jobOffer}
-                    onChange={handleJobOfferChange}
-                    onClear={handleJobOfferClear}
-                    error={state.jobOffer.length > 0 && state.jobOffer.length < 100 ? 'Please provide at least 100 characters' : null}
-                  />
+                      {/* Job Offer Input */}
+                      <JobOfferInput
+                        value={state.jobOffer}
+                        onChange={handleJobOfferChange}
+                        onClear={handleJobOfferClear}
+                        error={state.jobOffer.length > 0 && state.jobOffer.length < 100 ? 'Please provide at least 100 characters' : null}
+                      />
 
-                  {/* Action Buttons */}
-                  <ActionButtons
-                    isCVUploaded={!!state.cvData}
-                    isJobOfferProvided={state.jobOffer.length >= 100}
-                    onGenerateLetter={handleGenerateLetter}
-                    onGenerateMail={handleGenerateMail}
-                    onStopGeneration={handleStopGeneration}
-                    isGenerating={state.isGenerating}
-                    generationType={state.generationType}
-                  />
+                      {/* Action Buttons */}
+                      <ActionButtons
+                        isCVUploaded={!!state.cvData}
+                        isJobOfferProvided={state.jobOffer.length >= 100}
+                        onGenerateLetter={handleGenerateLetter}
+                        onGenerateMail={handleGenerateMail}
+                        onStopGeneration={handleStopGeneration}
+                        isGenerating={state.isGenerating}
+                        generationType={state.generationType}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
+            ) : (
+              // Two Column Layout when generating content
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Left Column - Input Form */}
+                <div className="bg-gray-50 rounded-lg p-6 sm:p-8">
+                  <div className="space-y-8">
+                    {/* CV Upload */}
+                    <CVUpload
+                      onFileUpload={handleFileUpload}
+                      onFileRemove={handleFileRemove}
+                      cvData={state.cvData}
+                      isProcessing={state.cvData?.status === 'processing'}
+                      error={state.error}
+                      uploadProgress={state.uploadProgress}
+                      isUploading={state.isUploading}
+                    />
 
-              {/* Right Column - Content Display */}
-              {(state.isGenerating || state.generatedContent) ? (
-                <div className="bg-white transition-all duration-500">
+                    {/* Language Selection */}
+                    <LanguageSelector
+                      currentLanguage={state.language}
+                      onLanguageChange={handleLanguageChange}
+                    />
+
+                    {/* Job Offer Input */}
+                    <JobOfferInput
+                      value={state.jobOffer}
+                      onChange={handleJobOfferChange}
+                      onClear={handleJobOfferClear}
+                      error={state.jobOffer.length > 0 && state.jobOffer.length < 100 ? 'Please provide at least 100 characters' : null}
+                    />
+
+                    {/* Action Buttons */}
+                    <ActionButtons
+                      isCVUploaded={!!state.cvData}
+                      isJobOfferProvided={state.jobOffer.length >= 100}
+                      onGenerateLetter={handleGenerateLetter}
+                      onGenerateMail={handleGenerateMail}
+                      onStopGeneration={handleStopGeneration}
+                      isGenerating={state.isGenerating}
+                      generationType={state.generationType}
+                    />
+                  </div>
+                </div>
+
+                {/* Right Column - Content Display */}
+                <div className="bg-white">
                   <ContentGenerator
                     content={state.generatedContent}
                     isGenerating={state.isGenerating}
@@ -383,20 +428,8 @@ export default function Home() {
                     onDownload={handleDownload}
                   />
                 </div>
-              ) : (
-                <div className="bg-white border-2 border-dashed border-gray-200 rounded-lg flex items-center justify-center min-h-[400px] transition-all duration-500">
-                  <div className="text-center">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                      <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                    </div>
-                    <p className="text-sm text-gray-500">Generated content will appear here</p>
-                    <p className="text-xs text-gray-400 mt-1">Upload CV and provide job description to get started</p>
-                  </div>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
