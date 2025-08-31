@@ -189,11 +189,23 @@ export default function Home() {
 
   return (
     <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="w-full">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
             {/* Main Header */}
             <div className="text-center mb-8">
+              <div className="flex justify-center gap-4 mb-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                </div>
+              </div>
               <h2 className="text-3xl font-bold text-gray-900 mb-2">
                 Job Application Enhancer
               </h2>
@@ -203,45 +215,50 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Main Content Card */}
-            <div className="bg-gray-50 rounded-lg p-6 sm:p-8">
-              <div className="space-y-8">
-                {/* CV Upload */}
-                <CVUpload
-                  onFileUpload={handleFileUpload}
-                  onFileRemove={handleFileRemove}
-                  cvData={state.cvData}
-                  isProcessing={state.cvData?.status === 'processing'}
-                  error={state.error}
-                />
+            {/* Two Column Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Left Column - Input Form */}
+              <div className="bg-gray-50 rounded-lg p-6 sm:p-8">
+                <div className="space-y-8">
+                  {/* CV Upload */}
+                  <CVUpload
+                    onFileUpload={handleFileUpload}
+                    onFileRemove={handleFileRemove}
+                    cvData={state.cvData}
+                    isProcessing={state.cvData?.status === 'processing'}
+                    error={state.error}
+                  />
 
-                {/* Language Selection */}
-                <LanguageSelector
-                  currentLanguage={state.language}
-                  onLanguageChange={handleLanguageChange}
-                />
+                  {/* Language Selection */}
+                  <LanguageSelector
+                    currentLanguage={state.language}
+                    onLanguageChange={handleLanguageChange}
+                  />
 
-                {/* Job Offer Input */}
-                <JobOfferInput
-                  value={state.jobOffer}
-                  onChange={handleJobOfferChange}
-                  onClear={handleJobOfferClear}
-                  error={state.jobOffer.length > 0 && state.jobOffer.length < 100 ? 'Please provide at least 100 characters' : null}
-                />
+                  {/* Job Offer Input */}
+                  <JobOfferInput
+                    value={state.jobOffer}
+                    onChange={handleJobOfferChange}
+                    onClear={handleJobOfferClear}
+                    error={state.jobOffer.length > 0 && state.jobOffer.length < 100 ? 'Please provide at least 100 characters' : null}
+                  />
 
-                {/* Action Buttons */}
-                <ActionButtons
-                  isCVUploaded={!!state.cvData}
-                  isJobOfferProvided={state.jobOffer.length >= 100}
-                  onGenerateLetter={handleGenerateLetter}
-                  onGenerateMail={handleGenerateMail}
-                  onStopGeneration={handleStopGeneration}
-                  isGenerating={state.isGenerating}
-                  generationType={state.generationType}
-                />
+                  {/* Action Buttons */}
+                  <ActionButtons
+                    isCVUploaded={!!state.cvData}
+                    isJobOfferProvided={state.jobOffer.length >= 100}
+                    onGenerateLetter={handleGenerateLetter}
+                    onGenerateMail={handleGenerateMail}
+                    onStopGeneration={handleStopGeneration}
+                    isGenerating={state.isGenerating}
+                    generationType={state.generationType}
+                  />
+                </div>
+              </div>
 
-                {/* Content Generator */}
-                {(state.isGenerating || state.generatedContent) && (
+              {/* Right Column - Content Display */}
+              <div className="bg-white">
+                {(state.isGenerating || state.generatedContent) ? (
                   <ContentGenerator
                     content={state.generatedContent}
                     isGenerating={state.isGenerating}
@@ -251,6 +268,17 @@ export default function Home() {
                     onRegenerate={handleRegenerate}
                     onDownload={handleDownload}
                   />
+                ) : (
+                  <div className="h-full flex items-center justify-center text-gray-400">
+                    <div className="text-center">
+                      <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                        <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                      </div>
+                      <p className="text-sm">Generated content will appear here</p>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>

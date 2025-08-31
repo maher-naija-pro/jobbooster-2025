@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { FileText, Download, Edit, RotateCcw, CheckCircle } from 'lucide-react';
+import { FileText, Download, Edit, RotateCcw, CheckCircle, Copy, Check } from 'lucide-react';
 import { GeneratedContent } from '../lib/types';
 
 interface ContentGeneratorProps {
@@ -27,6 +27,7 @@ export function ContentGenerator({
 }: ContentGeneratorProps) {
     const contentRef = useRef<HTMLDivElement>(null);
     const [displayContent, setDisplayContent] = useState('');
+    const [copied, setCopied] = useState(false);
 
     // Handle streaming content updates
     useEffect(() => {
@@ -54,7 +55,7 @@ export function ContentGenerator({
             if (line.trim() === '') {
                 return <br key={index} />;
             }
-            return <p key={index} className="mb-2">{line}</p>;
+            return <p key={index} className="mb-3 leading-relaxed">{line}</p>;
         });
     };
 
@@ -64,13 +65,24 @@ export function ContentGenerator({
         return 'Content';
     };
 
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(displayContent);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+            console.error('Failed to copy text: ', err);
+        }
+    };
+
     if (!content && !isGenerating) {
         return null;
     }
 
     return (
-        <div className={className}>
-            <div className="flex items-center justify-between mb-4">
+        <div className={`h-full flex flex-col ${className}`}>
+            {/* Header with Copy Button */}
+            <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
                     <FileText className="w-5 h-5 text-gray-600" />
                     <h3 className="text-lg font-semibold text-gray-900">
@@ -79,27 +91,28 @@ export function ContentGenerator({
                 </div>
 
                 {content && !isGenerating && (
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={onEdit}
-                            className="flex items-center gap-2 px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                        >
-                            <Edit className="w-4 h-4" />
-                            Edit
-                        </button>
-                        <button
-                            onClick={onRegenerate}
-                            className="flex items-center gap-2 px-3 py-1.5 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
-                        >
-                            <RotateCcw className="w-4 h-4" />
-                            Regenerate
-                        </button>
-                    </div>
+                    <button
+                        onClick={handleCopy}
+                        className="flex items-center gap-2 px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                    >
+                        {copied ? (
+                            <>
+                                <Check className="w-4 h-4 text-green-600" />
+                                Copied!
+                            </>
+                        ) : (
+                            <>
+                                <Copy className="w-4 h-4" />
+                                Copy
+                            </>
+                        )}
+                    </button>
                 )}
             </div>
 
-            <div className="border border-gray-200 rounded-lg overflow-hidden">
-                {/* Header */}
+            {/* Content Area */}
+            <div className="flex-1 bg-white border border-gray-200 rounded-lg overflow-hidden">
+                {/* Content Header */}
                 {content && !isGenerating && (
                     <div className="bg-gray-50 px-4 py-3 border-b border-gray-200 flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -114,14 +127,14 @@ export function ContentGenerator({
                     </div>
                 )}
 
-                {/* Content Area */}
+                {/* Main Content */}
                 <div
                     ref={contentRef}
-                    className="p-6 bg-white min-h-[300px] max-h-[500px] overflow-y-auto"
+                    className="p-6 min-h-[400px] max-h-[600px] overflow-y-auto"
                 >
                     {isGenerating ? (
                         <div className="space-y-4">
-                            <div className="flex items-center gap-2 text-blue-600">
+                            <div className="flex items-center gap-2 text-blue-600 mb-4">
                                 <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
                                 <span className="text-sm font-medium">Generating content...</span>
                             </div>
@@ -137,7 +150,7 @@ export function ContentGenerator({
                     ) : null}
                 </div>
 
-                {/* Footer with Download Options */}
+                {/* Footer with Actions */}
                 {content && !isGenerating && (
                     <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
                         <div className="flex items-center justify-between">
@@ -156,13 +169,29 @@ export function ContentGenerator({
                                     ))}
                                 </div>
                             </div>
-                            {content.metadata.atsOptimized && (
-                                <div className="flex items-center gap-1 text-xs text-green-600">
-                                    <CheckCircle className="w-3 h-3" />
-                                    ATS Optimized
-                                </div>
-                            )}
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={onEdit}
+                                    className="flex items-center gap-1 px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+                                >
+                                    <Edit className="w-3 h-3" />
+                                    Edit
+                                </button>
+                                <button
+                                    onClick={onRegenerate}
+                                    className="flex items-center gap-1 px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
+                                >
+                                    <RotateCcw className="w-3 h-3" />
+                                    Regenerate
+                                </button>
+                            </div>
                         </div>
+                        {content.metadata.atsOptimized && (
+                            <div className="flex items-center gap-1 text-xs text-green-600 mt-2">
+                                <CheckCircle className="w-3 h-3" />
+                                ATS Optimized
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
