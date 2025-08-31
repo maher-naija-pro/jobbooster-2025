@@ -299,7 +299,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen pt-1 pb-8 px-4 sm:px-6 lg:px-8">
       <div className="w-full">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
