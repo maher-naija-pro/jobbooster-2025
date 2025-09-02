@@ -489,7 +489,7 @@ export default function Home() {
             {/* Right Column - Content Display (2/3 width) */}
             <div className="lg:col-span-2 space-y-4">
               {/* Main Content Generator */}
-              <div className="bg-white">
+              <div className="bg-white mt-5">
                 <ContentGenerator
                   content={state.generatedContent}
                   isGenerating={state.isGenerating}
