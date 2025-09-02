@@ -57,13 +57,14 @@ export function ActionButtons({
                 <button
                     onClick={handleGenerateLetterClick}
                     disabled={isDisabled || isGenerating}
+                    aria-label={isGeneratingLetter ? "Generating cover letter..." : "Generate cover letter"}
                     className={cn(
-                        "w-full flex items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200",
+                        "w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2",
                         isDisabled
-                            ? "bg-gray-200 text-gray-500 cursor-not-allowed border border-gray-300"
+                            ? "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
                             : isGeneratingLetter
-                                ? "bg-blue-100 text-blue-700 cursor-not-allowed border border-blue-200"
-                                : "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 shadow-sm hover:shadow-md border border-blue-600"
+                                ? "bg-indigo-50 text-indigo-700 cursor-not-allowed border border-indigo-200"
+                                : "bg-indigo-600 text-white hover:bg-indigo-700 active:bg-indigo-800 shadow-lg hover:shadow-xl border border-indigo-600 focus:ring-indigo-500"
                     )}
                 >
                     {isGeneratingLetter ? (
@@ -83,13 +84,14 @@ export function ActionButtons({
                 <button
                     onClick={handleGenerateMailClick}
                     disabled={isDisabled || isGenerating}
+                    aria-label={isGeneratingEmail ? "Generating email..." : "Generate email"}
                     className={cn(
-                        "w-full flex items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200",
+                        "w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2",
                         isDisabled
-                            ? "bg-gray-200 text-gray-500 cursor-not-allowed border border-gray-300"
+                            ? "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
                             : isGeneratingEmail
-                                ? "bg-green-100 text-green-700 cursor-not-allowed border border-green-200"
-                                : "bg-green-600 text-white hover:bg-green-700 active:bg-green-800 shadow-sm hover:shadow-md border border-green-600"
+                                ? "bg-emerald-50 text-emerald-700 cursor-not-allowed border border-emerald-200"
+                                : "bg-emerald-600 text-white hover:bg-emerald-700 active:bg-emerald-800 shadow-lg hover:shadow-xl border border-emerald-600 focus:ring-emerald-500"
                     )}
                 >
                     {isGeneratingEmail ? (
@@ -109,13 +111,14 @@ export function ActionButtons({
                 <button
                     onClick={handleAnalyzeCVClick}
                     disabled={isDisabled || isGenerating}
+                    aria-label={isAnalyzingCV ? "Analyzing CV..." : "Analyze CV"}
                     className={cn(
-                        "w-full flex items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200",
+                        "w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2",
                         isDisabled
-                            ? "bg-gray-200 text-gray-500 cursor-not-allowed border border-gray-300"
+                            ? "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
                             : isAnalyzingCV
-                                ? "bg-purple-100 text-purple-700 cursor-not-allowed border border-purple-200"
-                                : "bg-purple-600 text-white hover:bg-purple-700 active:bg-purple-800 shadow-sm hover:shadow-md border border-purple-600"
+                                ? "bg-violet-50 text-violet-700 cursor-not-allowed border border-violet-200"
+                                : "bg-violet-600 text-white hover:bg-violet-700 active:bg-violet-800 shadow-lg hover:shadow-xl border border-violet-600 focus:ring-violet-500"
                     )}
                 >
                     {isAnalyzingCV ? (
@@ -135,7 +138,8 @@ export function ActionButtons({
                 {isGenerating && (
                     <button
                         onClick={onStopGeneration}
-                        className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium bg-red-600 text-white hover:bg-red-700 active:bg-red-800 shadow-sm hover:shadow-md transition-all duration-200 border border-red-600"
+                        aria-label="Stop current generation process"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-semibold bg-rose-600 text-white hover:bg-rose-700 active:bg-rose-800 shadow-lg hover:shadow-xl transition-all duration-300 border border-rose-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
                     >
                         <Square className="w-3 h-3" />
                         Stop Generation
