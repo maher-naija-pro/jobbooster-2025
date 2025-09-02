@@ -6,12 +6,15 @@ import { LanguageSelector } from '../components/language-selector';
 import { JobOfferInput } from '../components/job-offer-input';
 import { ActionButtons } from '../components/action-buttons';
 import { ContentGenerator } from '../components/content-generator';
+
+import { ErrorBoundary } from '../components/error-boundary';
 import { Language } from '../lib/types';
 import { useState } from 'react';
 
 export default function Home() {
   const { state, dispatch } = useApp();
   const [streamingContent, setStreamingContent] = useState('');
+  const [debugApiResponse, setDebugApiResponse] = useState<any>(null);
 
   // Store the current abort controller for cancellation
   const [currentAbortController, setCurrentAbortController] = useState<AbortController | null>(null);
@@ -246,6 +249,83 @@ export default function Home() {
     handleStreamingGeneration('email');
   };
 
+  const handleAnalyzeCV = async () => {
+    if (!state.cvData || !state.jobOffer) return;
+
+    // Clear any existing generated content before starting new analysis
+    dispatch({ type: 'CLEAR_GENERATED_CONTENT' });
+    setStreamingContent('');
+
+    dispatch({ type: 'START_GENERATION', payload: 'cv-analysis' });
+    dispatch({ type: 'START_CV_ANALYSIS' });
+    setDebugApiResponse(null); // Clear previous debug data
+
+    try {
+      console.log('Starting CV analysis with data:', {
+        cvData: state.cvData,
+        jobOffer: state.jobOffer,
+        language: state.language,
+      });
+
+      const response = await fetch('/api/analyze-cv', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          cvData: state.cvData,
+          jobOffer: state.jobOffer,
+          language: state.language,
+        }),
+      });
+
+      console.log('API Response status:', response.status);
+      console.log('API Response headers:', Object.fromEntries(response.headers.entries()));
+
+      if (!response.ok) {
+        const error = await response.json();
+        console.error('API Error response:', error);
+        dispatch({ type: 'SET_ERROR', payload: error.error });
+        return;
+      }
+
+      const result = await response.json();
+      console.log('API Success response:', result);
+      console.log('Result structure:', {
+        hasResult: !!result.result,
+        resultKeys: result.result ? Object.keys(result.result) : [],
+        resultType: typeof result.result,
+      });
+
+      // Store debug data
+      setDebugApiResponse(result);
+
+      // Create a GeneratedContent object for CV analysis
+      const generatedContent = {
+        id: `cv-analysis-${Date.now()}`,
+        type: 'cv-analysis' as const,
+        language: state.language,
+        content: `CV Analysis completed with ${result.result.jobMatch.overallMatch}% match score`,
+        metadata: {
+          wordCount: 0,
+          estimatedReadTime: 0,
+          atsOptimized: false,
+        },
+        exportOptions: [],
+        analysisData: result.result,
+      };
+
+      dispatch({ type: 'SET_GENERATED_CONTENT', payload: generatedContent });
+
+    } catch (error) {
+      console.error('CV analysis failed:', error);
+      dispatch({ type: 'SET_ERROR', payload: 'Failed to analyze CV. Please try again.' });
+    } finally {
+      dispatch({ type: 'STOP_GENERATION' });
+      dispatch({ type: 'STOP_CV_ANALYSIS' });
+    }
+  };
+
   const handleEdit = () => {
     // TODO: Implement edit functionality
     console.log('Edit content');
@@ -260,6 +340,15 @@ export default function Home() {
   const handleDownload = (format: 'pdf' | 'docx' | 'txt') => {
     // TODO: Implement actual download functionality
     console.log('Download as', format);
+  };
+
+  const handleRegenerateAnalysis = () => {
+    handleAnalyzeCV();
+  };
+
+  const handleDownloadAnalysis = () => {
+    // TODO: Implement CV analysis download functionality
+    console.log('Download CV analysis');
   };
 
   const handleStopGeneration = () => {
@@ -303,8 +392,8 @@ export default function Home() {
       <div className="w-full">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
-            {/* Conditional Layout - Centered when no content, two-column when generating */}
-            {!state.isGenerating && !state.generatedContent ? (
+            {/* Conditional Layout - Centered when no content, two-column when generating or has results */}
+            {!state.isGenerating && !state.generatedContent && !state.cvAnalysis ? (
               // Centered layout for initial state
               <div className="flex justify-center">
                 <div className="w-full max-w-xl">
@@ -341,6 +430,7 @@ export default function Home() {
                         isJobOfferProvided={state.jobOffer.length >= 100}
                         onGenerateLetter={handleGenerateLetter}
                         onGenerateMail={handleGenerateMail}
+                        onAnalyzeCV={handleAnalyzeCV}
                         onStopGeneration={handleStopGeneration}
                         isGenerating={state.isGenerating}
                         generationType={state.generationType}
@@ -386,6 +476,7 @@ export default function Home() {
                       isJobOfferProvided={state.jobOffer.length >= 100}
                       onGenerateLetter={handleGenerateLetter}
                       onGenerateMail={handleGenerateMail}
+                      onAnalyzeCV={handleAnalyzeCV}
                       onStopGeneration={handleStopGeneration}
                       isGenerating={state.isGenerating}
                       generationType={state.generationType}

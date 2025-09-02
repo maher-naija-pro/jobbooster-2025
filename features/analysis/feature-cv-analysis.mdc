@@ -450,6 +450,9 @@ interface ErrorRecovery {
   fallbackAnalysis(): Promise<CVAnalysisResult>;
 }
 ```
+### openai 
+use real open ai endpoint  use lib openai.ts under lib
+no fake data or demo
 
 ### Security and Privacy
 

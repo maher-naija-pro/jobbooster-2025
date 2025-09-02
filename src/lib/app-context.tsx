@@ -8,6 +8,7 @@ const initialState: AppState = {
     language: SUPPORTED_LANGUAGES[0], // English by default
     jobOffer: `We are looking for a skilled DevOps Engineer to join our team and drive the automation, scalability, and reliability of our infrastructure. The ideal candidate will have hands-on experience with cloud platforms (AWS, Azure, or GCP), infrastructure as code (Terraform, Ansible), and CI/CD pipelines (Jenkins, GitLab CI, or GitHub Actions). Strong knowledge of Docker, Kubernetes, and monitoring tools such as Prometheus, Grafana, or ELK is essential, along with a mindset for security and continuous improvement. In this role, you will collaborate closely with developers and operations teams to streamline deployments, implement observability, and ensure resilient, secure, and high-performing systems.`,
     jobAnalysis: null,
+    cvAnalysis: null,
     generatedContent: null,
     isGenerating: false,
     generationType: null,
@@ -15,6 +16,8 @@ const initialState: AppState = {
     error: null,
     uploadProgress: 0,
     isUploading: false,
+    isAnalyzingCV: false,
+    cvAnalysisProgress: 0,
 };
 
 function appReducer(state: AppState, action: AppAction): AppState {
@@ -22,7 +25,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
         case 'SET_CV_DATA':
             return { ...state, cvData: action.payload, error: null };
         case 'CLEAR_CV_DATA':
-            return { ...state, cvData: null, jobAnalysis: null };
+            return { ...state, cvData: null, jobAnalysis: null, cvAnalysis: null };
         case 'SET_LANGUAGE':
             return { ...state, language: action.payload };
         case 'SET_JOB_OFFER':
@@ -31,6 +34,10 @@ function appReducer(state: AppState, action: AppAction): AppState {
             return { ...state, jobOffer: '', jobAnalysis: null };
         case 'SET_JOB_ANALYSIS':
             return { ...state, jobAnalysis: action.payload };
+        case 'SET_CV_ANALYSIS':
+            return { ...state, cvAnalysis: action.payload, isAnalyzingCV: false, cvAnalysisProgress: 100, error: null };
+        case 'CLEAR_CV_ANALYSIS':
+            return { ...state, cvAnalysis: null };
         case 'SET_GENERATED_CONTENT':
             return { ...state, generatedContent: action.payload, isGenerating: false, generationType: null };
         case 'CLEAR_GENERATED_CONTENT':
@@ -41,8 +48,14 @@ function appReducer(state: AppState, action: AppAction): AppState {
             return { ...state, isGenerating: false, generationType: null, generationProgress: 0 };
         case 'SET_GENERATION_PROGRESS':
             return { ...state, generationProgress: action.payload };
+        case 'START_CV_ANALYSIS':
+            return { ...state, isAnalyzingCV: true, cvAnalysisProgress: 0, error: null };
+        case 'SET_CV_ANALYSIS_PROGRESS':
+            return { ...state, cvAnalysisProgress: action.payload };
+        case 'STOP_CV_ANALYSIS':
+            return { ...state, isAnalyzingCV: false, cvAnalysisProgress: 0 };
         case 'SET_ERROR':
-            return { ...state, error: action.payload, isGenerating: false };
+            return { ...state, error: action.payload, isGenerating: false, isAnalyzingCV: false };
         case 'CLEAR_ERROR':
             return { ...state, error: null };
         case 'START_UPLOAD':

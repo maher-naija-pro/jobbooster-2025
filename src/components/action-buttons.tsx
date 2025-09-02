@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { FileText, FileDown, Mail, Loader, Square } from 'lucide-react';
+import { FileText, FileDown, Mail, Loader, Square, BarChart3 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 interface ActionButtonsProps {
@@ -9,9 +9,10 @@ interface ActionButtonsProps {
     isJobOfferProvided: boolean;
     onGenerateLetter: () => void;
     onGenerateMail: () => void;
+    onAnalyzeCV: () => void;
     onStopGeneration: () => void;
     isGenerating: boolean;
-    generationType: 'cover-letter' | 'email' | null;
+    generationType: 'cover-letter' | 'email' | 'cv-analysis' | null;
     className?: string;
 }
 
@@ -20,6 +21,7 @@ export function ActionButtons({
     isJobOfferProvided,
     onGenerateLetter,
     onGenerateMail,
+    onAnalyzeCV,
     onStopGeneration,
     isGenerating,
     generationType,
@@ -28,6 +30,7 @@ export function ActionButtons({
     const isDisabled = !isCVUploaded || !isJobOfferProvided;
     const isGeneratingLetter = isGenerating && generationType === 'cover-letter';
     const isGeneratingEmail = isGenerating && generationType === 'email';
+    const isAnalyzingCV = isGenerating && generationType === 'cv-analysis';
 
     const handleGenerateLetterClick = () => {
         // Clear any existing content immediately before starting generation
@@ -37,6 +40,11 @@ export function ActionButtons({
     const handleGenerateMailClick = () => {
         // Clear any existing content immediately before starting generation
         onGenerateMail();
+    };
+
+    const handleAnalyzeCVClick = () => {
+        // Clear any existing content immediately before starting analysis
+        onAnalyzeCV();
     };
 
     return (
@@ -96,6 +104,32 @@ export function ActionButtons({
                         <>
                             <Mail className="w-4 h-4" />
                             Generate Email
+                        </>
+                    )}
+                </button>
+
+                {/* Analyze CV Button */}
+                <button
+                    onClick={handleAnalyzeCVClick}
+                    disabled={isDisabled || isGenerating}
+                    className={cn(
+                        "w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg font-medium transition-all duration-200",
+                        isDisabled
+                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                            : isAnalyzingCV
+                                ? "bg-purple-100 text-purple-700 cursor-not-allowed"
+                                : "bg-purple-600 text-white hover:bg-purple-700 active:bg-purple-800 shadow-sm hover:shadow-md"
+                    )}
+                >
+                    {isAnalyzingCV ? (
+                        <>
+                            <Loader className="w-4 h-4 animate-spin" />
+                            Analyzing CV...
+                        </>
+                    ) : (
+                        <>
+                            <BarChart3 className="w-4 h-4" />
+                            Analyze CV
                         </>
                     )}
                 </button>

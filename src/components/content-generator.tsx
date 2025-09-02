@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { FileText, CheckCircle, Copy } from 'lucide-react';
-import { GeneratedContent } from '../lib/types';
+import { FileText, CheckCircle, Copy, TrendingUp, TrendingDown, Star, Target, Award, BookOpen, Briefcase, Users, Lightbulb, AlertTriangle } from 'lucide-react';
+import { GeneratedContent, CVAnalysisResult } from '../lib/types';
 
 interface ContentGeneratorProps {
     content: GeneratedContent | null;
     isGenerating: boolean;
-    generationType: 'cover-letter' | 'email' | null;
+    generationType: 'cover-letter' | 'email' | 'cv-analysis' | null;
     generationProgress: number;
     streamingContent: string;
     onEdit: () => void;
@@ -112,9 +112,134 @@ export function ContentGenerator({
         });
     };
 
+    const renderCVAnalysis = (analysisData: CVAnalysisResult) => {
+        const { analysis, jobMatch } = analysisData;
+
+        return (
+            <div className="space-y-6">
+                {/* Overall Match Score */}
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200">
+                    <div className="flex items-center gap-3 mb-4">
+                        <Target className="w-6 h-6 text-blue-600" />
+                        <h3 className="text-xl font-semibold text-gray-900">Overall Match Score</h3>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <div className="text-4xl font-bold text-blue-600">
+                            {jobMatch.overallMatch}%
+                        </div>
+                        <div className="flex-1">
+                            <div className="w-full bg-gray-200 rounded-full h-3">
+                                <div
+                                    className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500"
+                                    style={{ width: `${jobMatch.overallMatch}%` }}
+                                ></div>
+                            </div>
+                            <p className="text-sm text-gray-600 mt-2">
+                                {jobMatch.overallMatch >= 80 ? 'Excellent match!' :
+                                    jobMatch.overallMatch >= 60 ? 'Good match' :
+                                        jobMatch.overallMatch >= 40 ? 'Moderate match' : 'Needs improvement'}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Strengths */}
+                {jobMatch.strengths && jobMatch.strengths.length > 0 && (
+                    <div className="bg-green-50 rounded-xl p-6 border border-green-200">
+                        <div className="flex items-center gap-3 mb-4">
+                            <TrendingUp className="w-6 h-6 text-green-600" />
+                            <h3 className="text-lg font-semibold text-gray-900">Strengths</h3>
+                        </div>
+                        <div className="grid gap-3">
+                            {jobMatch.strengths.map((strength, index) => (
+                                <div key={index} className="flex items-start gap-3">
+                                    <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                                    <p className="text-gray-700">{strength}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Missing Skills */}
+                {jobMatch.missingSkills && jobMatch.missingSkills.length > 0 && (
+                    <div className="bg-orange-50 rounded-xl p-6 border border-orange-200">
+                        <div className="flex items-center gap-3 mb-4">
+                            <TrendingDown className="w-6 h-6 text-orange-600" />
+                            <h3 className="text-lg font-semibold text-gray-900">Missing Skills</h3>
+                        </div>
+                        <div className="grid gap-3">
+                            {jobMatch.missingSkills.map((skill, index) => (
+                                <div key={index} className="flex items-start gap-3">
+                                    <AlertTriangle className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
+                                    <p className="text-gray-700">{skill}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Skill Matches */}
+                {jobMatch.skillMatches && jobMatch.skillMatches.length > 0 && (
+                    <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                        <div className="flex items-center gap-3 mb-4">
+                            <Star className="w-6 h-6 text-gray-600" />
+                            <h3 className="text-lg font-semibold text-gray-900">Skill Analysis</h3>
+                        </div>
+                        <div className="space-y-4">
+                            {jobMatch.skillMatches.slice(0, 10).map((match, index) => (
+                                <div key={index} className="flex items-center justify-between p-3 bg-white rounded-lg border">
+                                    <div className="flex-1">
+                                        <p className="font-medium text-gray-900">{match.skill}</p>
+                                        <p className="text-sm text-gray-600">
+                                            Your level: {match.cvLevel} • Required: {match.jobRequirement}
+                                        </p>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="text-sm font-medium text-gray-900">
+                                            {match.matchScore}%
+                                        </div>
+                                        <div className={`w-16 h-2 rounded-full ${match.matchScore >= 80 ? 'bg-green-500' :
+                                                match.matchScore >= 60 ? 'bg-yellow-500' :
+                                                    'bg-red-500'
+                                            }`}>
+                                            <div
+                                                className="h-2 rounded-full bg-white opacity-30"
+                                                style={{ width: `${100 - match.matchScore}%` }}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Recommendations */}
+                {jobMatch.recommendations && jobMatch.recommendations.length > 0 && (
+                    <div className="bg-purple-50 rounded-xl p-6 border border-purple-200">
+                        <div className="flex items-center gap-3 mb-4">
+                            <Lightbulb className="w-6 h-6 text-purple-600" />
+                            <h3 className="text-lg font-semibold text-gray-900">Recommendations</h3>
+                        </div>
+                        <div className="space-y-3">
+                            {jobMatch.recommendations.map((recommendation, index) => (
+                                <div key={index} className="flex items-start gap-3">
+                                    <div className="w-2 h-2 bg-purple-600 rounded-full mt-2 flex-shrink-0"></div>
+                                    <p className="text-gray-700">{recommendation}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
     const getContentTypeLabel = () => {
         if (generationType === 'cover-letter') return 'Cover Letter';
         if (generationType === 'email') return 'Email';
+        if (generationType === 'cv-analysis') return 'CV Analysis';
         return 'Content';
     };
 
@@ -147,7 +272,8 @@ export function ContentGenerator({
                         <div className="flex items-center gap-2">
                             <CheckCircle className="w-4 h-4 text-green-600" />
                             <span className="text-sm font-medium text-gray-900">
-                                {content.type === 'cover-letter' ? 'Cover Letter' : 'Email'} Generated Successfully
+                                {content.type === 'cover-letter' ? 'Cover Letter' :
+                                    content.type === 'email' ? 'Email' : 'CV Analysis'} Generated Successfully
                             </span>
                         </div>
                         <div className="flex items-center gap-3">
@@ -183,7 +309,8 @@ export function ContentGenerator({
                             <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl">
                                 <div className="flex items-center justify-between mb-3">
                                     <h4 className="text-base font-medium text-gray-900">
-                                        {generationType === 'cover-letter' ? 'Generating Cover Letter' : 'Generating Email'}
+                                        {generationType === 'cover-letter' ? 'Generating Cover Letter' :
+                                            generationType === 'email' ? 'Generating Email' : 'Analyzing CV'}
                                     </h4>
                                     {/* LED Indicator */}
                                     <div className="flex items-center gap-2">
@@ -203,13 +330,17 @@ export function ContentGenerator({
                                 </div>
                                 <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                                     <div
-                                        className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                                        className={`h-2 rounded-full transition-all duration-300 ${generationType === 'cv-analysis' ? 'bg-orange-500' : 'bg-blue-500'
+                                            }`}
                                         style={{ width: `${currentProgress}%` }}
                                     ></div>
                                 </div>
                                 <div className="flex items-center justify-between mt-2">
                                     <p className="text-sm text-gray-600">
-                                        AI is analyzing your CV and job requirements to create personalized content
+                                        {generationType === 'cv-analysis'
+                                            ? 'AI is analyzing your CV and matching it against job requirements'
+                                            : 'AI is analyzing your CV and job requirements to create personalized content'
+                                        }
                                     </p>
                                     <span className="text-sm text-blue-600 font-medium">
                                         {Math.round(currentProgress)}% Complete
@@ -227,7 +358,11 @@ export function ContentGenerator({
                         </div>
                     ) : content ? (
                         <div className="text-gray-900 leading-relaxed">
-                            {formatContent(displayContent)}
+                            {content.type === 'cv-analysis' && content.analysisData ? (
+                                renderCVAnalysis(content.analysisData)
+                            ) : (
+                                formatContent(displayContent)
+                            )}
                         </div>
                     ) : null}
                 </div>
