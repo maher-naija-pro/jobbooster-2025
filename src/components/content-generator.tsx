@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { FileText, CheckCircle, Copy, TrendingUp, TrendingDown, Star, Target, Award, BookOpen, Briefcase, Users, Lightbulb, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
-import { GeneratedContent, CVAnalysisResult } from '../lib/types';
+import { FileText, CheckCircle, Copy, TrendingUp, TrendingDown, Star, Target, Award, BookOpen, Briefcase, Users, Lightbulb, AlertTriangle, ChevronDown, ChevronUp, Eye, EyeOff, Building, MapPin, DollarSign, Calendar, GraduationCap, Code, Heart, Globe, Wrench } from 'lucide-react';
+import { GeneratedContent, CVAnalysisResult, JobAnalysis } from '../lib/types';
 
 interface ContentGeneratorProps {
     content: GeneratedContent | null;
@@ -14,6 +14,7 @@ interface ContentGeneratorProps {
     onRegenerate: () => void;
     onDownload: (format: 'pdf' | 'docx' | 'txt') => void;
     className?: string;
+    jobAnalysis?: JobAnalysis | null;
 }
 
 export function ContentGenerator({
@@ -25,7 +26,8 @@ export function ContentGenerator({
     onEdit,
     onRegenerate,
     onDownload,
-    className
+    className,
+    jobAnalysis
 }: ContentGeneratorProps) {
     const contentRef = useRef<HTMLDivElement>(null);
     const [displayContent, setDisplayContent] = useState('');
@@ -33,6 +35,7 @@ export function ContentGenerator({
     const [isCopied, setIsCopied] = useState(false);
     const [isMissingSkillsExpanded, setIsMissingSkillsExpanded] = useState(true);
     const [isStrengthsExpanded, setIsStrengthsExpanded] = useState(true);
+    const [analysisMode, setAnalysisMode] = useState<'compact' | 'detailed'>('compact');
 
     // Clear display content and reset progress when generation type changes (new generation starts)
     useEffect(() => {
@@ -117,43 +120,36 @@ export function ContentGenerator({
     const renderCVAnalysis = (analysisData: CVAnalysisResult) => {
         const { analysis, jobMatch } = analysisData;
 
-        return (
+        const renderCompactMode = () => (
             <div className="space-y-6">
-                {/* Skills Extraction Summary */}
-                <div className="bg-gradient-to-r from-indigo-50 to-cyan-50 rounded-xl p-6 border border-indigo-200">
-                    <div className="flex items-center gap-3 mb-4">
-                        <BookOpen className="w-6 h-6 text-indigo-600" />
-                        <h3 className="text-xl font-semibold text-gray-900">Skills Extraction Summary</h3>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="flex items-center gap-3 p-4 bg-white rounded-lg border border-indigo-100">
-                            <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                                <CheckCircle className="w-5 h-5 text-green-600" />
-                            </div>
-                            <div>
-                                <div className="text-2xl font-bold text-gray-900">
-                                    {jobMatch.skillMatches?.length || 0}
-                                </div>
-                                <div className="text-sm text-gray-600">Skills extracted from CV</div>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-3 p-4 bg-white rounded-lg border border-indigo-100">
-                            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                <Target className="w-5 h-5 text-blue-600" />
-                            </div>
-                            <div>
-                                <div className="text-2xl font-bold text-gray-900">
-                                    {jobMatch.skillMatches?.filter(skill =>
-                                        skill.jobRequirement === 'required' || skill.jobRequirement === 'preferred'
-                                    ).length || 0}
-                                </div>
-                                <div className="text-sm text-gray-600">Requirements from job offer</div>
-                            </div>
-                        </div>
+                {/* Mode Toggle */}
+                <div className="flex items-center justify-between">
+                    <h2 className="text-2xl font-bold text-gray-900">CV Analysis Results</h2>
+                    <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+                        <button
+                            onClick={() => setAnalysisMode('compact')}
+                            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${analysisMode === 'compact'
+                                ? 'bg-white text-gray-900 shadow-sm'
+                                : 'text-gray-600 hover:text-gray-900'
+                                }`}
+                        >
+                            <Eye className="w-4 h-4 inline mr-1" />
+                            Compact
+                        </button>
+                        <button
+                            onClick={() => setAnalysisMode('detailed')}
+                            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${analysisMode === 'detailed'
+                                ? 'bg-white text-gray-900 shadow-sm'
+                                : 'text-gray-600 hover:text-gray-900'
+                                }`}
+                        >
+                            <EyeOff className="w-4 h-4 inline mr-1" />
+                            Detailed
+                        </button>
                     </div>
                 </div>
 
-                {/* Overall Match Score */}
+                {/* Overall Match Score - Always visible */}
                 <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200">
                     <div className="flex items-center gap-3 mb-4">
                         <Target className="w-6 h-6 text-blue-600" />
@@ -179,63 +175,86 @@ export function ContentGenerator({
                     </div>
                 </div>
 
-                {/* Skill Comparison Table */}
+                {/* Quick Stats */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                        <div className="flex items-center gap-3">
+                            <CheckCircle className="w-8 h-8 text-green-600" />
+                            <div>
+                                <div className="text-2xl font-bold text-gray-900">
+                                    {jobMatch.skillMatches?.filter(s => s.gap === 'none' || s.matchScore >= 0.8).length || 0}
+                                </div>
+                                <div className="text-sm text-gray-600">Perfect Matches</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+                        <div className="flex items-center gap-3">
+                            <AlertTriangle className="w-8 h-8 text-yellow-600" />
+                            <div>
+                                <div className="text-2xl font-bold text-gray-900">
+                                    {jobMatch.missingSkills?.length || 0}
+                                </div>
+                                <div className="text-sm text-gray-600">Missing Skills</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                        <div className="flex items-center gap-3">
+                            <Star className="w-8 h-8 text-blue-600" />
+                            <div>
+                                <div className="text-2xl font-bold text-gray-900">
+                                    {jobMatch.strengths?.length || 0}
+                                </div>
+                                <div className="text-sm text-gray-600">Strengths</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Technical Skills Table */}
                 {jobMatch.skillMatches && jobMatch.skillMatches.length > 0 && (
                     <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                        <div className="flex items-center gap-3 mb-6">
-                            <Star className="w-6 h-6 text-gray-600" />
-                            <h3 className="text-lg font-semibold text-gray-900">📋 Skill Comparison Table</h3>
-                        </div>
-
-                        {/* Table */}
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Technical Skills Analysis</h3>
                         <div className="overflow-x-auto">
                             <table className="w-full border-collapse">
                                 <thead>
                                     <tr className="border-b-2 border-gray-300">
                                         <th className="text-left py-3 px-4 font-semibold text-gray-900">Skill Name</th>
                                         <th className="text-left py-3 px-4 font-semibold text-gray-900">Job Required</th>
-                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">CV Match</th>
+                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">CV Level</th>
+                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Match</th>
                                         <th className="text-left py-3 px-4 font-semibold text-gray-900">Status</th>
-                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {jobMatch.skillMatches.map((match, index) => {
-                                        // Helper functions to format the data
                                         const getJobRequiredDisplay = (requirement: string) => {
                                             switch (requirement) {
                                                 case 'required': return '✅ Required';
                                                 case 'preferred': return '⚠️ Preferred';
-                                                case 'optional': return '❌ Not Req';
-                                                default: return '❌ Not Req';
+                                                case 'optional': return '❌ Optional';
+                                                default: return '❌ Not Required';
                                             }
                                         };
 
                                         const getCVMatchDisplay = (level: string) => {
                                             switch (level) {
                                                 case 'expert': return '✅ Expert';
-                                                case 'advanced': return '✅ Good';
-                                                case 'intermediate': return '⚠️ Basic';
-                                                case 'beginner': return '❌ None';
+                                                case 'advanced': return '✅ Advanced';
+                                                case 'intermediate': return '⚠️ Intermed';
+                                                case 'beginner': return '❌ Beginner';
                                                 default: return '❌ None';
                                             }
                                         };
 
                                         const getStatusDisplay = (gap: string, matchScore: number) => {
-                                            if (gap === 'none' || matchScore >= 0.8) return '✅ Match';
-                                            if (gap === 'minor' || matchScore >= 0.6) return '⚠️ Gap';
-                                            if (gap === 'moderate' || gap === 'major') return '❌ Gap';
-                                            // Check if it's an extra skill (not required but present)
+                                            if (gap === 'none' || matchScore >= 0.8) return '✅ Perfect';
+                                            if (gap === 'minor' || matchScore >= 0.6) return '⚠️ Minor';
+                                            if (gap === 'moderate') return '❌ Moderate';
+                                            if (gap === 'major') return '❌ Major';
                                             if (match.jobRequirement === 'optional' && match.cvLevel !== 'beginner') return '➕ Extra';
                                             return '❌ Gap';
-                                        };
-
-                                        const getActionDisplay = (gap: string, matchScore: number, recommendation: string) => {
-                                            if (gap === 'none' || matchScore >= 0.8) return 'Perfect';
-                                            if (gap === 'minor' || matchScore >= 0.6) return 'Consider';
-                                            if (gap === 'moderate' || gap === 'major') return 'Learn';
-                                            if (match.jobRequirement === 'optional' && match.cvLevel !== 'beginner') return 'Bonus';
-                                            return 'Learn';
                                         };
 
                                         const getRowColor = (gap: string, matchScore: number) => {
@@ -250,41 +269,504 @@ export function ContentGenerator({
                                                 <td className="py-3 px-4 font-medium text-gray-900">{match.skill}</td>
                                                 <td className="py-3 px-4 text-gray-700">{getJobRequiredDisplay(match.jobRequirement)}</td>
                                                 <td className="py-3 px-4 text-gray-700">{getCVMatchDisplay(match.cvLevel)}</td>
+                                                <td className="py-3 px-4 text-gray-700">{Math.round(match.matchScore * 100)}%</td>
                                                 <td className="py-3 px-4 text-gray-700">{getStatusDisplay(match.gap, match.matchScore)}</td>
-                                                <td className="py-3 px-4 text-gray-700">{getActionDisplay(match.gap, match.matchScore, match.recommendation)}</td>
                                             </tr>
                                         );
                                     })}
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                )}
 
-                        {/* Table Legend */}
-                        <div className="mt-4 p-4 bg-white rounded-lg border border-gray-200">
-                            <h4 className="text-sm font-semibold text-gray-900 mb-2">Legend:</h4>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs text-gray-600">
-                                <div className="flex items-center gap-1">
-                                    <span className="w-3 h-3 bg-green-100 border border-green-300 rounded"></span>
-                                    <span>Perfect Match</span>
-                                </div>
-                                <div className="flex items-center gap-1">
-                                    <span className="w-3 h-3 bg-yellow-100 border border-yellow-300 rounded"></span>
-                                    <span>Minor Gap</span>
-                                </div>
-                                <div className="flex items-center gap-1">
-                                    <span className="w-3 h-3 bg-red-100 border border-red-300 rounded"></span>
-                                    <span>Major Gap</span>
-                                </div>
-                                <div className="flex items-center gap-1">
-                                    <span className="w-3 h-3 bg-blue-100 border border-blue-300 rounded"></span>
-                                    <span>Bonus Skill</span>
-                                </div>
-                            </div>
+                {/* Soft Skills Table */}
+                {jobMatch.skillMatches && jobMatch.skillMatches.length > 0 && (
+                    <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Soft Skills Analysis</h3>
+                        <div className="overflow-x-auto">
+                            <table className="w-full border-collapse">
+                                <thead>
+                                    <tr className="border-b-2 border-gray-300">
+                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Skill Name</th>
+                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Job Required</th>
+                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">CV Level</th>
+                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Match</th>
+                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {jobMatch.skillMatches.map((match, index) => {
+                                        const getJobRequiredDisplay = (requirement: string) => {
+                                            switch (requirement) {
+                                                case 'required': return '✅ Required';
+                                                case 'preferred': return '⚠️ Preferred';
+                                                case 'optional': return '❌ Optional';
+                                                default: return '❌ Not Required';
+                                            }
+                                        };
+
+                                        const getCVMatchDisplay = (level: string) => {
+                                            switch (level) {
+                                                case 'expert': return '✅ Expert';
+                                                case 'advanced': return '✅ Advanced';
+                                                case 'intermediate': return '⚠️ Intermed';
+                                                case 'beginner': return '❌ Beginner';
+                                                default: return '❌ None';
+                                            }
+                                        };
+
+                                        const getStatusDisplay = (gap: string, matchScore: number) => {
+                                            if (gap === 'none' || matchScore >= 0.8) return '✅ Perfect';
+                                            if (gap === 'minor' || matchScore >= 0.6) return '⚠️ Minor';
+                                            if (gap === 'moderate') return '❌ Moderate';
+                                            if (gap === 'major') return '❌ Major';
+                                            if (match.jobRequirement === 'optional' && match.cvLevel !== 'beginner') return '➕ Extra';
+                                            return '❌ Gap';
+                                        };
+
+                                        const getRowColor = (gap: string, matchScore: number) => {
+                                            if (gap === 'none' || matchScore >= 0.8) return 'bg-green-50 border-green-200';
+                                            if (gap === 'minor' || matchScore >= 0.6) return 'bg-yellow-50 border-yellow-200';
+                                            if (match.jobRequirement === 'optional' && match.cvLevel !== 'beginner') return 'bg-blue-50 border-blue-200';
+                                            return 'bg-red-50 border-red-200';
+                                        };
+
+                                        return (
+                                            <tr key={`soft-${index}`} className={`border-b border-gray-200 ${getRowColor(match.gap, match.matchScore)}`}>
+                                                <td className="py-3 px-4 font-medium text-gray-900">{match.skill}</td>
+                                                <td className="py-3 px-4 text-gray-700">{getJobRequiredDisplay(match.jobRequirement)}</td>
+                                                <td className="py-3 px-4 text-gray-700">{getCVMatchDisplay(match.cvLevel)}</td>
+                                                <td className="py-3 px-4 text-gray-700">{Math.round(match.matchScore * 100)}%</td>
+                                                <td className="py-3 px-4 text-gray-700">{getStatusDisplay(match.gap, match.matchScore)}</td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 )}
 
-                {/* Strengths - Collapsible Button */}
+                {/* Key Recommendations */}
+                {jobMatch.recommendations && jobMatch.recommendations.length > 0 && (
+                    <div className="bg-purple-50 rounded-xl p-6 border border-purple-200">
+                        <div className="flex items-center gap-3 mb-4">
+                            <Lightbulb className="w-6 h-6 text-purple-600" />
+                            <h3 className="text-lg font-semibold text-gray-900">Key Recommendations</h3>
+                        </div>
+                        <div className="space-y-2">
+                            {jobMatch.recommendations.slice(0, 3).map((recommendation, index) => (
+                                <div key={index} className="flex items-start gap-3">
+                                    <div className="w-2 h-2 bg-purple-600 rounded-full mt-2 flex-shrink-0"></div>
+                                    <p className="text-gray-700 text-sm">{recommendation}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+
+        const renderDetailedMode = () => (
+            <div className="space-y-6">
+                {/* Mode Toggle */}
+                <div className="flex items-center justify-between">
+                    <h2 className="text-2xl font-bold text-gray-900">Detailed CV Analysis</h2>
+                    <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+                        <button
+                            onClick={() => setAnalysisMode('compact')}
+                            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${analysisMode === 'compact'
+                                ? 'bg-white text-gray-900 shadow-sm'
+                                : 'text-gray-600 hover:text-gray-900'
+                                }`}
+                        >
+                            <Eye className="w-4 h-4 inline mr-1" />
+                            Compact
+                        </button>
+                        <button
+                            onClick={() => setAnalysisMode('detailed')}
+                            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${analysisMode === 'detailed'
+                                ? 'bg-white text-gray-900 shadow-sm'
+                                : 'text-gray-600 hover:text-gray-900'
+                                }`}
+                        >
+                            <EyeOff className="w-4 h-4 inline mr-1" />
+                            Detailed
+                        </button>
+                    </div>
+                </div>
+
+                {/* Overall Match Score - First in detailed mode */}
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200">
+                    <div className="flex items-center gap-3 mb-4">
+                        <Target className="w-6 h-6 text-blue-600" />
+                        <h3 className="text-xl font-semibold text-gray-900">Overall Match Score</h3>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <div className="text-4xl font-bold text-blue-600">
+                            {jobMatch.overallMatch}%
+                        </div>
+                        <div className="flex-1">
+                            <div className="w-full bg-gray-200 rounded-full h-3">
+                                <div
+                                    className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500"
+                                    style={{ width: `${jobMatch.overallMatch}%` }}
+                                ></div>
+                            </div>
+                            <p className="text-sm text-gray-600 mt-2">
+                                {jobMatch.overallMatch >= 80 ? 'Excellent match!' :
+                                    jobMatch.overallMatch >= 60 ? 'Good match' :
+                                        jobMatch.overallMatch >= 40 ? 'Moderate match' : 'Needs improvement'}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Technical Skills Table - Detailed Mode */}
+                {jobMatch.skillMatches && jobMatch.skillMatches.length > 0 && (
+                    <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Technical Skills Analysis</h3>
+                        <div className="overflow-x-auto">
+                            <table className="w-full border-collapse">
+                                <thead>
+                                    <tr className="border-b-2 border-gray-300">
+                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Skill Name</th>
+                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Job Required</th>
+                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">CV Level</th>
+                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Match</th>
+                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {jobMatch.skillMatches.map((match, index) => {
+                                        const getJobRequiredDisplay = (requirement: string) => {
+                                            switch (requirement) {
+                                                case 'required': return '✅ Required';
+                                                case 'preferred': return '⚠️ Preferred';
+                                                case 'optional': return '❌ Optional';
+                                                default: return '❌ Not Required';
+                                            }
+                                        };
+
+                                        const getCVMatchDisplay = (level: string) => {
+                                            switch (level) {
+                                                case 'expert': return '✅ Expert';
+                                                case 'advanced': return '✅ Advanced';
+                                                case 'intermediate': return '⚠️ Intermed';
+                                                case 'beginner': return '❌ Beginner';
+                                                default: return '❌ None';
+                                            }
+                                        };
+
+                                        const getStatusDisplay = (gap: string, matchScore: number) => {
+                                            if (gap === 'none' || matchScore >= 0.8) return '✅ Perfect';
+                                            if (gap === 'minor' || matchScore >= 0.6) return '⚠️ Minor';
+                                            if (gap === 'moderate') return '❌ Moderate';
+                                            if (gap === 'major') return '❌ Major';
+                                            if (match.jobRequirement === 'optional' && match.cvLevel !== 'beginner') return '➕ Extra';
+                                            return '❌ Gap';
+                                        };
+
+                                        const getRowColor = (gap: string, matchScore: number) => {
+                                            if (gap === 'none' || matchScore >= 0.8) return 'bg-green-50 border-green-200';
+                                            if (gap === 'minor' || matchScore >= 0.6) return 'bg-yellow-50 border-yellow-200';
+                                            if (match.jobRequirement === 'optional' && match.cvLevel !== 'beginner') return 'bg-blue-50 border-blue-200';
+                                            return 'bg-red-50 border-red-200';
+                                        };
+
+                                        return (
+                                            <tr key={`detailed-tech-${index}`} className={`border-b border-gray-200 ${getRowColor(match.gap, match.matchScore)}`}>
+                                                <td className="py-3 px-4 font-medium text-gray-900">{match.skill}</td>
+                                                <td className="py-3 px-4 text-gray-700">{getJobRequiredDisplay(match.jobRequirement)}</td>
+                                                <td className="py-3 px-4 text-gray-700">{getCVMatchDisplay(match.cvLevel)}</td>
+                                                <td className="py-3 px-4 text-gray-700">{Math.round(match.matchScore * 100)}%</td>
+                                                <td className="py-3 px-4 text-gray-700">{getStatusDisplay(match.gap, match.matchScore)}</td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
+
+                {/* Soft Skills Table - Detailed Mode */}
+                {jobMatch.skillMatches && jobMatch.skillMatches.length > 0 && (
+                    <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Soft Skills Analysis</h3>
+                        <div className="overflow-x-auto">
+                            <table className="w-full border-collapse">
+                                <thead>
+                                    <tr className="border-b-2 border-gray-300">
+                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Skill Name</th>
+                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Job Required</th>
+                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">CV Level</th>
+                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Match</th>
+                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {jobMatch.skillMatches.map((match, index) => {
+                                        const getJobRequiredDisplay = (requirement: string) => {
+                                            switch (requirement) {
+                                                case 'required': return '✅ Required';
+                                                case 'preferred': return '⚠️ Preferred';
+                                                case 'optional': return '❌ Optional';
+                                                default: return '❌ Not Required';
+                                            }
+                                        };
+
+                                        const getCVMatchDisplay = (level: string) => {
+                                            switch (level) {
+                                                case 'expert': return '✅ Expert';
+                                                case 'advanced': return '✅ Advanced';
+                                                case 'intermediate': return '⚠️ Intermed';
+                                                case 'beginner': return '❌ Beginner';
+                                                default: return '❌ None';
+                                            }
+                                        };
+
+                                        const getStatusDisplay = (gap: string, matchScore: number) => {
+                                            if (gap === 'none' || matchScore >= 0.8) return '✅ Perfect';
+                                            if (gap === 'minor' || matchScore >= 0.6) return '⚠️ Minor';
+                                            if (gap === 'moderate') return '❌ Moderate';
+                                            if (gap === 'major') return '❌ Major';
+                                            if (match.jobRequirement === 'optional' && match.cvLevel !== 'beginner') return '➕ Extra';
+                                            return '❌ Gap';
+                                        };
+
+                                        const getRowColor = (gap: string, matchScore: number) => {
+                                            if (gap === 'none' || matchScore >= 0.8) return 'bg-green-50 border-green-200';
+                                            if (gap === 'minor' || matchScore >= 0.6) return 'bg-yellow-50 border-yellow-200';
+                                            if (match.jobRequirement === 'optional' && match.cvLevel !== 'beginner') return 'bg-blue-50 border-blue-200';
+                                            return 'bg-red-50 border-red-200';
+                                        };
+
+                                        return (
+                                            <tr key={`detailed-soft-${index}`} className={`border-b border-gray-200 ${getRowColor(match.gap, match.matchScore)}`}>
+                                                <td className="py-3 px-4 font-medium text-gray-900">{match.skill}</td>
+                                                <td className="py-3 px-4 text-gray-700">{getJobRequiredDisplay(match.jobRequirement)}</td>
+                                                <td className="py-3 px-4 text-gray-700">{getCVMatchDisplay(match.cvLevel)}</td>
+                                                <td className="py-3 px-4 text-gray-700">{Math.round(match.matchScore * 100)}%</td>
+                                                <td className="py-3 px-4 text-gray-700">{getStatusDisplay(match.gap, match.matchScore)}</td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
+
+                {/* Job Analysis Section */}
+                {jobAnalysis && (
+                    <div className="bg-gradient-to-r from-indigo-50 to-cyan-50 rounded-xl p-6 border border-indigo-200">
+                        <div className="flex items-center gap-3 mb-4">
+                            <Building className="w-6 h-6 text-indigo-600" />
+                            <h3 className="text-xl font-semibold text-gray-900">Job Analysis</h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div className="bg-white rounded-lg p-4 border border-indigo-100">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Building className="w-4 h-4 text-indigo-600" />
+                                    <span className="text-sm font-medium text-gray-600">Company</span>
+                                </div>
+                                <p className="text-gray-900 font-semibold">{jobAnalysis.companyName}</p>
+                            </div>
+                            <div className="bg-white rounded-lg p-4 border border-indigo-100">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Target className="w-4 h-4 text-indigo-600" />
+                                    <span className="text-sm font-medium text-gray-600">Level</span>
+                                </div>
+                                <p className="text-gray-900 font-semibold capitalize">{jobAnalysis.experienceLevel}</p>
+                            </div>
+                            <div className="bg-white rounded-lg p-4 border border-indigo-100">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <MapPin className="w-4 h-4 text-indigo-600" />
+                                    <span className="text-sm font-medium text-gray-600">Location</span>
+                                </div>
+                                <p className="text-gray-900 font-semibold">{jobAnalysis.location}</p>
+                            </div>
+                            <div className="bg-white rounded-lg p-4 border border-indigo-100">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Users className="w-4 h-4 text-indigo-600" />
+                                    <span className="text-sm font-medium text-gray-600">Company Size</span>
+                                </div>
+                                <p className="text-gray-900 font-semibold capitalize">{jobAnalysis.companySize}</p>
+                            </div>
+                            <div className="bg-white rounded-lg p-4 border border-indigo-100">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Briefcase className="w-4 h-4 text-indigo-600" />
+                                    <span className="text-sm font-medium text-gray-600">Industry</span>
+                                </div>
+                                <p className="text-gray-900 font-semibold">{jobAnalysis.industry}</p>
+                            </div>
+                            {jobAnalysis.salaryRange && (
+                                <div className="bg-white rounded-lg p-4 border border-indigo-100">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <DollarSign className="w-4 h-4 text-indigo-600" />
+                                        <span className="text-sm font-medium text-gray-600">Salary Range</span>
+                                    </div>
+                                    <p className="text-gray-900 font-semibold">{jobAnalysis.salaryRange}</p>
+                                </div>
+                            )}
+                        </div>
+                        {jobAnalysis.requirements && jobAnalysis.requirements.length > 0 && (
+                            <div className="mt-4">
+                                <h4 className="text-sm font-semibold text-gray-900 mb-2">Key Requirements:</h4>
+                                <div className="flex flex-wrap gap-2">
+                                    {jobAnalysis.requirements.map((req, index) => (
+                                        <span key={index} className="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full">
+                                            {req}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Skills Analysis */}
+                {analysis.skills && analysis.skills.length > 0 && (
+                    <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                        <div className="flex items-center gap-3 mb-6">
+                            <BookOpen className="w-6 h-6 text-gray-600" />
+                            <h3 className="text-lg font-semibold text-gray-900">Extracted Skills Analysis</h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {analysis.skills.map((skill, index) => (
+                                <div key={index} className="bg-white rounded-lg p-4 border border-gray-200">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="font-medium text-gray-900">{skill.name}</span>
+                                        <span className={`text-xs px-2 py-1 rounded-full ${skill.category === 'technical' ? 'bg-blue-100 text-blue-800' :
+                                            skill.category === 'soft' ? 'bg-green-100 text-green-800' :
+                                                skill.category === 'language' ? 'bg-purple-100 text-purple-800' :
+                                                    skill.category === 'certification' ? 'bg-yellow-100 text-yellow-800' :
+                                                        'bg-gray-100 text-gray-800'
+                                            }`}>
+                                            {skill.category}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center justify-between text-sm text-gray-600">
+                                        <span>Level: {skill.level}</span>
+                                        <span>Confidence: {Math.round(skill.confidence * 100)}%</span>
+                                    </div>
+                                    {skill.yearsOfExperience && (
+                                        <div className="text-xs text-gray-500 mt-1">
+                                            {skill.yearsOfExperience} years experience
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Experience Analysis */}
+                {analysis.experience && analysis.experience.length > 0 && (
+                    <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                        <div className="flex items-center gap-3 mb-6">
+                            <Briefcase className="w-6 h-6 text-gray-600" />
+                            <h3 className="text-lg font-semibold text-gray-900">Experience Analysis</h3>
+                        </div>
+                        <div className="space-y-4">
+                            {analysis.experience.map((exp, index) => (
+                                <div key={index} className="bg-white rounded-lg p-4 border border-gray-200">
+                                    <div className="flex items-start justify-between mb-3">
+                                        <div>
+                                            <h4 className="font-semibold text-gray-900">{exp.title}</h4>
+                                            <p className="text-gray-600">{exp.company}</p>
+                                            <p className="text-sm text-gray-500">{exp.duration}</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <div className="text-sm font-medium text-gray-900">
+                                                Relevance: {Math.round(exp.relevanceScore * 100)}%
+                                            </div>
+                                            <div className="w-20 bg-gray-200 rounded-full h-2 mt-1">
+                                                <div
+                                                    className="bg-blue-500 h-2 rounded-full"
+                                                    style={{ width: `${exp.relevanceScore * 100}%` }}
+                                                ></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p className="text-gray-700 text-sm mb-3">{exp.description}</p>
+                                    {exp.skills && exp.skills.length > 0 && (
+                                        <div className="mb-3">
+                                            <h5 className="text-sm font-medium text-gray-900 mb-1">Skills:</h5>
+                                            <div className="flex flex-wrap gap-1">
+                                                {exp.skills.map((skill, skillIndex) => (
+                                                    <span key={skillIndex} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                                                        {skill}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {exp.achievements && exp.achievements.length > 0 && (
+                                        <div>
+                                            <h5 className="text-sm font-medium text-gray-900 mb-1">Key Achievements:</h5>
+                                            <ul className="text-sm text-gray-700 space-y-1">
+                                                {exp.achievements.map((achievement, achIndex) => (
+                                                    <li key={achIndex} className="flex items-start gap-2">
+                                                        <Award className="w-3 h-3 text-yellow-600 mt-0.5 flex-shrink-0" />
+                                                        {achievement}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Education Analysis */}
+                {analysis.education && analysis.education.length > 0 && (
+                    <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                        <div className="flex items-center gap-3 mb-6">
+                            <GraduationCap className="w-6 h-6 text-gray-600" />
+                            <h3 className="text-lg font-semibold text-gray-900">Education Analysis</h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {analysis.education.map((edu, index) => (
+                                <div key={index} className="bg-white rounded-lg p-4 border border-gray-200">
+                                    <div className="flex items-start justify-between mb-2">
+                                        <div>
+                                            <h4 className="font-semibold text-gray-900">{edu.degree}</h4>
+                                            <p className="text-gray-600">{edu.institution}</p>
+                                            <p className="text-sm text-gray-500">{edu.year}</p>
+                                        </div>
+                                        <span className={`text-xs px-2 py-1 rounded-full ${edu.relevance === 'high' ? 'bg-green-100 text-green-800' :
+                                            edu.relevance === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                                                'bg-gray-100 text-gray-800'
+                                            }`}>
+                                            {edu.relevance} relevance
+                                        </span>
+                                    </div>
+                                    {edu.skills && edu.skills.length > 0 && (
+                                        <div>
+                                            <h5 className="text-sm font-medium text-gray-900 mb-1">Skills:</h5>
+                                            <div className="flex flex-wrap gap-1">
+                                                {edu.skills.map((skill, skillIndex) => (
+                                                    <span key={skillIndex} className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">
+                                                        {skill}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+
+
+                {/* Strengths */}
                 {jobMatch.strengths && jobMatch.strengths.length > 0 && (
                     <div className="bg-green-50 rounded-xl border border-green-200">
                         <button
@@ -319,7 +801,7 @@ export function ContentGenerator({
                     </div>
                 )}
 
-                {/* Missing Skills - Collapsible Button */}
+                {/* Missing Skills */}
                 {jobMatch.missingSkills && jobMatch.missingSkills.length > 0 && (
                     <div className="bg-orange-50 rounded-xl border border-orange-200">
                         <button
@@ -354,12 +836,12 @@ export function ContentGenerator({
                     </div>
                 )}
 
-                {/* Recommendations */}
+                {/* All Recommendations */}
                 {jobMatch.recommendations && jobMatch.recommendations.length > 0 && (
                     <div className="bg-purple-50 rounded-xl p-6 border border-purple-200">
                         <div className="flex items-center gap-3 mb-4">
                             <Lightbulb className="w-6 h-6 text-purple-600" />
-                            <h3 className="text-lg font-semibold text-gray-900">Recommendations</h3>
+                            <h3 className="text-lg font-semibold text-gray-900">Detailed Recommendations</h3>
                         </div>
                         <div className="space-y-3">
                             {jobMatch.recommendations.map((recommendation, index) => (
@@ -371,8 +853,28 @@ export function ContentGenerator({
                         </div>
                     </div>
                 )}
+
+                {/* Analysis Metadata */}
+                {analysis.metadata && (
+                    <div className="bg-gray-100 rounded-xl p-4 border border-gray-200">
+                        <h4 className="text-sm font-semibold text-gray-900 mb-2">Analysis Details</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
+                            <div>
+                                <span className="font-medium">Processing Time:</span> {analysis.metadata.processingTime}ms
+                            </div>
+                            <div>
+                                <span className="font-medium">Confidence:</span> {Math.round(analysis.metadata.confidence * 100)}%
+                            </div>
+                            <div>
+                                <span className="font-medium">Version:</span> {analysis.metadata.version}
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         );
+
+        return analysisMode === 'compact' ? renderCompactMode() : renderDetailedMode();
     };
 
     const getContentTypeLabel = () => {

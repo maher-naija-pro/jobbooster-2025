@@ -18,6 +18,8 @@ const initialState: AppState = {
     isUploading: false,
     isAnalyzingCV: false,
     cvAnalysisProgress: 0,
+    isAnalyzingJob: false,
+    jobAnalysisProgress: 0,
 };
 
 function appReducer(state: AppState, action: AppAction): AppState {
@@ -54,8 +56,14 @@ function appReducer(state: AppState, action: AppAction): AppState {
             return { ...state, cvAnalysisProgress: action.payload };
         case 'STOP_CV_ANALYSIS':
             return { ...state, isAnalyzingCV: false, cvAnalysisProgress: 0 };
+        case 'START_JOB_ANALYSIS':
+            return { ...state, isAnalyzingJob: true, jobAnalysisProgress: 0, error: null };
+        case 'SET_JOB_ANALYSIS_PROGRESS':
+            return { ...state, jobAnalysisProgress: action.payload };
+        case 'STOP_JOB_ANALYSIS':
+            return { ...state, isAnalyzingJob: false, jobAnalysisProgress: 0 };
         case 'SET_ERROR':
-            return { ...state, error: action.payload, isGenerating: false, isAnalyzingCV: false };
+            return { ...state, error: action.payload, isGenerating: false, isAnalyzingCV: false, isAnalyzingJob: false };
         case 'CLEAR_ERROR':
             return { ...state, error: null };
         case 'START_UPLOAD':

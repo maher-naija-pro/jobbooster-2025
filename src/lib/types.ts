@@ -3,14 +3,8 @@ export interface CVData {
   filename: string;
   size: number;
   uploadDate: Date;
-  experience: Experience[];
-  education: Education[];
   processedContent: string;
   status: 'processing' | 'completed' | 'error';
-  personalInfo?: PersonalInfo;
-  summary?: string;
-  skills?: SkillsData;
-  projects?: Project[];
 }
 
 export interface PersonalInfo {
@@ -191,6 +185,9 @@ export type AppAction =
   | { type: 'START_CV_ANALYSIS' }
   | { type: 'SET_CV_ANALYSIS_PROGRESS'; payload: number }
   | { type: 'STOP_CV_ANALYSIS' }
+  | { type: 'START_JOB_ANALYSIS' }
+  | { type: 'SET_JOB_ANALYSIS_PROGRESS'; payload: number }
+  | { type: 'STOP_JOB_ANALYSIS' }
   | { type: 'SET_ERROR'; payload: string }
   | { type: 'CLEAR_ERROR' }
   | { type: 'START_UPLOAD' }

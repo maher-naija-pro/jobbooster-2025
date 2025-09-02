@@ -499,6 +499,7 @@ export default function Home() {
                       onEdit={handleEdit}
                       onRegenerate={handleRegenerate}
                       onDownload={handleDownload}
+                      jobAnalysis={state.jobAnalysis}
                     />
                   </div>
                 </div>

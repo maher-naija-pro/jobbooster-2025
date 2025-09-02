@@ -127,7 +127,6 @@ Analyze the following CV data and job offer to provide a comprehensive analysis.
   "analysis": {
     "id": "analysis_${Date.now()}",
     "cvId": "${cvData.id}",
-    "analysisDate": "${new Date().toISOString()}",
     "status": "completed",
     "skills": [
       {
@@ -158,16 +157,7 @@ Analyze the following CV data and job offer to provide a comprehensive analysis.
         "relevance": "high|medium|low",
         "skills": ["skill1", "skill2", "skill3"]
       }
-    ],
-    "strengths": ["strength1", "strength2", "strength3"],
-    "weaknesses": ["weakness1", "weakness2"],
-    "recommendations": ["recommendation1", "recommendation2", "recommendation3"],
-    "overallScore": 0-100,
-    "metadata": {
-      "processingTime": number,
-      "confidence": 0.0-1.0,
-      "version": "1.0.0"
-    }
+    ]
   },
   "jobMatch": {
     "overallMatch": 0-100,
@@ -192,8 +182,7 @@ Analyze the following CV data and job offer to provide a comprehensive analysis.
     "requirements": ["requirement1", "requirement2", "requirement3"],
     "companySize": "startup|small|medium|large|enterprise",
     "location": "location_info",
-    "salaryRange": "salary_range_if_mentioned",
-    "keywords": ["keyword1", "keyword2", "keyword3"]
+    "salaryRange": "salary_range_if_mentioned"
   }
 }
 
@@ -201,8 +190,6 @@ CRITICAL: You MUST return ONLY this exact structure. Do NOT add any additional f
 
 CV Data:
 - Filename: ${cvData.filename}
-- Experience: ${JSON.stringify(cvData.experience)}
-- Education: ${JSON.stringify(cvData.education)}
 - Processed Content: ${cvData.processedContent}
 
 Job Offer:
@@ -212,7 +199,7 @@ Language: ${language?.name || 'English'}
 
 CRITICAL INSTRUCTIONS FOR SKILL AND EXPERIENCE FILTERING:
 1. Extract ALL skills mentioned in the CV content first, then select the TOP 10 MOST RELEVANT skills for this specific job offer
-2. For experiences, select the TOP 4 MOST RELEVANT experiences based on job requirements and relevance
+2. For experiences, select the TOP 6 MOST RELEVANT experiences based on job requirements and relevance
 3. Relevance should be determined by:
    - Direct skill matches with job requirements
    - Industry/domain relevance
