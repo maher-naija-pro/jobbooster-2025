@@ -84,13 +84,13 @@ export function UploadProgress({
                         "h-3 rounded-full transition-all duration-300 ease-out",
                         getProgressColor()
                     )}
-                    style={{ width: `${progress}%` }}
+                    style={{ width: `${status === 'completed' ? 100 : progress}%` }}
                 />
             </div>
 
             {/* Progress Percentage */}
             <div className="flex justify-between items-center text-sm text-gray-600">
-                <span>{Math.round(progress)}%</span>
+                <span>{status === 'completed' ? 100 : Math.round(progress)}%</span>
                 {status === 'uploading' && (
                     <span className="text-blue-600 font-medium">
                         {progress < 100 ? 'Uploading...' : 'Finalizing...'}
@@ -100,7 +100,7 @@ export function UploadProgress({
                     <span className="text-blue-600 font-medium">Processing...</span>
                 )}
                 {status === 'completed' && (
-                    <span className="text-green-600 font-medium">Ready!</span>
+                    <span className="text-green-600 font-medium">Complete</span>
                 )}
                 {status === 'error' && (
                     <span className="text-red-600 font-medium">Failed</span>
@@ -114,14 +114,7 @@ export function UploadProgress({
                 </div>
             )}
 
-            {/* Processing Details */}
-            {status === 'processing' && (
-                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
-                    <p className="text-sm text-blue-700">
-                        Extracting text and analyzing your CV content...
-                    </p>
-                </div>
-            )}
+
         </div>
     );
 }

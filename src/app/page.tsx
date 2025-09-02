@@ -6,6 +6,7 @@ import { LanguageSelector } from '../components/language-selector';
 import { JobOfferInput } from '../components/job-offer-input';
 import { ActionButtons } from '../components/action-buttons';
 import { ContentGenerator } from '../components/content-generator';
+import { DebugApiResponse } from '../components/debug-api-response';
 
 import { ErrorBoundary } from '../components/error-boundary';
 import { Language } from '../lib/types';
@@ -388,7 +389,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen pt-1 pb-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen pb-8 px-4 sm:px-6 lg:px-8">
       <div className="w-full">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
@@ -485,17 +486,20 @@ export default function Home() {
                 </div>
 
                 {/* Right Column - Content Display (2/3 width) */}
-                <div className="lg:col-span-2 bg-white">
-                  <ContentGenerator
-                    content={state.generatedContent}
-                    isGenerating={state.isGenerating}
-                    generationType={state.generationType}
-                    generationProgress={state.generationProgress}
-                    streamingContent={streamingContent}
-                    onEdit={handleEdit}
-                    onRegenerate={handleRegenerate}
-                    onDownload={handleDownload}
-                  />
+                <div className="lg:col-span-2 space-y-4">
+                  {/* Main Content Generator */}
+                  <div className="bg-white">
+                    <ContentGenerator
+                      content={state.generatedContent}
+                      isGenerating={state.isGenerating}
+                      generationType={state.generationType}
+                      generationProgress={state.generationProgress}
+                      streamingContent={streamingContent}
+                      onEdit={handleEdit}
+                      onRegenerate={handleRegenerate}
+                      onDownload={handleDownload}
+                    />
+                  </div>
                 </div>
               </div>
             )}

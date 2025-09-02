@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { FileText, CheckCircle, Copy, TrendingUp, TrendingDown, Star, Target, Award, BookOpen, Briefcase, Users, Lightbulb, AlertTriangle } from 'lucide-react';
+import { FileText, CheckCircle, Copy, TrendingUp, TrendingDown, Star, Target, Award, BookOpen, Briefcase, Users, Lightbulb, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
 import { GeneratedContent, CVAnalysisResult } from '../lib/types';
 
 interface ContentGeneratorProps {
@@ -31,6 +31,8 @@ export function ContentGenerator({
     const [displayContent, setDisplayContent] = useState('');
     const [localProgress, setLocalProgress] = useState(0);
     const [isCopied, setIsCopied] = useState(false);
+    const [isMissingSkillsExpanded, setIsMissingSkillsExpanded] = useState(true);
+    const [isStrengthsExpanded, setIsStrengthsExpanded] = useState(true);
 
     // Clear display content and reset progress when generation type changes (new generation starts)
     useEffect(() => {
@@ -117,6 +119,40 @@ export function ContentGenerator({
 
         return (
             <div className="space-y-6">
+                {/* Skills Extraction Summary */}
+                <div className="bg-gradient-to-r from-indigo-50 to-cyan-50 rounded-xl p-6 border border-indigo-200">
+                    <div className="flex items-center gap-3 mb-4">
+                        <BookOpen className="w-6 h-6 text-indigo-600" />
+                        <h3 className="text-xl font-semibold text-gray-900">Skills Extraction Summary</h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex items-center gap-3 p-4 bg-white rounded-lg border border-indigo-100">
+                            <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                <CheckCircle className="w-5 h-5 text-green-600" />
+                            </div>
+                            <div>
+                                <div className="text-2xl font-bold text-gray-900">
+                                    {jobMatch.skillMatches?.length || 0}
+                                </div>
+                                <div className="text-sm text-gray-600">Skills extracted from CV</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3 p-4 bg-white rounded-lg border border-indigo-100">
+                            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                <Target className="w-5 h-5 text-blue-600" />
+                            </div>
+                            <div>
+                                <div className="text-2xl font-bold text-gray-900">
+                                    {jobMatch.skillMatches?.filter(skill =>
+                                        skill.jobRequirement === 'required' || skill.jobRequirement === 'preferred'
+                                    ).length || 0}
+                                </div>
+                                <div className="text-sm text-gray-600">Requirements from job offer</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Overall Match Score */}
                 <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200">
                     <div className="flex items-center gap-3 mb-4">
@@ -143,75 +179,178 @@ export function ContentGenerator({
                     </div>
                 </div>
 
-                {/* Strengths */}
-                {jobMatch.strengths && jobMatch.strengths.length > 0 && (
-                    <div className="bg-green-50 rounded-xl p-6 border border-green-200">
-                        <div className="flex items-center gap-3 mb-4">
-                            <TrendingUp className="w-6 h-6 text-green-600" />
-                            <h3 className="text-lg font-semibold text-gray-900">Strengths</h3>
-                        </div>
-                        <div className="grid gap-3">
-                            {jobMatch.strengths.map((strength, index) => (
-                                <div key={index} className="flex items-start gap-3">
-                                    <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                                    <p className="text-gray-700">{strength}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* Missing Skills */}
-                {jobMatch.missingSkills && jobMatch.missingSkills.length > 0 && (
-                    <div className="bg-orange-50 rounded-xl p-6 border border-orange-200">
-                        <div className="flex items-center gap-3 mb-4">
-                            <TrendingDown className="w-6 h-6 text-orange-600" />
-                            <h3 className="text-lg font-semibold text-gray-900">Missing Skills</h3>
-                        </div>
-                        <div className="grid gap-3">
-                            {jobMatch.missingSkills.map((skill, index) => (
-                                <div key={index} className="flex items-start gap-3">
-                                    <AlertTriangle className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
-                                    <p className="text-gray-700">{skill}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* Skill Matches */}
+                {/* Skill Comparison Table */}
                 {jobMatch.skillMatches && jobMatch.skillMatches.length > 0 && (
                     <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                        <div className="flex items-center gap-3 mb-4">
+                        <div className="flex items-center gap-3 mb-6">
                             <Star className="w-6 h-6 text-gray-600" />
-                            <h3 className="text-lg font-semibold text-gray-900">Skill Analysis</h3>
+                            <h3 className="text-lg font-semibold text-gray-900">📋 Skill Comparison Table</h3>
                         </div>
-                        <div className="space-y-4">
-                            {jobMatch.skillMatches.slice(0, 10).map((match, index) => (
-                                <div key={index} className="flex items-center justify-between p-3 bg-white rounded-lg border">
-                                    <div className="flex-1">
-                                        <p className="font-medium text-gray-900">{match.skill}</p>
-                                        <p className="text-sm text-gray-600">
-                                            Your level: {match.cvLevel} • Required: {match.jobRequirement}
-                                        </p>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <div className="text-sm font-medium text-gray-900">
-                                            {match.matchScore}%
-                                        </div>
-                                        <div className={`w-16 h-2 rounded-full ${match.matchScore >= 80 ? 'bg-green-500' :
-                                                match.matchScore >= 60 ? 'bg-yellow-500' :
-                                                    'bg-red-500'
-                                            }`}>
-                                            <div
-                                                className="h-2 rounded-full bg-white opacity-30"
-                                                style={{ width: `${100 - match.matchScore}%` }}
-                                            ></div>
-                                        </div>
-                                    </div>
+
+                        {/* Table */}
+                        <div className="overflow-x-auto">
+                            <table className="w-full border-collapse">
+                                <thead>
+                                    <tr className="border-b-2 border-gray-300">
+                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Skill Name</th>
+                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Job Required</th>
+                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">CV Match</th>
+                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Status</th>
+                                        <th className="text-left py-3 px-4 font-semibold text-gray-900">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {jobMatch.skillMatches.map((match, index) => {
+                                        // Helper functions to format the data
+                                        const getJobRequiredDisplay = (requirement: string) => {
+                                            switch (requirement) {
+                                                case 'required': return '✅ Required';
+                                                case 'preferred': return '⚠️ Preferred';
+                                                case 'optional': return '❌ Not Req';
+                                                default: return '❌ Not Req';
+                                            }
+                                        };
+
+                                        const getCVMatchDisplay = (level: string) => {
+                                            switch (level) {
+                                                case 'expert': return '✅ Expert';
+                                                case 'advanced': return '✅ Good';
+                                                case 'intermediate': return '⚠️ Basic';
+                                                case 'beginner': return '❌ None';
+                                                default: return '❌ None';
+                                            }
+                                        };
+
+                                        const getStatusDisplay = (gap: string, matchScore: number) => {
+                                            if (gap === 'none' || matchScore >= 0.8) return '✅ Match';
+                                            if (gap === 'minor' || matchScore >= 0.6) return '⚠️ Gap';
+                                            if (gap === 'moderate' || gap === 'major') return '❌ Gap';
+                                            // Check if it's an extra skill (not required but present)
+                                            if (match.jobRequirement === 'optional' && match.cvLevel !== 'beginner') return '➕ Extra';
+                                            return '❌ Gap';
+                                        };
+
+                                        const getActionDisplay = (gap: string, matchScore: number, recommendation: string) => {
+                                            if (gap === 'none' || matchScore >= 0.8) return 'Perfect';
+                                            if (gap === 'minor' || matchScore >= 0.6) return 'Consider';
+                                            if (gap === 'moderate' || gap === 'major') return 'Learn';
+                                            if (match.jobRequirement === 'optional' && match.cvLevel !== 'beginner') return 'Bonus';
+                                            return 'Learn';
+                                        };
+
+                                        const getRowColor = (gap: string, matchScore: number) => {
+                                            if (gap === 'none' || matchScore >= 0.8) return 'bg-green-50 border-green-200';
+                                            if (gap === 'minor' || matchScore >= 0.6) return 'bg-yellow-50 border-yellow-200';
+                                            if (match.jobRequirement === 'optional' && match.cvLevel !== 'beginner') return 'bg-blue-50 border-blue-200';
+                                            return 'bg-red-50 border-red-200';
+                                        };
+
+                                        return (
+                                            <tr key={index} className={`border-b border-gray-200 ${getRowColor(match.gap, match.matchScore)}`}>
+                                                <td className="py-3 px-4 font-medium text-gray-900">{match.skill}</td>
+                                                <td className="py-3 px-4 text-gray-700">{getJobRequiredDisplay(match.jobRequirement)}</td>
+                                                <td className="py-3 px-4 text-gray-700">{getCVMatchDisplay(match.cvLevel)}</td>
+                                                <td className="py-3 px-4 text-gray-700">{getStatusDisplay(match.gap, match.matchScore)}</td>
+                                                <td className="py-3 px-4 text-gray-700">{getActionDisplay(match.gap, match.matchScore, match.recommendation)}</td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Table Legend */}
+                        <div className="mt-4 p-4 bg-white rounded-lg border border-gray-200">
+                            <h4 className="text-sm font-semibold text-gray-900 mb-2">Legend:</h4>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs text-gray-600">
+                                <div className="flex items-center gap-1">
+                                    <span className="w-3 h-3 bg-green-100 border border-green-300 rounded"></span>
+                                    <span>Perfect Match</span>
                                 </div>
-                            ))}
+                                <div className="flex items-center gap-1">
+                                    <span className="w-3 h-3 bg-yellow-100 border border-yellow-300 rounded"></span>
+                                    <span>Minor Gap</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                    <span className="w-3 h-3 bg-red-100 border border-red-300 rounded"></span>
+                                    <span>Major Gap</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                    <span className="w-3 h-3 bg-blue-100 border border-blue-300 rounded"></span>
+                                    <span>Bonus Skill</span>
+                                </div>
+                            </div>
                         </div>
+                    </div>
+                )}
+
+                {/* Strengths - Collapsible Button */}
+                {jobMatch.strengths && jobMatch.strengths.length > 0 && (
+                    <div className="bg-green-50 rounded-xl border border-green-200">
+                        <button
+                            onClick={() => setIsStrengthsExpanded(!isStrengthsExpanded)}
+                            className="w-full flex items-center justify-between p-6 text-left hover:bg-green-100 transition-colors duration-200 rounded-xl"
+                        >
+                            <div className="flex items-center gap-3">
+                                <TrendingUp className="w-6 h-6 text-green-600" />
+                                <h3 className="text-lg font-semibold text-gray-900">Strengths</h3>
+                                <span className="bg-green-200 text-green-800 text-sm px-2 py-1 rounded-full">
+                                    {jobMatch.strengths.length}
+                                </span>
+                            </div>
+                            {isStrengthsExpanded ? (
+                                <ChevronUp className="w-5 h-5 text-green-600" />
+                            ) : (
+                                <ChevronDown className="w-5 h-5 text-green-600" />
+                            )}
+                        </button>
+                        {isStrengthsExpanded && (
+                            <div className="px-6 pb-6">
+                                <div className="grid gap-3">
+                                    {jobMatch.strengths.map((strength, index) => (
+                                        <div key={index} className="flex items-start gap-3">
+                                            <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                                            <p className="text-gray-700">{strength}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Missing Skills - Collapsible Button */}
+                {jobMatch.missingSkills && jobMatch.missingSkills.length > 0 && (
+                    <div className="bg-orange-50 rounded-xl border border-orange-200">
+                        <button
+                            onClick={() => setIsMissingSkillsExpanded(!isMissingSkillsExpanded)}
+                            className="w-full flex items-center justify-between p-6 text-left hover:bg-orange-100 transition-colors duration-200 rounded-xl"
+                        >
+                            <div className="flex items-center gap-3">
+                                <TrendingDown className="w-6 h-6 text-orange-600" />
+                                <h3 className="text-lg font-semibold text-gray-900">Missing Skills</h3>
+                                <span className="bg-orange-200 text-orange-800 text-sm px-2 py-1 rounded-full">
+                                    {jobMatch.missingSkills.length}
+                                </span>
+                            </div>
+                            {isMissingSkillsExpanded ? (
+                                <ChevronUp className="w-5 h-5 text-orange-600" />
+                            ) : (
+                                <ChevronDown className="w-5 h-5 text-orange-600" />
+                            )}
+                        </button>
+                        {isMissingSkillsExpanded && (
+                            <div className="px-6 pb-6">
+                                <div className="grid gap-3">
+                                    {jobMatch.missingSkills.map((skill, index) => (
+                                        <div key={index} className="flex items-start gap-3">
+                                            <AlertTriangle className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
+                                            <p className="text-gray-700">{skill}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
 

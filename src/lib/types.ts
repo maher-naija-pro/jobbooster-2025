@@ -7,6 +7,33 @@ export interface CVData {
   education: Education[];
   processedContent: string;
   status: 'processing' | 'completed' | 'error';
+  personalInfo?: PersonalInfo;
+  summary?: string;
+  skills?: SkillsData;
+  projects?: Project[];
+}
+
+export interface PersonalInfo {
+  name?: string;
+  email?: string;
+  phone?: string;
+  location?: string;
+  linkedin?: string;
+  website?: string;
+}
+
+export interface SkillsData {
+  technical?: string[];
+  soft?: string[];
+  languages?: string[];
+  certifications?: string[];
+}
+
+export interface Project {
+  name: string;
+  description: string;
+  technologies: string[];
+  url?: string;
 }
 
 export interface Experience {

@@ -135,7 +135,7 @@ export function CVUpload({
                     {/* Upload Content */}
                     <div
                         className={cn(
-                            "relative border-2 border-dashed rounded-none border-gray-300 p-6 text-center transition-colors cursor-pointer",
+                            "relative border-2 border-dashed rounded-none border-gray-300 p-3 text-center transition-colors cursor-pointer",
                             isDragOver
                                 ? "border-blue-400 bg-blue-50"
                                 : "hover:border-gray-400",
@@ -154,21 +154,21 @@ export function CVUpload({
                             className="hidden"
                         />
 
-                        <div className="flex flex-col items-center gap-3">
+                        <div className="flex flex-col items-center gap-1">
                             <Upload className={cn(
-                                "w-8 h-8",
+                                "w-5 h-5",
                                 isDragOver ? "text-blue-500" : "text-gray-400"
                             )} />
 
-                            <div className="space-y-2">
-                                <p className="text-lg font-medium text-gray-900">
+                            <div className="space-y-0.5">
+                                <p className="text-sm font-medium text-gray-900">
                                     {isDragOver ? "Drop your CV here" : "Drop your CV/Resume here"}
                                 </p>
-                                <p className="text-sm text-gray-600">
+                                <p className="text-xs text-gray-600">
                                     or <span className="text-blue-600 hover:text-blue-700 font-medium">click to browse</span>
                                 </p>
                                 <p className="text-xs text-gray-500">
-                                    Supports PDF, DOC, DOCX files up to 10MB
+                                    PDF, DOC, DOCX up to 10MB
                                 </p>
                             </div>
                         </div>
@@ -176,49 +176,21 @@ export function CVUpload({
                 </div>
             )}
 
-            {/* Upload Progress - Show when uploading */}
-            {isUploading && currentFile && (
+            {/* Upload Progress - Show when uploading or processing */}
+            {(isUploading || (cvData && cvData.status === 'processing')) && currentFile && (
                 <UploadProgress
                     progress={uploadProgress}
                     filename={currentFile.name}
                     filesize={currentFile.size}
-                    status="uploading"
+                    status={isUploading ? 'uploading' : cvData?.status || 'uploading'}
                     className="mb-3"
                 />
             )}
 
-            {/* Processing State - Show when processing after upload */}
-            {isProcessing && (
-                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-                    {/* Header */}
-                    <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
-                        <div className="flex items-center gap-2">
-                            <Loader className="w-4 h-4 text-blue-600 animate-spin" />
-                            <span className="text-sm font-medium text-gray-900">Processing CV</span>
-                        </div>
-                    </div>
 
-                    {/* Content */}
-                    <div className="p-6">
-                        <div className="flex items-center gap-3 mb-4">
-                            <Loader className="w-5 h-5 text-blue-600 animate-spin" />
-                            <div className="flex-1">
-                                <p className="font-medium text-gray-900">Processing document...</p>
-                                <p className="text-sm text-gray-600">Extracting information from your CV</p>
-                            </div>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-3">
-                            <div className="bg-blue-600 h-3 rounded-full animate-pulse transition-all duration-1000" style={{ width: '60%' }}></div>
-                        </div>
-                        <p className="text-xs text-gray-500 mt-2">
-                            AI is analyzing your CV content and preparing for content generation
-                        </p>
-                    </div>
-                </div>
-            )}
 
             {/* CV Data Display - Show when upload and processing are complete */}
-            {cvData && !isProcessing && !isUploading && (
+            {cvData && cvData.status === 'completed' && !isUploading && (
                 <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
                     {/* Header */}
                     <div className="bg-gray-50 px-4 py-3 border-b border-gray-200 flex items-center justify-between">
@@ -246,9 +218,6 @@ export function CVUpload({
                                 </p>
                             </div>
                         </div>
-                        <p className="text-xs text-gray-500">
-                            Your CV is ready for content generation
-                        </p>
                     </div>
                 </div>
             )}
