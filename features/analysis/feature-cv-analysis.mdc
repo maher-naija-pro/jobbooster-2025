@@ -1,0 +1,468 @@
+# CV and Job Offer Analysis Feature
+
+## Overview
+This feature provides comprehensive analysis of CVs and job offers, generating detailed skill comparisons, matching scores, and actionable recommendations for CV improvement. The system uses AI-powered analysis to extract skills, calculate compatibility scores, and suggest skill enhancements.
+
+## Feature Description
+
+### Core Functionality
+The CV Analysis feature receives a CV document and a job offer description, then performs the following operations:
+
+1. **Skill Extraction**: Extracts skills from both CV and job offer
+2. **Skill Comparison**: Creates a detailed comparison table
+3. **Matching Score Calculation**: Computes compatibility percentage
+4. **Skill Gap Analysis**: Identifies missing skills
+5. **Recommendations**: Suggests skills to add to CV
+
+## Technical Architecture
+
+### Data Models
+
+#### CV Analysis Input
+```typescript
+interface CVAnalysisInput {
+  cvFile: File;
+  jobOffer: string;
+  analysisOptions: {
+    includeSoftSkills: boolean;
+    includeTechnicalSkills: boolean;
+    includeCertifications: boolean;
+    skillWeighting: 'balanced' | 'technical-focused' | 'soft-skills-focused';
+  };
+}
+```
+
+#### Skill Data Structure
+```typescript
+interface Skill {
+  id: string;
+  name: string;
+  category: 'technical' | 'soft' | 'certification' | 'language' | 'tool';
+  level: 'beginner' | 'intermediate' | 'advanced' | 'expert';
+  yearsOfExperience?: number;
+  relevance: number; // 0-1 score for job relevance
+  source: 'cv' | 'job-offer' | 'suggested';
+}
+
+interface SkillCategory {
+  name: string;
+  skills: Skill[];
+  weight: number; // Importance for this job
+  matchPercentage: number;
+}
+```
+
+#### Analysis Results
+```typescript
+interface CVAnalysisResult {
+  id: string;
+  timestamp: Date;
+  overallMatchScore: number; // 0-100 percentage
+  skillComparison: SkillComparisonTable;
+  skillGaps: SkillGap[];
+  recommendations: SkillRecommendation[];
+  strengths: string[];
+  weaknesses: string[];
+  metadata: {
+    processingTime: number;
+    skillsExtracted: number;
+    jobOfferSkills: number;
+    cvSkills: number;
+  };
+}
+
+interface SkillComparisonTable {
+  categories: SkillCategory[];
+  summary: {
+    totalSkills: number;
+    matchedSkills: number;
+    missingSkills: number;
+    extraSkills: number;
+  };
+}
+
+interface SkillGap {
+  skill: Skill;
+  importance: 'critical' | 'important' | 'nice-to-have';
+  learningDifficulty: 'easy' | 'medium' | 'hard';
+  estimatedLearningTime: string;
+  resources: string[];
+}
+
+interface SkillRecommendation {
+  skill: Skill;
+  priority: 'high' | 'medium' | 'low';
+  reason: string;
+  actionPlan: string;
+  resources: {
+    courses: string[];
+    certifications: string[];
+    practice: string[];
+  };
+}
+```
+
+### API Endpoints
+
+#### CV Analysis Endpoint
+```typescript
+POST /api/analyze-cv
+{
+  "cvFile": File,
+  "jobOffer": string,
+  "options": {
+    includeSoftSkills: boolean,
+    includeTechnicalSkills: boolean,
+    includeCertifications: boolean,
+    skillWeighting: string
+  }
+}
+
+Response:
+{
+  "success": boolean,
+  "analysis": CVAnalysisResult,
+  "processingTime": number,
+  "error"?: string
+}
+```
+
+
+```
+
+### UI Components
+
+#### Integration with Existing ContentGenerator Component
+The CV analysis results will be displayed using the existing `ContentGenerator` component by extending the `GeneratedContent` type to support analysis results.
+
+
+
+#### CV Analysis Display Components
+These components will be rendered within the existing ContentGenerator card structure:
+
+
+#### ContentGenerator Integration Points
+The existing ContentGenerator component will be enhanced to:
+
+1. **Detect Analysis Content**: Check if `content.type === 'cv-analysis'`
+2. **Render Analysis UI**: Display skill comparison table, matching scores, and recommendations
+
+4. **Streaming Analysis**: Show real-time progress during analysis generation
+
+
+
+#### Action Buttons Integration
+The existing ActionButtons component will be extended to include CV analysis:
+
+
+
+#### Skill Extraction Service
+```typescript
+interface SkillExtractionService {
+  extractFromCV(cvContent: string): Promise<Skill[]>;
+  extractFromJobOffer(jobOffer: string): Promise<Skill[]>;
+  normalizeSkills(skills: Skill[]): Skill[];
+  categorizeSkills(skills: Skill[]): SkillCategory[];
+}
+
+class AISkillExtractionService implements SkillExtractionService {
+  async extractFromCV(cvContent: string): Promise<Skill[]> {
+    // Use OpenAI to extract skills from CV content
+    const prompt = `
+      Analyze the following CV and extract all skills mentioned.
+      For each skill, determine:
+      - Skill name
+      - Category (technical, soft, certification, language, tool)
+      - Level (beginner, intermediate, advanced, expert)
+      - Years of experience (if mentioned)
+      
+      CV Content: ${cvContent}
+      
+      Return as JSON array of skills.
+    `;
+    
+    const response = await openai.chat.completions.create({
+      model: "gpt-oss",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.3,
+    });
+    
+    return JSON.parse(response.choices[0].message.content);
+  }
+
+  async extractFromJobOffer(jobOffer: string): Promise<Skill[]> {
+    // Similar implementation for job offer analysis
+  }
+}
+```
+
+#### Matching Score Calculator
+```typescript
+interface MatchingScoreCalculator {
+  calculateOverallScore(cvSkills: Skill[], jobSkills: Skill[]): number;
+  calculateCategoryScores(cvSkills: Skill[], jobSkills: Skill[]): Record<string, number>;
+  calculateSkillRelevance(skill: Skill, jobSkills: Skill[]): number;
+}
+
+class WeightedMatchingCalculator implements MatchingScoreCalculator {
+  calculateOverallScore(cvSkills: Skill[], jobSkills: Skill[]): number {
+    const categories = this.categorizeSkills([...cvSkills, ...jobSkills]);
+    let totalScore = 0;
+    let totalWeight = 0;
+
+    for (const category of categories) {
+      const categoryScore = this.calculateCategoryScore(category, cvSkills, jobSkills);
+      totalScore += categoryScore * category.weight;
+      totalWeight += category.weight;
+    }
+
+    return totalWeight > 0 ? (totalScore / totalWeight) * 100 : 0;
+  }
+
+  private calculateCategoryScore(
+    category: SkillCategory, 
+    cvSkills: Skill[], 
+    jobSkills: Skill[]
+  ): number {
+    const jobSkillsInCategory = jobSkills.filter(s => s.category === category.name);
+    const cvSkillsInCategory = cvSkills.filter(s => s.category === category.name);
+    
+    if (jobSkillsInCategory.length === 0) return 100; // No requirements in this category
+    
+    let matchedSkills = 0;
+    let totalRelevance = 0;
+
+    for (const jobSkill of jobSkillsInCategory) {
+      const cvSkill = cvSkillsInCategory.find(s => 
+        this.skillsMatch(s, jobSkill)
+      );
+      
+      if (cvSkill) {
+        matchedSkills++;
+        totalRelevance += this.calculateSkillRelevance(cvSkill, jobSkill);
+      }
+    }
+
+    const baseScore = (matchedSkills / jobSkillsInCategory.length) * 100;
+    const relevanceBonus = totalRelevance / jobSkillsInCategory.length;
+    
+    return Math.min(100, baseScore + relevanceBonus);
+  }
+}
+```
+
+### User Interface Flow
+
+#### Analysis Workflow
+1. **Upload CV**: User uploads CV document
+2. **Input Job Offer**: User pastes or uploads job description
+3. **Configure Analysis**: User selects analysis options
+4. **Run Analysis**: System processes both documents
+5. **View Results**: Display comparison table and scores
+6. **Review Recommendations**: Show skill gaps and suggestions
+7. **Export Results**: Download analysis report
+
+#### Results Display Components
+
+##### Skill Comparison Table
+```typescript
+interface SkillComparisonTableProps {
+  comparison: SkillComparisonTable;
+  onSkillClick: (skill: Skill) => void;
+  showDetails: boolean;
+}
+
+// Table columns:
+// 1. Skill Name
+// 2. Job Offer Requirement (Yes/No + Level)
+// 3. CV Match (Yes/No + Level)
+// 4. Match Status (Perfect/Partial/Missing/Extra)
+// 5. Importance Score
+// 6. Action Required
+```
+
+##### Matching Score Visualization
+```typescript
+interface MatchingScoreProps {
+  score: number;
+  breakdown: {
+    technical: number;
+    soft: number;
+    experience: number;
+    education: number;
+  };
+  animated: boolean;
+}
+
+// Visual elements:
+// - Overall percentage score with progress ring
+// - Category breakdown with bar charts
+// - Trend indicators (improvement suggestions)
+// - Color coding (red/yellow/green)
+```
+
+##### Skill Recommendations Panel
+```typescript
+interface SkillRecommendationsProps {
+  recommendations: SkillRecommendation[];
+  onRecommendationSelect: (recommendation: SkillRecommendation) => void;
+  showActionPlans: boolean;
+}
+
+// Recommendation cards showing:
+// - Skill name and category
+// - Priority level
+// - Learning difficulty
+// - Estimated time to learn
+// - Suggested resources
+// - Action plan steps
+```
+
+### AI Integration
+
+#### OpenAI Prompts for Skill Analysis
+
+##### CV Skill Extraction Prompt
+```
+You are an expert HR analyst. Analyze the following CV and extract all skills mentioned.
+
+For each skill, provide:
+1. Skill name (standardized)
+2. Category: technical, soft, certification, language, or tool
+3. Level: beginner, intermediate, advanced, or expert
+4. Years of experience (if mentioned)
+5. Relevance to the job market (1-10)
+
+CV Content: {cvContent}
+
+Return as JSON array with this structure:
+[
+  {
+    "name": "JavaScript",
+    "category": "technical",
+    "level": "advanced",
+    "yearsOfExperience": 3,
+    "relevance": 9
+  }
+]
+```
+
+##### Job Offer Analysis Prompt
+```
+Analyze this job offer and extract all required and preferred skills.
+
+For each skill, determine:
+1. Skill name (standardized)
+2. Category: technical, soft, certification, language, or tool
+3. Required level: beginner, intermediate, advanced, or expert
+4. Importance: required, preferred, or nice-to-have
+5. Weight in overall evaluation (1-10)
+
+Job Offer: {jobOffer}
+
+Return as JSON array with this structure:
+[
+  {
+    "name": "React",
+    "category": "technical",
+    "level": "intermediate",
+    "importance": "required",
+    "weight": 9
+  }
+]
+```
+
+##### Skill Matching Analysis Prompt
+```
+Compare the following skills from a CV and job offer, then calculate matching scores and provide recommendations.
+
+CV Skills: {cvSkills}
+Job Offer Skills: {jobSkills}
+
+Provide:
+1. Overall matching percentage
+2. Category-wise matching scores
+3. Missing critical skills
+4. Skills that exceed requirements
+5. Recommendations for improvement
+
+Return as JSON with this structure:
+{
+  "overallMatch": 75,
+  "categoryScores": {
+    "technical": 80,
+    "soft": 70,
+    "certifications": 60
+  },
+  "missingSkills": [...],
+  "extraSkills": [...],
+  "recommendations": [...]
+}
+```
+
+### Export and Reporting
+
+#### Analysis Report Generation
+```typescript
+interface AnalysisReport {
+  summary: {
+    overallScore: number;
+    strengths: string[];
+    weaknesses: string[];
+    keyRecommendations: string[];
+  };
+  detailedAnalysis: CVAnalysisResult;
+  skillComparisonTable: SkillComparisonTable;
+  actionPlan: {
+    shortTerm: SkillRecommendation[];
+    longTerm: SkillRecommendation[];
+    timeline: string;
+  };
+}
+
+interface ReportExportService {
+  generatePDF(report: AnalysisReport): Promise<Blob>;
+  generateJSON(report: AnalysisReport): Promise<string>;
+  generateCSV(comparison: SkillComparisonTable): Promise<string>;
+}
+```
+
+### Performance Considerations
+
+#### Optimization Strategies
+- **Caching**: Cache skill extraction results for similar documents
+- **Streaming**: Stream analysis results as they become available
+- **Background Processing**: Process large documents in background
+- **Incremental Updates**: Update UI as analysis progresses
+
+#### Error Handling
+```typescript
+interface AnalysisError {
+  type: 'extraction_error' | 'matching_error' | 'calculation_error';
+  message: string;
+  details?: any;
+  suggestions: string[];
+}
+
+interface ErrorRecovery {
+  retryAnalysis(): Promise<void>;
+  partialResults(): CVAnalysisResult | null;
+  fallbackAnalysis(): Promise<CVAnalysisResult>;
+}
+```
+
+### Security and Privacy
+
+#### Data Protection
+- **Local Processing**: Process documents locally when possible
+- **Temporary Storage**: Store analysis results temporarily
+- **Data Encryption**: Encrypt sensitive data in transit and at rest
+- **User Consent**: Clear consent for data processing
+
+#### Input Validation
+- **File Validation**: Validate CV file format and content
+- **Content Sanitization**: Sanitize job offer text input
+- **Size Limits**: Enforce reasonable file size limits
+- **Malware Scanning**: Scan uploaded files for security threats
+
+

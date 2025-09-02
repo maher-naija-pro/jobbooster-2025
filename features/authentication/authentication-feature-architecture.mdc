@@ -1,0 +1,1042 @@
+# Authentication Feature Architecture
+
+## Overview
+This document outlines the technical architecture and implementation details for the Authentication system in JobBooster 2025, providing secure user management, session handling, and data persistence using Supabase as the backend-as-a-service platform.
+
+## System Architecture
+
+### High-Level Architecture
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Frontend (Next.js 15.5.2)                   │
+├─────────────────────────────────────────────────────────────────┤
+│  • React 19.1.0 Components                                   │
+│  • TypeScript for Type Safety                                 │
+│  • Tailwind CSS for Styling                                   │
+│  • Supabase Client Integration                                │
+│  • Server-Side Rendering (SSR) Support                       │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    Authentication Layer                        │
+├─────────────────────────────────────────────────────────────────┤
+│  • Supabase Auth Client                                       │
+│  • JWT Token Management                                       │
+│  • Session Management                                         │
+│  • Middleware for Route Protection                            │
+│  • Cookie-based Session Storage                               │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    API Layer (Next.js API Routes)              │
+├─────────────────────────────────────────────────────────────────┤
+│  • /api/auth/login - User authentication                      │
+│  • /api/auth/register - User registration                     │
+│  • /api/auth/logout - Session termination                     │
+│  • /api/auth/refresh - Token refresh                          │
+│  • /api/user/profile - Profile management                     │
+│  • /api/user/preferences - User preferences                   │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    Supabase Backend                           │
+├─────────────────────────────────────────────────────────────────┤
+│  • PostgreSQL Database                                        │
+│  • Row Level Security (RLS)                                   │
+│  • Real-time Subscriptions                                    │
+│  • File Storage (Avatars, CVs)                               │
+│  • Edge Functions                                             │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+## Core Components Architecture
+
+### 1. Authentication Client Setup
+
+#### Supabase Client Configuration
+```typescript
+// utils/supabase/client.ts
+import { createBrowserClient } from '@supabase/ssr'
+
+export function createClient() {
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+}
+
+// utils/supabase/server.ts
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
+
+export async function createClient() {
+  const cookieStore = await cookies()
+  
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll()
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            )
+          } catch {
+            // Server Component context - can be ignored with middleware
+          }
+        },
+      },
+    }
+  )
+}
+```
+
+#### Middleware Configuration
+```typescript
+// middleware.ts
+import { type NextRequest } from 'next/server'
+import { updateSession } from '@/utils/supabase/middleware'
+
+export async function middleware(request: NextRequest) {
+  return await updateSession(request)
+}
+
+export const config = {
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
+}
+
+// utils/supabase/middleware.ts
+import { createServerClient } from '@supabase/ssr'
+import { NextResponse, type NextRequest } from 'next/server'
+
+export async function updateSession(request: NextRequest) {
+  let supabaseResponse = NextResponse.next({ request })
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => 
+            request.cookies.set(name, value)
+          )
+          supabaseResponse = NextResponse.next({ request })
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options)
+          )
+        },
+      },
+    }
+  )
+
+  // Refresh auth token
+  await supabase.auth.getUser()
+  
+  return supabaseResponse
+}
+```
+
+### 2. Authentication Components
+
+#### Login/Signup Form Component
+```typescript
+// components/auth/auth-form.tsx
+interface AuthFormProps {
+  mode: 'login' | 'signup'
+  onSuccess?: () => void
+  onError?: (error: string) => void
+}
+
+interface AuthFormData {
+  email: string
+  password: string
+  confirmPassword?: string
+  fullName?: string
+  acceptTerms?: boolean
+}
+
+export function AuthForm({ mode, onSuccess, onError }: AuthFormProps) {
+  const [formData, setFormData] = useState<AuthFormData>({
+    email: '',
+    password: '',
+    confirmPassword: '',
+    fullName: '',
+    acceptTerms: false
+  })
+  
+  const [isLoading, setIsLoading] = useState(false)
+  const [errors, setErrors] = useState<Partial<AuthFormData>>({})
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+    setErrors({})
+
+    try {
+      if (mode === 'signup') {
+        await handleSignup(formData)
+      } else {
+        await handleLogin(formData)
+      }
+      onSuccess?.()
+    } catch (error) {
+      onError?.(error.message)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Form fields */}
+    </form>
+  )
+}
+```
+
+#### User Profile Component
+```typescript
+// components/user/user-profile.tsx
+interface UserProfileProps {
+  user: User
+  onUpdate?: (profile: UserProfile) => void
+}
+
+interface UserProfile {
+  id: string
+  email: string
+  fullName: string
+  username: string
+  avatarUrl?: string
+  preferences: UserPreferences
+  subscription: SubscriptionInfo
+  createdAt: Date
+  updatedAt: Date
+}
+
+export function UserProfile({ user, onUpdate }: UserProfileProps) {
+  const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isUpdating, setIsUpdating] = useState(false)
+
+  const loadProfile = useCallback(async () => {
+    try {
+      setIsLoading(true)
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+
+      if (error) throw error
+      setProfile(data)
+    } catch (error) {
+      console.error('Error loading profile:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [user.id])
+
+  const updateProfile = async (updates: Partial<UserProfile>) => {
+    try {
+      setIsUpdating(true)
+      const { data, error } = await supabase
+        .from('profiles')
+        .update({
+          ...updates,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id)
+        .select()
+        .single()
+
+      if (error) throw error
+      setProfile(data)
+      onUpdate?.(data)
+    } catch (error) {
+      console.error('Error updating profile:', error)
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto p-6">
+      {/* Profile form */}
+    </div>
+  )
+}
+```
+
+### 3. Database Schema Architecture
+
+#### Core Tables
+```sql
+-- User profiles table
+CREATE TABLE profiles (
+  id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  full_name TEXT,
+  username TEXT UNIQUE,
+  avatar_url TEXT,
+  preferences JSONB DEFAULT '{
+    "language": "en",
+    "timezone": "UTC",
+    "notifications": {
+      "email": true,
+      "push": false,
+      "marketing": false
+    },
+    "privacy": {
+      "profileVisibility": "private",
+      "dataRetention": 365
+    }
+  }',
+  subscription JSONB DEFAULT '{
+    "plan": "free",
+    "features": ["basic_cv_analysis", "cover_letter_generation"]
+  }',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- User sessions for analytics
+CREATE TABLE user_sessions (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL,
+  session_token TEXT UNIQUE NOT NULL,
+  device_info JSONB,
+  ip_address INET,
+  user_agent TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  last_activity TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- User activity logs
+CREATE TABLE user_activity (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL,
+  action TEXT NOT NULL,
+  resource_type TEXT,
+  resource_id UUID,
+  metadata JSONB,
+  ip_address INET,
+  user_agent TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- CV data linked to users
+CREATE TABLE cv_data (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL,
+  filename TEXT NOT NULL,
+  file_size INTEGER,
+  file_path TEXT,
+  upload_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  processed_content TEXT,
+  experience JSONB,
+  education JSONB,
+  skills JSONB,
+  status TEXT DEFAULT 'processing' CHECK (status IN ('processing', 'completed', 'failed')),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Generated content linked to users
+CREATE TABLE generated_content (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL,
+  cv_id UUID REFERENCES cv_data(id) ON DELETE SET NULL,
+  content_type TEXT NOT NULL CHECK (content_type IN ('cover_letter', 'email', 'cv_recommendations')),
+  content TEXT NOT NULL,
+  language TEXT NOT NULL,
+  job_analysis JSONB,
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+#### Row Level Security (RLS) Policies
+```sql
+-- Enable RLS on all tables
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_activity ENABLE ROW LEVEL SECURITY;
+ALTER TABLE cv_data ENABLE ROW LEVEL SECURITY;
+ALTER TABLE generated_content ENABLE ROW LEVEL SECURITY;
+
+-- Profiles policies
+CREATE POLICY "Users can view own profile" ON profiles
+  FOR SELECT USING (auth.uid() = id);
+
+CREATE POLICY "Users can update own profile" ON profiles
+  FOR UPDATE USING (auth.uid() = id);
+
+CREATE POLICY "Users can insert own profile" ON profiles
+  FOR INSERT WITH CHECK (auth.uid() = id);
+
+-- CV data policies
+CREATE POLICY "Users can view own CV data" ON cv_data
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own CV data" ON cv_data
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own CV data" ON cv_data
+  FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own CV data" ON cv_data
+  FOR DELETE USING (auth.uid() = user_id);
+
+-- Generated content policies
+CREATE POLICY "Users can view own generated content" ON generated_content
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own generated content" ON generated_content
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own generated content" ON generated_content
+  FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own generated content" ON generated_content
+  FOR DELETE USING (auth.uid() = user_id);
+```
+
+### 4. API Routes Architecture
+
+#### Authentication Routes
+```typescript
+// app/api/auth/login/route.ts
+import { createClient } from '@/utils/supabase/server'
+import { NextRequest, NextResponse } from 'next/server'
+
+export async function POST(request: NextRequest) {
+  try {
+    const { email, password } = await request.json()
+    const supabase = await createClient()
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    if (error) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 400 }
+      )
+    }
+
+    return NextResponse.json({
+      user: data.user,
+      session: data.session
+    })
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
+// app/api/auth/register/route.ts
+export async function POST(request: NextRequest) {
+  try {
+    const { email, password, fullName } = await request.json()
+    const supabase = await createClient()
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+        }
+      }
+    })
+
+    if (error) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 400 }
+      )
+    }
+
+    return NextResponse.json({
+      user: data.user,
+      session: data.session
+    })
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
+// app/api/auth/logout/route.ts
+export async function POST(request: NextRequest) {
+  try {
+    const supabase = await createClient()
+    await supabase.auth.signOut()
+    
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+```
+
+#### User Management Routes
+```typescript
+// app/api/user/profile/route.ts
+export async function GET(request: NextRequest) {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single()
+
+    if (error) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 400 }
+      )
+    }
+
+    return NextResponse.json({ profile })
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    const updates = await request.json()
+    
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .update({
+        ...updates,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', user.id)
+      .select()
+      .single()
+
+    if (error) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 400 }
+      )
+    }
+
+    return NextResponse.json({ profile })
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+```
+
+### 5. State Management Architecture
+
+#### Authentication Context
+```typescript
+// contexts/auth-context.tsx
+interface AuthContextType {
+  user: User | null
+  profile: UserProfile | null
+  isLoading: boolean
+  signIn: (email: string, password: string) => Promise<void>
+  signUp: (email: string, password: string, fullName: string) => Promise<void>
+  signOut: () => Promise<void>
+  updateProfile: (updates: Partial<UserProfile>) => Promise<void>
+  refreshProfile: () => Promise<void>
+}
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null)
+  const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const supabase = createClient()
+
+  useEffect(() => {
+    // Get initial session
+    const getInitialSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      setUser(session?.user ?? null)
+      
+      if (session?.user) {
+        await loadUserProfile(session.user.id)
+      }
+      
+      setIsLoading(false)
+    }
+
+    getInitialSession()
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setUser(session?.user ?? null)
+        
+        if (session?.user) {
+          await loadUserProfile(session.user.id)
+        } else {
+          setProfile(null)
+        }
+      }
+    )
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const loadUserProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single()
+
+      if (error) throw error
+      setProfile(data)
+    } catch (error) {
+      console.error('Error loading profile:', error)
+    }
+  }
+
+  const signIn = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+    if (error) throw error
+  }
+
+  const signUp = async (email: string, password: string, fullName: string) => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+        }
+      }
+    })
+    if (error) throw error
+  }
+
+  const signOut = async () => {
+    const { error } = await supabase.auth.signOut()
+    if (error) throw error
+  }
+
+  const updateProfile = async (updates: Partial<UserProfile>) => {
+    if (!user) throw new Error('No user logged in')
+    
+    const { data, error } = await supabase
+      .from('profiles')
+      .update({
+        ...updates,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', user.id)
+      .select()
+      .single()
+
+    if (error) throw error
+    setProfile(data)
+  }
+
+  const refreshProfile = async () => {
+    if (!user) return
+    await loadUserProfile(user.id)
+  }
+
+  return (
+    <AuthContext.Provider value={{
+      user,
+      profile,
+      isLoading,
+      signIn,
+      signUp,
+      signOut,
+      updateProfile,
+      refreshProfile
+    }}>
+      {children}
+    </AuthContext.Provider>
+  )
+}
+```
+
+### 6. Security Architecture
+
+#### Input Validation
+```typescript
+// lib/validation/auth-validation.ts
+import { z } from 'zod'
+
+export const loginSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+})
+
+export const signupSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string()
+    .min(8, 'Password must be at least 8 characters')
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Password must contain uppercase, lowercase, and number'),
+  confirmPassword: z.string(),
+  fullName: z.string().min(2, 'Full name must be at least 2 characters'),
+  acceptTerms: z.boolean().refine(val => val === true, 'You must accept the terms'),
+}).refine(data => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+})
+
+export const profileUpdateSchema = z.object({
+  fullName: z.string().min(2, 'Full name must be at least 2 characters').optional(),
+  username: z.string().min(3, 'Username must be at least 3 characters').optional(),
+  preferences: z.object({
+    language: z.string().optional(),
+    timezone: z.string().optional(),
+    notifications: z.object({
+      email: z.boolean().optional(),
+      push: z.boolean().optional(),
+      marketing: z.boolean().optional(),
+    }).optional(),
+  }).optional(),
+})
+```
+
+#### Rate Limiting
+```typescript
+// lib/rate-limiting.ts
+import { Ratelimit } from '@upstash/ratelimit'
+import { Redis } from '@upstash/redis'
+
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+})
+
+export const ratelimit = new Ratelimit({
+  redis: redis,
+  limiter: Ratelimit.slidingWindow(10, '1 m'), // 10 requests per minute
+})
+
+export const authRatelimit = new Ratelimit({
+  redis: redis,
+  limiter: Ratelimit.slidingWindow(5, '1 m'), // 5 auth requests per minute
+})
+```
+
+### 7. File Storage Architecture
+
+#### Avatar Upload
+```typescript
+// lib/storage/avatar-upload.ts
+export async function uploadAvatar(userId: string, file: File) {
+  const supabase = createClient()
+  
+  // Validate file
+  if (!file.type.startsWith('image/')) {
+    throw new Error('File must be an image')
+  }
+  
+  if (file.size > 5 * 1024 * 1024) { // 5MB limit
+    throw new Error('File size must be less than 5MB')
+  }
+
+  // Generate unique filename
+  const fileExt = file.name.split('.').pop()
+  const fileName = `${userId}-${Date.now()}.${fileExt}`
+
+  // Upload to Supabase Storage
+  const { data, error } = await supabase.storage
+    .from('avatars')
+    .upload(fileName, file, {
+      cacheControl: '3600',
+      upsert: false
+    })
+
+  if (error) throw error
+
+  // Get public URL
+  const { data: { publicUrl } } = supabase.storage
+    .from('avatars')
+    .getPublicUrl(fileName)
+
+  return publicUrl
+}
+```
+
+### 8. Error Handling Architecture
+
+#### Error Types
+```typescript
+// lib/errors/auth-errors.ts
+export class AuthError extends Error {
+  constructor(
+    message: string,
+    public code: string,
+    public statusCode: number = 400
+  ) {
+    super(message)
+    this.name = 'AuthError'
+  }
+}
+
+export class ValidationError extends AuthError {
+  constructor(message: string, public field?: string) {
+    super(message, 'VALIDATION_ERROR', 400)
+  }
+}
+
+export class AuthenticationError extends AuthError {
+  constructor(message: string = 'Authentication failed') {
+    super(message, 'AUTHENTICATION_ERROR', 401)
+  }
+}
+
+export class AuthorizationError extends AuthError {
+  constructor(message: string = 'Access denied') {
+    super(message, 'AUTHORIZATION_ERROR', 403)
+  }
+}
+```
+
+#### Error Handler
+```typescript
+// lib/error-handler.ts
+export function handleAuthError(error: any): AuthError {
+  if (error instanceof AuthError) {
+    return error
+  }
+
+  // Supabase auth errors
+  if (error.message?.includes('Invalid login credentials')) {
+    return new AuthenticationError('Invalid email or password')
+  }
+
+  if (error.message?.includes('User already registered')) {
+    return new ValidationError('An account with this email already exists')
+  }
+
+  if (error.message?.includes('Password should be at least')) {
+    return new ValidationError('Password must be at least 6 characters')
+  }
+
+  // Generic error
+  return new AuthError(
+    error.message || 'An unexpected error occurred',
+    'UNKNOWN_ERROR',
+    500
+  )
+}
+```
+
+## Performance Architecture
+
+### Caching Strategy
+```typescript
+// lib/cache/user-cache.ts
+import { Redis } from '@upstash/redis'
+
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+})
+
+export async function getCachedProfile(userId: string) {
+  const cached = await redis.get(`profile:${userId}`)
+  if (cached) return JSON.parse(cached as string)
+  return null
+}
+
+export async function setCachedProfile(userId: string, profile: UserProfile) {
+  await redis.setex(`profile:${userId}`, 3600, JSON.stringify(profile)) // 1 hour cache
+}
+
+export async function invalidateProfileCache(userId: string) {
+  await redis.del(`profile:${userId}`)
+}
+```
+
+### Database Optimization
+```sql
+-- Indexes for performance
+CREATE INDEX idx_profiles_email ON profiles(email);
+CREATE INDEX idx_profiles_username ON profiles(username);
+CREATE INDEX idx_cv_data_user_id ON cv_data(user_id);
+CREATE INDEX idx_cv_data_created_at ON cv_data(created_at);
+CREATE INDEX idx_generated_content_user_id ON generated_content(user_id);
+CREATE INDEX idx_generated_content_type ON generated_content(content_type);
+CREATE INDEX idx_user_activity_user_id ON user_activity(user_id);
+CREATE INDEX idx_user_activity_created_at ON user_activity(created_at);
+
+-- Partial indexes for active sessions
+CREATE INDEX idx_user_sessions_active ON user_sessions(user_id) 
+WHERE expires_at > NOW();
+```
+
+## Monitoring & Analytics
+
+### User Activity Tracking
+```typescript
+// lib/analytics/user-activity.ts
+export async function trackUserActivity(
+  userId: string,
+  action: string,
+  metadata: Record<string, any> = {},
+  request?: NextRequest
+) {
+  const supabase = await createClient()
+  
+  await supabase.from('user_activity').insert({
+    user_id: userId,
+    action,
+    metadata,
+    ip_address: request?.ip,
+    user_agent: request?.headers.get('user-agent'),
+  })
+}
+
+// Usage examples
+await trackUserActivity(user.id, 'login', { method: 'email' })
+await trackUserActivity(user.id, 'cv_upload', { filename: file.name, size: file.size })
+await trackUserActivity(user.id, 'content_generated', { type: 'cover_letter', language: 'en' })
+```
+
+### Performance Monitoring
+```typescript
+// lib/monitoring/performance.ts
+export function measureAuthPerformance<T>(
+  operation: string,
+  fn: () => Promise<T>
+): Promise<T> {
+  const start = Date.now()
+  
+  return fn().finally(() => {
+    const duration = Date.now() - start
+    console.log(`Auth operation '${operation}' took ${duration}ms`)
+    
+    // Send to monitoring service
+    if (duration > 1000) {
+      console.warn(`Slow auth operation: ${operation} (${duration}ms)`)
+    }
+  })
+}
+```
+
+## Deployment Architecture
+
+### Environment Configuration
+```typescript
+// lib/config/auth-config.ts
+export const authConfig = {
+  supabase: {
+    url: process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  },
+  security: {
+    sessionTimeout: 24 * 60 * 60 * 1000, // 24 hours
+    refreshThreshold: 60 * 60 * 1000, // 1 hour
+    maxLoginAttempts: 5,
+    lockoutDuration: 15 * 60 * 1000, // 15 minutes
+  },
+  storage: {
+    maxFileSize: 5 * 1024 * 1024, // 5MB
+    allowedTypes: ['image/jpeg', 'image/png', 'image/webp'],
+    bucketName: 'avatars',
+  },
+  rateLimiting: {
+    authRequests: 5, // per minute
+    apiRequests: 100, // per minute
+    windowMs: 60 * 1000, // 1 minute
+  },
+}
+```
+
+### Health Checks
+```typescript
+// app/api/health/auth/route.ts
+export async function GET() {
+  try {
+    const supabase = await createClient()
+    
+    // Test database connection
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('count')
+      .limit(1)
+    
+    if (error) throw error
+    
+    return NextResponse.json({
+      status: 'healthy',
+      database: 'connected',
+      timestamp: new Date().toISOString(),
+    })
+  } catch (error) {
+    return NextResponse.json(
+      {
+        status: 'unhealthy',
+        error: error.message,
+        timestamp: new Date().toISOString(),
+      },
+      { status: 500 }
+    )
+  }
+}
+```
+
+This authentication feature architecture provides a comprehensive, scalable, and secure foundation for implementing user authentication in JobBooster 2025, leveraging Supabase's powerful backend-as-a-service capabilities while maintaining full control over the user experience and data security.

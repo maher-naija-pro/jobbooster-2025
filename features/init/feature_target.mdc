@@ -1,0 +1,129 @@
+# Job Application Enhancer - Features Documentation
+
+## Overview
+The Job Application Enhancer is a comprehensive tool designed to help users create tailored job application materials by aligning their CV/resume with specific job descriptions.
+
+## Core Features
+
+### 1. Document Management
+- **CV/Resume Upload System**
+  - Drag-and-drop PDF upload interface
+  - File validation and processing
+  - Support for multiple document formats (PDF, DOC, DOCX)
+  - Document preview and management
+  - Secure file handling and storage
+
+### 2. Language Support
+- **Multi-language Interface**
+  - Language selection dropdown
+  - Support one of multiple languages (English, French, Spanish, German, etc.)
+
+
+### 3. Job Offer Analysis
+- **Job Description Input**
+  - Large text area for job offer content
+  - Clear input instructions
+  - Content clearing functionality (trash can icon)
+  - Resizable text input area
+  - validation
+
+### 4. Content Generation Engine
+
+#### 4.1 Cover Letter Generation with Real-time Streaming
+- **"Generate Letter" Feature**
+  - **CRITICAL**: AI-powered cover letter creation with OpenAI streaming API
+  - **MANDATORY**: Real-time character-by-character content display
+  - Tailored content based on CV and job description
+  - Professional tone and structure with live streaming preview
+  - Customizable length and focus areas during generation
+
+#### 4.2 Email Generation with Real-time Streaming
+- **"Generate Mail" Feature**
+  - **CRITICAL**: Professional email templates with OpenAI streaming
+  - **MANDATORY**: Real-time email content display during generation
+  - Follow-up email generation with live streaming updates
+  - Application submission emails with character-by-character preview
+  - Customizable subject lines and content with streaming responses
+
+#### 4.3 CV Recommendations
+- **"Generating CV Recommendations" Feature**
+  - CV analysis and optimization suggestions
+  - Keyword optimization for ATS systems
+  - Format and structure recommendations
+  - Industry-specific customization
+
+### 5. AI-Powered Analysis
+
+
+
+#### 5.2 Content Optimization
+- **Smart Content Enhancement**
+  - Keyword optimization for job descriptions
+  - ATS-friendly formatting
+  - Industry-specific terminology
+  - Professional language enhancement
+  - Content length optimization
+
+### 6. User Interface Features
+
+
+#### 6.2 Responsive Design
+- **Cross-platform Compatibility**
+  - Mobile-responsive interface
+
+
+### 7. Output and Export
+
+#### 7.1 Document Formats
+- **Multiple Export Options**
+  - PDF export for all generated content
+  - Word document export
+  - Plain text export
+
+
+
+
+
+
+
+#### 10.2 API Access
+- **Developer Features**
+  - RESTful API for external access
+
+
+## Technical Requirements
+
+### Frontend
+- Next.js 15.5.2 framework
+- React 19.1.0 components
+- Tailwind CSS for styling
+- TypeScript for type safety
+- Responsive design principles
+- chadcn componants 
+
+### Backend - Real-time Streaming Implementation
+**CRITICAL TECHNICAL REQUIREMENTS**:
+- **OpenAI with custom URL and streaming support**
+- **MANDATORY**: Use GPT-OSS model with real-time streaming capabilities
+- **ESSENTIAL**: Implement streaming API endpoints for live content generation
+- **REQUIRED**: Character-by-character content display during generation
+- **NECESSARY**: Vercel AI SDK integration for streaming responses
+
+**Streaming API Architecture**:
+- `/api/generate-letter` - Streaming cover letter generation endpoint
+- `/api/generate-email` - Streaming email generation endpoint
+- Both endpoints MUST support Server-Sent Events (SSE) or WebSocket streaming
+- Real-time UI updates with each streaming chunk
+
+
+
+
+
+
+
+
+
+
+
+
+
