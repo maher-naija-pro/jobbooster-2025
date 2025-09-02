@@ -26,69 +26,7 @@ export async function POST(request: NextRequest) {
             hasJobOffer: !!jobOffer
         });
 
-        // Log detailed parameters that will be used in the prompt
-        if (cvData) {
-            logger.info('CV Data parameters for prompt', {
-                requestId,
-                personalInfo: {
-                    name: cvData.personalInfo?.name || 'Not provided',
-                    email: cvData.personalInfo?.email ? 'Provided' : 'Not provided',
-                    phone: cvData.personalInfo?.phone ? 'Provided' : 'Not provided'
-                },
-                experience: {
-                    count: cvData.experience?.length || 0,
-                    totalYears: cvData.experience?.reduce((total, exp) => {
-                        const duration = exp.duration.toLowerCase();
-                        const yearsMatch = duration.match(/(\d+)\s*year/);
-                        const monthsMatch = duration.match(/(\d+)\s*month/);
-                        let years = 0;
-                        if (yearsMatch) years += parseInt(yearsMatch[1]);
-                        if (monthsMatch) years += parseInt(monthsMatch[1]) / 12;
-                        return total + years;
-                    }, 0) || 0,
-                    recentTitles: cvData.experience?.slice(0, 2).map(exp => exp.title) || []
-                },
-                skills: {
-                    technicalCount: cvData.skills?.technical?.length || 0,
-                    softCount: cvData.skills?.soft?.length || 0,
-                    technicalSkills: cvData.skills?.technical?.slice(0, 5) || [], // Log first 5 technical skills
-                    softSkills: cvData.skills?.soft?.slice(0, 5) || [] // Log first 5 soft skills
-                },
-                education: {
-                    count: cvData.education?.length || 0,
-                    degrees: cvData.education?.map(edu => edu.degree) || []
-                },
-                summary: {
-                    hasSummary: !!cvData.summary,
-                    summaryLength: cvData.summary?.length || 0,
-                    processedContentLength: cvData.processedContent?.length || 0
-                }
-            });
-        }
 
-        logger.info('Job offer parameters for prompt', {
-            requestId,
-            jobOffer: {
-                length: jobOffer?.length || 0,
-                preview: jobOffer?.substring(0, 200) + (jobOffer?.length > 200 ? '...' : ''),
-                wordCount: jobOffer?.split(/\s+/).length || 0
-            }
-        });
-
-        logger.info('Language and type parameters for prompt', {
-            requestId,
-            language: {
-                code: language?.code || 'unknown',
-                name: language?.name || 'unknown',
-                nativeName: language?.nativeName || 'unknown'
-            },
-            emailType: {
-                type,
-                description: type === 'application' ? 'job application submission' :
-                    type === 'follow-up' ? 'follow-up after application submission' :
-                        type === 'inquiry' ? 'inquiry about job opportunities' : 'unknown'
-            }
-        });
 
         // Validate required data
         if (!cvData || !jobOffer || !language) {
@@ -107,7 +45,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Create unified prompt for job analysis and email generation
-        const unifiedPrompt = createUnifiedEmailPrompt(cvData, jobOffer, language, type);
+        const unifiedPrompt = createUnifiedEmailPrompt(cvData.processedContent, jobOffer, language, type);
 
         logger.contentGeneration('Unified email prompt created', {
             requestId,
@@ -216,92 +154,73 @@ export async function POST(request: NextRequest) {
     }
 }
 
-function createUnifiedEmailPrompt(cvData: CVData, jobOffer: string, language: Language, type: string): string {
+function createUnifiedEmailPrompt(cvContent: string, jobOffer: string, language: Language, type: string): string {
+
+
     const emailTypes = {
         application: 'job application submission',
         'follow-up': 'follow-up after application submission',
         inquiry: 'inquiry about job opportunities'
     };
 
-    // Calculate total years of experience from CV data
-    const totalExperience = cvData.experience?.reduce((total, exp) => {
-        // Extract years from duration string (e.g., "2 years", "1 year", "6 months")
-        const duration = exp.duration.toLowerCase();
-        const yearsMatch = duration.match(/(\d+)\s*year/);
-        const monthsMatch = duration.match(/(\d+)\s*month/);
-
-        let years = 0;
-        if (yearsMatch) years += parseInt(yearsMatch[1]);
-        if (monthsMatch) years += parseInt(monthsMatch[1]) / 12;
-
-        return total + years;
-    }, 0) || 0;
-
-    // Get candidate's name from personal info
-    const candidateName = cvData.personalInfo?.name || 'the candidate';
-
-    // Get relevant skills from CV
-    const technicalSkills = cvData.skills?.technical?.join(', ') || '';
-    const softSkills = cvData.skills?.soft?.join(', ') || '';
-
-    logger.debug('Creating unified email prompt', {
-        type,
-        language: language.nativeName,
-        jobOfferLength: jobOffer.length,
-        candidateName,
-        totalExperience: Math.round(totalExperience * 10) / 10
-    });
-
-    // Log all calculated values that will be used in the prompt
-    logger.info('Prompt parameters calculated', {
-        emailType: emailTypes[type as keyof typeof emailTypes],
-        candidateName,
-        totalExperience: Math.round(totalExperience * 10) / 10,
-        technicalSkills: technicalSkills || 'Not specified',
-        softSkills: softSkills || 'Not specified',
-        recentExperience: cvData.experience?.slice(0, 2).map(exp => `${exp.title} at ${exp.company}`).join(', ') || 'Not specified',
-        education: cvData.education?.map(edu => `${edu.degree} from ${edu.institution}`).join(', ') || 'Not specified',
-        summaryPreview: cvData.summary || cvData.processedContent.substring(0, 500),
-        fullCvContentLength: cvData.processedContent.length,
-        language: language.nativeName
-    });
-
     return `
-Please analyze the following job offer and create a professional email for ${emailTypes[type as keyof typeof emailTypes]} based on the candidate's background.
 
 JOB OFFER:
 ${jobOffer}
 
-CANDIDATE'S BACKGROUND:
-- Name: ${candidateName}
-- Total Experience: ${Math.round(totalExperience * 10) / 10} years
-- Technical Skills: ${technicalSkills || 'Not specified'}
-- Soft Skills: ${softSkills || 'Not specified'}
-- Recent Experience: ${cvData.experience?.slice(0, 2).map(exp => `${exp.title} at ${exp.company}`).join(', ') || 'Not specified'}
-- Education: ${cvData.education?.map(edu => `${edu.degree} from ${edu.institution}`).join(', ') || 'Not specified'}
-- CV Summary: ${cvData.summary || cvData.processedContent.substring(0, 500)}...
-- Full CV Content: ${cvData.processedContent}
+CANDIDATE'S CV CONTENT:
+${cvContent}
+Please extract dont display the following information from the CV and use it in the email:
+
+- Name: Extract the candidate's full name
+- Email: Extract email address if available
+- Phone: Extract phone number if available
+- Location: Extract location/address if available
+- LinkedIn: Extract LinkedIn profile URL if available
+- Website: Extract personal website URL if available
+- Total Experience: Calculate total years of experience
+- Technical Skills: Extract and list technical skills
+- Soft Skills: Extract and list soft skills
+- Recent Experience: Summarize most recent work experience
+- Education: Extract educational background
+- Summary: Extract professional summary or objective
+- Languages: Extract languages spoken
+- Certifications: Extract certifications and licenses
+- Projects: Extract notable projects and achievements
 
 INSTRUCTIONS:
-1. Analyze the job offer to understand the role, company, requirements, and expectations
-2. Write a professional email in ${language.nativeName} that directly addresses the job requirements
-3. Include an appropriate subject line
-4. Keep the email concise and impactful (150-300 words)
-5. Reference the attached cover letter and CV
-6. Show enthusiasm for the position and company
-7. Include a professional sign-off
-8. Use the candidate's actual name: ${candidateName}
-9. Highlight relevant experience and skills that match the job requirements
+1. First, extract and analyze dont display all the candidate information from the CV content
+2. Analyze the job offer to understand the role, company, requirements, and expectations
+3. Write a professional email in ${language.nativeName} that directly addresses the job requirements
+4. Use the extracted candidate information strategically:
+   - Use the candidate's actual NAME 
+   - Use the candidate's actual NAME in the greeting and sign-off
+   - Reference their TOTAL EXPERIENCE to establish credibility
+   - Highlight TECHNICAL SKILLS that match the job requirements
+   - Mention SOFT SKILLS that align with the company culture
+   - Include specific details from RECENT EXPERIENCE that relate to the role
+   - Reference relevant EDUCATION if applicable to the position
+   - Mention notable PROJECTS that demonstrate relevant capabilities
+   - Include CERTIFICATIONS that add value to the application
+   - Reference LANGUAGE skills if relevant to the role
+   - Use the PROFESSIONAL SUMMARY as a foundation for the introduction
+5. Keep it concise (150-300 words)
+6. Use a professional but engaging tone
+7. Include specific examples from the candidate's background that relate to the job
+8. End with a strong call to action
+9. Use the candidate's actual name and contact information (EMAIL, PHONE, LOCATION, LINKEDIN, WEBSITE)
+10. Reference specific projects, experiences, and achievements from their CV that are relevant to this position
 
 Structure the email with:
-- Clear, professional subject line
-- Polite greeting
-- Brief introduction mentioning how you found the position
-- 1-2 paragraphs highlighting relevant qualifications and experience that match the job requirements
-- Mention of attached documents
-- Call to action or next steps
-- Professional closing
+- Professional subject line that captures attention
+- Professional greeting using the candidate's NAME
+- Introduction paragraph that shows understanding of the role and references their SUMMARY
+- 1-2 body paragraphs highlighting relevant TECHNICAL SKILLS, SOFT SKILLS, and RECENT EXPERIENCE
+- Mention specific PROJECTS and CERTIFICATIONS that demonstrate relevant capabilities
+- Reference attached documents (CV and cover letter)
+- Conclusion with call to action
+- Professional sign-off with the candidate's NAME and contact information
 
-Focus on creating a personalized email that demonstrates how the candidate's background aligns with the specific job requirements mentioned in the job offer.
+Focus on creating a personalized email that demonstrates how the candidate's extracted background (experience, skills, education, projects) aligns with the specific job requirements mentioned in the job offer.
 `;
 }

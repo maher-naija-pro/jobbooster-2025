@@ -172,7 +172,10 @@ ${jobOffer}
 CANDIDATE'S CV CONTENT:
 ${cvContent}
 
-Please extract the following information from the CV and use it in the cover letter:
+Please extract dont display the following information from the CV and use it in the cover letter:
+
+CANDIDATE'S BACKGROUND:
+
 - Name: Extract the candidate's full name
 - Email: Extract email address if available
 - Phone: Extract phone number if available
@@ -194,6 +197,7 @@ INSTRUCTIONS:
 2. Analyze the job offer to understand the role, company, requirements, and expectations
 3. Write a professional cover letter in ${language.nativeName} that directly addresses the job requirements
 4. Use the extracted candidate information strategically:
+   - Use the candidate's actual NAME 
    - Use the candidate's actual NAME in the greeting and sign-off
    - Reference their TOTAL EXPERIENCE to establish credibility
    - Highlight TECHNICAL SKILLS that match the job requirements
