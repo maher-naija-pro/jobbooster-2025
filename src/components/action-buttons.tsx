@@ -59,7 +59,7 @@ export function ActionButtons({
                     disabled={isDisabled || isGenerating}
                     aria-label={isGeneratingLetter ? "Generating cover letter..." : "Generate cover letter"}
                     className={cn(
-                        "w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2",
+                        "w-full flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-xs font-semibold transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-offset-1",
                         isDisabled
                             ? "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
                             : isGeneratingLetter
@@ -69,12 +69,12 @@ export function ActionButtons({
                 >
                     {isGeneratingLetter ? (
                         <>
-                            <Loader className="w-3 h-3 animate-spin" />
+                            <Loader className="w-2 h-2 animate-spin" />
                             Generating Letter...
                         </>
                     ) : (
                         <>
-                            <FileDown className="w-3 h-3" />
+                            <FileDown className="w-2 h-2" />
                             Generate Cover Letter
                         </>
                     )}
@@ -86,7 +86,7 @@ export function ActionButtons({
                     disabled={isDisabled || isGenerating}
                     aria-label={isGeneratingEmail ? "Generating email..." : "Generate email"}
                     className={cn(
-                        "w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2",
+                        "w-full flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-xs font-semibold transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-offset-1",
                         isDisabled
                             ? "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
                             : isGeneratingEmail
@@ -96,12 +96,12 @@ export function ActionButtons({
                 >
                     {isGeneratingEmail ? (
                         <>
-                            <Loader className="w-3 h-3 animate-spin" />
+                            <Loader className="w-2 h-2 animate-spin" />
                             Generating Email...
                         </>
                     ) : (
                         <>
-                            <Mail className="w-3 h-3" />
+                            <Mail className="w-2 h-2" />
                             Generate Email
                         </>
                     )}
@@ -113,7 +113,7 @@ export function ActionButtons({
                     disabled={isDisabled || isGenerating}
                     aria-label={isAnalyzingCV ? "Analyzing CV..." : "Analyze CV"}
                     className={cn(
-                        "w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2",
+                        "w-full flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-xs font-semibold transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-offset-1",
                         isDisabled
                             ? "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
                             : isAnalyzingCV
@@ -123,12 +123,12 @@ export function ActionButtons({
                 >
                     {isAnalyzingCV ? (
                         <>
-                            <Loader className="w-3 h-3 animate-spin" />
+                            <Loader className="w-2 h-2 animate-spin" />
                             Analyzing CV...
                         </>
                     ) : (
                         <>
-                            <BarChart3 className="w-3 h-3" />
+                            <BarChart3 className="w-2 h-2" />
                             Analyze CV
                         </>
                     )}
@@ -139,9 +139,9 @@ export function ActionButtons({
                     <button
                         onClick={onStopGeneration}
                         aria-label="Stop current generation process"
-                        className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-semibold bg-rose-600 text-white hover:bg-rose-700 active:bg-rose-800 shadow-lg hover:shadow-xl transition-all duration-300 border border-rose-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
+                        className="w-full flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-xs font-semibold bg-rose-600 text-white hover:bg-rose-700 active:bg-rose-800 shadow-md hover:shadow-lg transition-all duration-300 border border-rose-600 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-rose-500"
                     >
-                        <Square className="w-3 h-3" />
+                        <Square className="w-2 h-2" />
                         Stop Generation
                     </button>
                 )}

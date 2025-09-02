@@ -91,51 +91,47 @@ export function CVUpload({
     };
 
     return (
-        <div className={cn("space-y-4", className)}>
+        <div className={cn("space-y-1", className)}>
             {/* Main Header with Title and Description */}
-            <div className="text-center mb-4">
-                <div className="flex justify-center gap-3 mb-3">
-                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                        <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="text-center mb-1">
+                <div className="flex justify-center gap-1 mb-1">
+                    <div className="w-3 h-3 bg-blue-100 rounded-full flex items-center justify-center">
+                        <svg className="w-1.5 h-1.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                     </div>
-                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                        <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-3 h-3 bg-green-100 rounded-full flex items-center justify-center">
+                        <svg className="w-1.5 h-1.5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
                     </div>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                <h2 className="text-lg font-bold text-gray-900 mb-1">
                     Job Application Enhancer
                 </h2>
-                <p className="text-gray-600 max-w-lg mx-auto text-sm">
+                <p className="text-gray-600 max-w-lg mx-auto text-xs leading-tight">
                     All tools to create tailored job application kit aligned with your job description
                     and your unique skills.
                 </p>
             </div>
 
-            {/* CV Upload Section Header */}
-            <div className="flex items-center gap-2">
-                <FileText className="w-5 h-5 text-gray-600" />
-                <h3 className="text-lg font-semibold text-gray-900">CV/Resume Upload</h3>
-            </div>
+
 
             {/* Upload Area - Show when not uploading, processing, or has CV data */}
             {!cvData && !isProcessing && !isUploading && (
-                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                <div className="bg-white border border-gray-200 rounded-md overflow-hidden shadow-sm">
                     {/* Header */}
-                    <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
-                        <div className="flex items-center gap-2">
-                            <Upload className="w-4 h-4 text-gray-600" />
-                            <span className="text-sm font-medium text-gray-900">Upload CV/Resume</span>
+                    <div className="bg-gray-50 px-1.5 py-1 border-b border-gray-200">
+                        <div className="flex items-center gap-0.5">
+                            <Upload className="w-2 h-2 text-gray-600" />
+                            <span className="text-xs font-medium text-gray-900">Upload CV/Resume</span>
                         </div>
                     </div>
 
                     {/* Upload Content */}
                     <div
                         className={cn(
-                            "relative border-2 border-dashed rounded-none border-gray-300 p-3 text-center transition-colors cursor-pointer",
+                            "relative border-2 border-dashed rounded-none border-gray-300 p-1 text-center transition-colors cursor-pointer",
                             isDragOver
                                 ? "border-blue-400 bg-blue-50"
                                 : "hover:border-gray-400",
@@ -154,14 +150,14 @@ export function CVUpload({
                             className="hidden"
                         />
 
-                        <div className="flex flex-col items-center gap-1">
+                        <div className="flex flex-col items-center gap-0.5">
                             <Upload className={cn(
-                                "w-5 h-5",
+                                "w-2 h-2",
                                 isDragOver ? "text-blue-500" : "text-gray-400"
                             )} />
 
                             <div className="space-y-0.5">
-                                <p className="text-sm font-medium text-gray-900">
+                                <p className="text-xs font-medium text-gray-900">
                                     {isDragOver ? "Drop your CV here" : "Drop your CV/Resume here"}
                                 </p>
                                 <p className="text-xs text-gray-600">
@@ -193,27 +189,27 @@ export function CVUpload({
             {cvData && cvData.status === 'completed' && !isUploading && (
                 <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
                     {/* Header */}
-                    <div className="bg-gray-50 px-4 py-3 border-b border-gray-200 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <CheckCircle className="w-4 h-4 text-green-600" />
+                    <div className="bg-gray-50 px-2 py-1.5 border-b border-gray-200 flex items-center justify-between">
+                        <div className="flex items-center gap-1">
+                            <CheckCircle className="w-3 h-3 text-green-600" />
                             <span className="text-sm font-medium text-gray-900">CV Uploaded Successfully</span>
                         </div>
                         <button
                             onClick={handleRemove}
-                            className="p-2 text-gray-400 hover:text-red-600 transition-colors rounded-lg hover:bg-red-50"
+                            className="p-1.5 text-gray-400 hover:text-red-600 transition-colors rounded-lg hover:bg-red-50"
                             title="Remove file"
                         >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3 h-3" />
                         </button>
                     </div>
 
                     {/* Content */}
-                    <div className="p-6">
-                        <div className="flex items-center gap-3 mb-2">
-                            <CheckCircle className="w-5 h-5 text-green-600" />
+                    <div className="px-2 py-1.5">
+                        <div className="flex items-center gap-1.5">
+                            <CheckCircle className="w-3 h-3 text-green-600" />
                             <div>
-                                <p className="font-medium text-gray-900">{cvData.filename}</p>
-                                <p className="text-sm text-gray-600">
+                                <p className="text-sm font-medium text-gray-900">{cvData.filename}</p>
+                                <p className="text-xs text-gray-600">
                                     {formatFileSize(cvData.size)} • Uploaded {cvData.uploadDate.toLocaleDateString()}
                                 </p>
                             </div>

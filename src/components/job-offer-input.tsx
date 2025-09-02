@@ -71,10 +71,10 @@ export function JobOfferInput({
 
     return (
         <div className={className}>
-            <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-gray-600" />
-                    <h3 className="text-lg font-semibold text-gray-900">Job Offer Input</h3>
+            <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center gap-1">
+                    <FileText className="w-2 h-2 text-gray-600" />
+                    <h3 className="text-xs font-semibold text-gray-900">Job Offer Input</h3>
                 </div>
                 {value && (
                     <button
@@ -95,11 +95,11 @@ export function JobOfferInput({
                         onMouseEnter={handleMouseEnter}
                         onMouseLeave={handleMouseLeave}
                         placeholder="Paste your job offer here...&#10;&#10;Include job title, company name, requirements, responsibilities, and any other relevant details from the job posting."
-                        className={`w-full min-h-[120px] p-3 border rounded-lg resize-vertical focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-in-out hover:min-h-[250px] hover:shadow-lg ${error
+                        className={`w-full min-h-[80px] p-2 border rounded-md resize-vertical focus:ring-1 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-in-out hover:min-h-[120px] hover:shadow-md text-sm ${error
                             ? 'border-red-300 focus:ring-red-500'
                             : 'border-gray-300 focus:border-blue-500'
                             }`}
-                        style={{ minHeight: '120px', maxHeight: '400px' }}
+                        style={{ minHeight: '80px', maxHeight: '200px' }}
                     />
 
                     {/* Tooltip */}
@@ -124,8 +124,8 @@ export function JobOfferInput({
                     )}
 
                     {/* Character count */}
-                    <div className="absolute bottom-3 right-3 text-xs">
-                        <span className={getCharacterCountColor()}>
+                    <div className="absolute bottom-2 right-2 text-xs">
+                        <span className={`text-xs ${getCharacterCountColor()}`}>
                             {characterCount}/{MAX_LENGTH}
                         </span>
                     </div>

@@ -32,15 +32,15 @@ export function UploadProgress({
     const getStatusIcon = () => {
         switch (status) {
             case 'uploading':
-                return <Upload className="w-5 h-5 text-blue-600 animate-pulse" />;
+                return <Upload className="w-5 h-5 text-indigo-600 animate-pulse" />;
             case 'processing':
-                return <Upload className="w-5 h-5 text-blue-600 animate-spin" />;
+                return <Upload className="w-5 h-5 text-indigo-600 animate-spin" />;
             case 'completed':
-                return <CheckCircle className="w-5 h-5 text-green-600" />;
+                return <CheckCircle className="w-5 h-5 text-emerald-600" />;
             case 'error':
-                return <AlertCircle className="w-5 h-5 text-red-600" />;
+                return <AlertCircle className="w-5 h-5 text-rose-600" />;
             default:
-                return <Upload className="w-5 h-5 text-blue-600" />;
+                return <Upload className="w-5 h-5 text-indigo-600" />;
         }
     };
 
@@ -60,9 +60,9 @@ export function UploadProgress({
     };
 
     const getProgressColor = () => {
-        if (status === 'error') return 'bg-red-600';
-        if (status === 'completed') return 'bg-green-600';
-        return 'bg-blue-600';
+        if (status === 'error') return 'bg-rose-600';
+        if (status === 'completed') return 'bg-emerald-600';
+        return 'bg-indigo-600';
     };
 
     return (
@@ -78,13 +78,18 @@ export function UploadProgress({
             </div>
 
             {/* Progress Bar */}
-            <div className="w-full bg-gray-200 rounded-full h-3 mb-3">
+            <div className="w-full bg-slate-200 rounded-full h-3 mb-3">
                 <div
                     className={cn(
                         "h-3 rounded-full transition-all duration-300 ease-out",
                         getProgressColor()
                     )}
                     style={{ width: `${status === 'completed' ? 100 : progress}%` }}
+                    role="progressbar"
+                    aria-valuenow={status === 'completed' ? 100 : progress}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label={`Upload progress: ${status === 'completed' ? 100 : Math.round(progress)}%`}
                 />
             </div>
 
@@ -92,25 +97,25 @@ export function UploadProgress({
             <div className="flex justify-between items-center text-sm text-gray-600">
                 <span>{status === 'completed' ? 100 : Math.round(progress)}%</span>
                 {status === 'uploading' && (
-                    <span className="text-blue-600 font-medium">
+                    <span className="text-indigo-600 font-medium">
                         {progress < 100 ? 'Uploading...' : 'Finalizing...'}
                     </span>
                 )}
                 {status === 'processing' && (
-                    <span className="text-blue-600 font-medium">Processing...</span>
+                    <span className="text-indigo-600 font-medium">Processing...</span>
                 )}
                 {status === 'completed' && (
-                    <span className="text-green-600 font-medium">Complete</span>
+                    <span className="text-emerald-600 font-medium">Complete</span>
                 )}
                 {status === 'error' && (
-                    <span className="text-red-600 font-medium">Failed</span>
+                    <span className="text-rose-600 font-medium">Failed</span>
                 )}
             </div>
 
             {/* Error Message */}
             {error && status === 'error' && (
-                <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-md">
-                    <p className="text-sm text-red-700">{error}</p>
+                <div className="mt-3 p-3 bg-rose-50 border border-rose-200 rounded-md">
+                    <p className="text-sm text-rose-700">{error}</p>
                 </div>
             )}
 

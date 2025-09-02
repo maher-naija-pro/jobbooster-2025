@@ -390,123 +390,121 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen pb-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen px-4 sm:px-6 lg:px-8">
       <div className="w-full">
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          <div className="px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
-            {/* Conditional Layout - Centered when no content, two-column when generating or has results */}
-            {!state.isGenerating && !state.generatedContent && !state.cvAnalysis ? (
-              // Centered layout for initial state
-              <div className="flex justify-center">
-                <div className="w-full max-w-xl">
-                  <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
-                    <div className="space-y-6">
-                      {/* CV Upload - Centered */}
-                      <CVUpload
-                        onFileUpload={handleFileUpload}
-                        onFileRemove={handleFileRemove}
-                        cvData={state.cvData}
-                        isProcessing={state.cvData?.status === 'processing'}
-                        error={state.error}
-                        uploadProgress={state.uploadProgress}
-                        isUploading={state.isUploading}
-                      />
+        {/* Conditional Layout - Centered when no content, two-column when generating or has results */}
+        {!state.isGenerating && !state.generatedContent && !state.cvAnalysis ? (
+          // Centered layout for initial state
+          <div className="flex justify-center">
+            <div className="w-full max-w-md">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mt-5">
+                <div className="space-y-2">
+                  {/* CV Upload - Centered */}
+                  <CVUpload
+                    onFileUpload={handleFileUpload}
+                    onFileRemove={handleFileRemove}
+                    cvData={state.cvData}
+                    isProcessing={state.cvData?.status === 'processing'}
+                    error={state.error}
+                    uploadProgress={state.uploadProgress}
+                    isUploading={state.isUploading}
+                  />
 
-                      {/* Language Selection */}
-                      <LanguageSelector
-                        currentLanguage={state.language}
-                        onLanguageChange={handleLanguageChange}
-                      />
+                  {/* Language Selection */}
+                  <LanguageSelector
+                    currentLanguage={state.language}
+                    onLanguageChange={handleLanguageChange}
+                  />
 
-                      {/* Job Offer Input */}
-                      <JobOfferInput
-                        value={state.jobOffer}
-                        onChange={handleJobOfferChange}
-                        onClear={handleJobOfferClear}
-                        error={state.jobOffer.length > 0 && state.jobOffer.length < 100 ? 'Please provide at least 100 characters' : null}
-                      />
+                  {/* Job Offer Input */}
+                  <JobOfferInput
+                    value={state.jobOffer}
+                    onChange={handleJobOfferChange}
+                    onClear={handleJobOfferClear}
+                    error={state.jobOffer.length > 0 && state.jobOffer.length < 100 ? 'Please provide at least 100 characters' : null}
+                  />
 
-                      {/* Action Buttons */}
-                      <ActionButtons
-                        isCVUploaded={!!state.cvData}
-                        isJobOfferProvided={state.jobOffer.length >= 100}
-                        onGenerateLetter={handleGenerateLetter}
-                        onGenerateMail={handleGenerateMail}
-                        onAnalyzeCV={handleAnalyzeCV}
-                        onStopGeneration={handleStopGeneration}
-                        isGenerating={state.isGenerating}
-                        generationType={state.generationType}
-                      />
-                    </div>
-                  </div>
+                  {/* Action Buttons */}
+                  <ActionButtons
+                    isCVUploaded={!!state.cvData}
+                    isJobOfferProvided={state.jobOffer.length >= 100}
+                    onGenerateLetter={handleGenerateLetter}
+                    onGenerateMail={handleGenerateMail}
+                    onAnalyzeCV={handleAnalyzeCV}
+                    onStopGeneration={handleStopGeneration}
+                    isGenerating={state.isGenerating}
+                    generationType={state.generationType}
+                  />
                 </div>
               </div>
-            ) : (
-              // Two Column Layout when generating content
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Left Column - Input Form (1/3 width) */}
-                <div className="lg:col-span-1 bg-gray-50 rounded-lg p-4 sm:p-6">
-                  <div className="space-y-6">
-                    {/* CV Upload */}
-                    <CVUpload
-                      onFileUpload={handleFileUpload}
-                      onFileRemove={handleFileRemove}
-                      cvData={state.cvData}
-                      isProcessing={state.cvData?.status === 'processing'}
-                      error={state.error}
-                      uploadProgress={state.uploadProgress}
-                      isUploading={state.isUploading}
-                    />
-
-                    {/* Language Selection */}
-                    <LanguageSelector
-                      currentLanguage={state.language}
-                      onLanguageChange={handleLanguageChange}
-                    />
-
-                    {/* Job Offer Input */}
-                    <JobOfferInput
-                      value={state.jobOffer}
-                      onChange={handleJobOfferChange}
-                      onClear={handleJobOfferClear}
-                      error={state.jobOffer.length > 0 && state.jobOffer.length < 100 ? 'Please provide at least 100 characters' : null}
-                    />
-
-                    {/* Action Buttons */}
-                    <ActionButtons
-                      isCVUploaded={!!state.cvData}
-                      isJobOfferProvided={state.jobOffer.length >= 100}
-                      onGenerateLetter={handleGenerateLetter}
-                      onGenerateMail={handleGenerateMail}
-                      onAnalyzeCV={handleAnalyzeCV}
-                      onStopGeneration={handleStopGeneration}
-                      isGenerating={state.isGenerating}
-                      generationType={state.generationType}
-                    />
-                  </div>
-                </div>
-
-                {/* Right Column - Content Display (2/3 width) */}
-                <div className="lg:col-span-2 space-y-4">
-                  {/* Main Content Generator */}
-                  <div className="bg-white">
-                    <ContentGenerator
-                      content={state.generatedContent}
-                      isGenerating={state.isGenerating}
-                      generationType={state.generationType}
-                      generationProgress={state.generationProgress}
-                      streamingContent={streamingContent}
-                      onEdit={handleEdit}
-                      onRegenerate={handleRegenerate}
-                      onDownload={handleDownload}
-                      jobAnalysis={state.jobAnalysis}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
+            </div>
           </div>
-        </div>
+        ) : (
+          // Two Column Layout when generating content
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+            {/* Left Column - Input Form (1/3 width) */}
+            <div className="lg:col-span-1">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mt-5">
+                <div className="space-y-2">
+                  {/* CV Upload */}
+                  <CVUpload
+                    onFileUpload={handleFileUpload}
+                    onFileRemove={handleFileRemove}
+                    cvData={state.cvData}
+                    isProcessing={state.cvData?.status === 'processing'}
+                    error={state.error}
+                    uploadProgress={state.uploadProgress}
+                    isUploading={state.isUploading}
+                  />
+
+                  {/* Language Selection */}
+                  <LanguageSelector
+                    currentLanguage={state.language}
+                    onLanguageChange={handleLanguageChange}
+                  />
+
+                  {/* Job Offer Input */}
+                  <JobOfferInput
+                    value={state.jobOffer}
+                    onChange={handleJobOfferChange}
+                    onClear={handleJobOfferClear}
+                    error={state.jobOffer.length > 0 && state.jobOffer.length < 100 ? 'Please provide at least 100 characters' : null}
+                  />
+
+                  {/* Action Buttons */}
+                  <ActionButtons
+                    isCVUploaded={!!state.cvData}
+                    isJobOfferProvided={state.jobOffer.length >= 100}
+                    onGenerateLetter={handleGenerateLetter}
+                    onGenerateMail={handleGenerateMail}
+                    onAnalyzeCV={handleAnalyzeCV}
+                    onStopGeneration={handleStopGeneration}
+                    isGenerating={state.isGenerating}
+                    generationType={state.generationType}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column - Content Display (2/3 width) */}
+            <div className="lg:col-span-2 space-y-4">
+              {/* Main Content Generator */}
+              <div className="bg-white">
+                <ContentGenerator
+                  content={state.generatedContent}
+                  isGenerating={state.isGenerating}
+                  generationType={state.generationType}
+                  generationProgress={state.generationProgress}
+                  streamingContent={streamingContent}
+                  onEdit={handleEdit}
+                  onRegenerate={handleRegenerate}
+                  onDownload={handleDownload}
+                  jobAnalysis={state.jobAnalysis}
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

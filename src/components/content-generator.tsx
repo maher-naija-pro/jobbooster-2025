@@ -957,23 +957,37 @@ export function ContentGenerator({
                                     <div className="flex items-center gap-2">
                                         <div
                                             className={`w-3 h-3 rounded-full shadow-sm ${isGenerating
-                                                ? 'bg-orange-500 animate-pulse'
+                                                ? generationType === 'cv-analysis'
+                                                    ? 'bg-violet-500 animate-pulse'
+                                                    : generationType === 'email'
+                                                        ? 'bg-emerald-500 animate-pulse'
+                                                        : 'bg-indigo-500 animate-pulse'
                                                 : content
-                                                    ? 'bg-green-500'
-                                                    : 'bg-gray-400'
+                                                    ? 'bg-emerald-500'
+                                                    : 'bg-slate-400'
                                                 }`}
                                             title={isGenerating ? 'Generating...' : content ? 'Generation Complete' : 'Ready'}
+                                            aria-label={isGenerating ? 'Generating content' : content ? 'Generation complete' : 'Ready to generate'}
                                         ></div>
                                         {isGenerating && (
                                             <span className="text-xs text-gray-500">Generating...</span>
                                         )}
                                     </div>
                                 </div>
-                                <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                                <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
                                     <div
-                                        className={`h-2 rounded-full transition-all duration-300 ${generationType === 'cv-analysis' ? 'bg-orange-500' : 'bg-blue-500'
+                                        className={`h-2 rounded-full transition-all duration-300 ${generationType === 'cv-analysis'
+                                            ? 'bg-violet-500'
+                                            : generationType === 'email'
+                                                ? 'bg-emerald-500'
+                                                : 'bg-indigo-500'
                                             }`}
                                         style={{ width: `${currentProgress}%` }}
+                                        role="progressbar"
+                                        aria-valuenow={currentProgress}
+                                        aria-valuemin={0}
+                                        aria-valuemax={100}
+                                        aria-label={`${generationType === 'cv-analysis' ? 'CV analysis' : generationType === 'email' ? 'Email generation' : 'Cover letter generation'} progress: ${currentProgress}%`}
                                     ></div>
                                 </div>
                                 <div className="flex items-center justify-between mt-2">
