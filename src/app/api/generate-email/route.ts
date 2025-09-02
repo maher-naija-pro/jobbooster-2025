@@ -26,6 +26,70 @@ export async function POST(request: NextRequest) {
             hasJobOffer: !!jobOffer
         });
 
+        // Log detailed parameters that will be used in the prompt
+        if (cvData) {
+            logger.info('CV Data parameters for prompt', {
+                requestId,
+                personalInfo: {
+                    name: cvData.personalInfo?.name || 'Not provided',
+                    email: cvData.personalInfo?.email ? 'Provided' : 'Not provided',
+                    phone: cvData.personalInfo?.phone ? 'Provided' : 'Not provided'
+                },
+                experience: {
+                    count: cvData.experience?.length || 0,
+                    totalYears: cvData.experience?.reduce((total, exp) => {
+                        const duration = exp.duration.toLowerCase();
+                        const yearsMatch = duration.match(/(\d+)\s*year/);
+                        const monthsMatch = duration.match(/(\d+)\s*month/);
+                        let years = 0;
+                        if (yearsMatch) years += parseInt(yearsMatch[1]);
+                        if (monthsMatch) years += parseInt(monthsMatch[1]) / 12;
+                        return total + years;
+                    }, 0) || 0,
+                    recentTitles: cvData.experience?.slice(0, 2).map(exp => exp.title) || []
+                },
+                skills: {
+                    technicalCount: cvData.skills?.technical?.length || 0,
+                    softCount: cvData.skills?.soft?.length || 0,
+                    technicalSkills: cvData.skills?.technical?.slice(0, 5) || [], // Log first 5 technical skills
+                    softSkills: cvData.skills?.soft?.slice(0, 5) || [] // Log first 5 soft skills
+                },
+                education: {
+                    count: cvData.education?.length || 0,
+                    degrees: cvData.education?.map(edu => edu.degree) || []
+                },
+                summary: {
+                    hasSummary: !!cvData.summary,
+                    summaryLength: cvData.summary?.length || 0,
+                    processedContentLength: cvData.processedContent?.length || 0
+                }
+            });
+        }
+
+        logger.info('Job offer parameters for prompt', {
+            requestId,
+            jobOffer: {
+                length: jobOffer?.length || 0,
+                preview: jobOffer?.substring(0, 200) + (jobOffer?.length > 200 ? '...' : ''),
+                wordCount: jobOffer?.split(/\s+/).length || 0
+            }
+        });
+
+        logger.info('Language and type parameters for prompt', {
+            requestId,
+            language: {
+                code: language?.code || 'unknown',
+                name: language?.name || 'unknown',
+                nativeName: language?.nativeName || 'unknown'
+            },
+            emailType: {
+                type,
+                description: type === 'application' ? 'job application submission' :
+                    type === 'follow-up' ? 'follow-up after application submission' :
+                        type === 'inquiry' ? 'inquiry about job opportunities' : 'unknown'
+            }
+        });
+
         // Validate required data
         if (!cvData || !jobOffer || !language) {
             logger.warn('Email generation request failed validation', {
@@ -186,6 +250,20 @@ function createUnifiedEmailPrompt(cvData: CVData, jobOffer: string, language: La
         jobOfferLength: jobOffer.length,
         candidateName,
         totalExperience: Math.round(totalExperience * 10) / 10
+    });
+
+    // Log all calculated values that will be used in the prompt
+    logger.info('Prompt parameters calculated', {
+        emailType: emailTypes[type as keyof typeof emailTypes],
+        candidateName,
+        totalExperience: Math.round(totalExperience * 10) / 10,
+        technicalSkills: technicalSkills || 'Not specified',
+        softSkills: softSkills || 'Not specified',
+        recentExperience: cvData.experience?.slice(0, 2).map(exp => `${exp.title} at ${exp.company}`).join(', ') || 'Not specified',
+        education: cvData.education?.map(edu => `${edu.degree} from ${edu.institution}`).join(', ') || 'Not specified',
+        summaryPreview: cvData.summary || cvData.processedContent.substring(0, 500),
+        fullCvContentLength: cvData.processedContent.length,
+        language: language.nativeName
     });
 
     return `

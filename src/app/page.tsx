@@ -426,7 +426,17 @@ export default function Home() {
                         error={state.jobOffer.length > 0 && state.jobOffer.length < 100 ? 'Please provide at least 100 characters' : null}
                       />
 
-
+                      {/* Action Buttons */}
+                      <ActionButtons
+                        isCVUploaded={!!state.cvData}
+                        isJobOfferProvided={state.jobOffer.length >= 100}
+                        onGenerateLetter={handleGenerateLetter}
+                        onGenerateMail={handleGenerateMail}
+                        onAnalyzeCV={handleAnalyzeCV}
+                        onStopGeneration={handleStopGeneration}
+                        isGenerating={state.isGenerating}
+                        generationType={state.generationType}
+                      />
                     </div>
                   </div>
                 </div>

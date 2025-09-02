@@ -151,8 +151,8 @@ export async function POST(request: NextRequest) {
             filename: file.name,
             size: file.size,
             uploadDate: new Date(),
-            experience: [], // Will be populated by AI analysis
-            education: [], // Will be populated by AI analysis
+            experience: [],
+            education: [],
             processedContent: extractedText,
             status: 'completed'
         };
