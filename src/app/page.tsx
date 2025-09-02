@@ -6,7 +6,7 @@ import { LanguageSelector } from '../components/language-selector';
 import { JobOfferInput } from '../components/job-offer-input';
 import { ActionButtons } from '../components/action-buttons';
 import { ContentGenerator } from '../components/content-generator';
-import { DebugApiResponse } from '../components/debug-api-response';
+
 
 import { ErrorBoundary } from '../components/error-boundary';
 import { Language } from '../lib/types';
@@ -140,14 +140,7 @@ export default function Home() {
         },
         body: JSON.stringify({
           cvData: state.cvData,
-          jobAnalysis: state.jobAnalysis || {
-            experienceLevel: 'mid',
-            industry: 'Technology',
-            requirements: ['Problem solving', 'Communication'],
-            companySize: 'Medium',
-            location: 'Remote',
-            keywords: ['development', 'teamwork']
-          },
+          jobOffer: state.jobOffer,
           language: state.language,
           type: type === 'email' ? 'application' : undefined,
         }),
@@ -301,11 +294,17 @@ export default function Home() {
       // Store debug data
       setDebugApiResponse(result);
 
+      // Extract and store job analysis if available
+      if (result.jobAnalysis) {
+        console.log('Storing job analysis:', result.jobAnalysis);
+        dispatch({ type: 'SET_JOB_ANALYSIS', payload: result.jobAnalysis });
+      }
+
       // Create a GeneratedContent object for CV analysis
       const generatedContent = {
         id: `cv-analysis-${Date.now()}`,
         type: 'cv-analysis' as const,
-        language: state.language,
+        language: state.language.code,
         content: `CV Analysis completed with ${result.result.jobMatch.overallMatch}% match score`,
         metadata: {
           wordCount: 0,
@@ -333,8 +332,10 @@ export default function Home() {
   };
 
   const handleRegenerate = () => {
-    if (state.generationType) {
+    if (state.generationType && (state.generationType === 'cover-letter' || state.generationType === 'email')) {
       handleStreamingGeneration(state.generationType);
+    } else if (state.generationType === 'cv-analysis') {
+      handleAnalyzeCV();
     }
   };
 

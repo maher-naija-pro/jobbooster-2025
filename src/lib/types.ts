@@ -60,6 +60,7 @@ export interface Language {
 export interface JobAnalysis {
   experienceLevel: 'entry' | 'mid' | 'senior' | 'lead';
   industry: string;
+  companyName: string;
   requirements: string[];
   companySize: string;
   location: string;
@@ -169,6 +170,8 @@ export interface AppState {
   isUploading: boolean;
   isAnalyzingCV: boolean;
   cvAnalysisProgress: number;
+  isAnalyzingJob: boolean;
+  jobAnalysisProgress: number;
 }
 
 export type AppAction =

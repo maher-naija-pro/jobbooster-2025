@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { CVAnalysisResult, CVAnalysis, ExtractedSkill, ExperienceAnalysis, EducationAnalysis, SkillMatch } from '../../../lib/types';
+import { CVAnalysisResult, CVAnalysis, ExtractedSkill, ExperienceAnalysis, EducationAnalysis, SkillMatch, JobAnalysis } from '../../../lib/types';
 import { openai } from '../../../lib/openai';
+import { logger } from '../../../lib/logger';
 
 // Helper function to transform AI response variations to expected structure
 function transformAIResponse(aiResponse: any): CVAnalysisResult | null {
@@ -65,17 +66,45 @@ function transformAIResponse(aiResponse: any): CVAnalysisResult | null {
 
     return null;
   } catch (error) {
-    console.error('Error transforming AI response:', error);
+    logger.error('Error transforming AI response', {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined
+    });
     return null;
   }
 }
 
 export async function POST(request: NextRequest) {
+  const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  const startTime = Date.now();
+
+  logger.info('CV Analysis API request started', {
+    requestId,
+    endpoint: '/api/analyze-cv',
+    method: 'POST',
+    userAgent: request.headers.get('user-agent'),
+    ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip')
+  });
+
   try {
     const body = await request.json();
     const { cvData, jobOffer, language } = body;
 
+    logger.debug('Request body parsed successfully', {
+      requestId,
+      hasCvData: !!cvData,
+      hasJobOffer: !!jobOffer,
+      language: language?.name || 'English',
+      cvDataId: cvData?.id,
+      cvFilename: cvData?.filename
+    });
+
     if (!cvData || !jobOffer) {
+      logger.warn('Missing required parameters', {
+        requestId,
+        hasCvData: !!cvData,
+        hasJobOffer: !!jobOffer
+      });
       return NextResponse.json(
         { error: 'CV data and job offer are required' },
         { status: 400 }
@@ -83,8 +112,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Call OpenAI API for CV analysis
-
-    const startTime = Date.now();
+    logger.info('Starting CV analysis with OpenAI', {
+      requestId,
+      cvId: cvData.id,
+      cvFilename: cvData.filename,
+      language: language?.name || 'English'
+    });
 
     // Prepare the prompt for CV analysis
     const analysisPrompt = `
@@ -151,10 +184,20 @@ Analyze the following CV data and job offer to provide a comprehensive analysis.
     "missingSkills": ["skill1", "skill2", "skill3"],
     "strengths": ["strength1", "strength2"],
     "recommendations": ["recommendation1", "recommendation2"]
+  },
+  "jobAnalysis": {
+    "experienceLevel": "entry|mid|senior|lead",
+    "industry": "industry_name",
+    "companyName": "company_name",
+    "requirements": ["requirement1", "requirement2", "requirement3"],
+    "companySize": "startup|small|medium|large|enterprise",
+    "location": "location_info",
+    "salaryRange": "salary_range_if_mentioned",
+    "keywords": ["keyword1", "keyword2", "keyword3"]
   }
 }
 
-CRITICAL: You MUST return ONLY this exact structure. Do NOT add any additional fields like "experience relevance scoring", "job match analysis", or "actionable recommendations". The response must have exactly two top-level fields: "analysis" and "jobMatch".
+CRITICAL: You MUST return ONLY this exact structure. Do NOT add any additional fields like "experience relevance scoring", "job match analysis", or "actionable recommendations". The response must have exactly three top-level fields: "analysis", "jobMatch", and "jobAnalysis".
 
 CV Data:
 - Filename: ${cvData.filename}
@@ -189,9 +232,20 @@ Please provide a detailed analysis focusing on:
 4. Strengths and weaknesses identification
 5. Job match analysis with specific skill gaps
 6. Actionable recommendations for improvement
+7. Job analysis: Extract structured job information including experience level, industry, company name, requirements, company size, location, salary range, and keywords
 
 IMPORTANT: Return ONLY valid JSON. Do not include any explanatory text, comments, or formatting. Start your response directly with { and end with }. The response must be parseable JSON.
 `;
+
+    const openaiStartTime = Date.now();
+
+    logger.debug('Calling OpenAI API', {
+      requestId,
+      model: process.env.OPENAI_MODEL || 'gpt-oss',
+      promptLength: analysisPrompt.length,
+      temperature: 0.3,
+      maxTokens: 6000
+    });
 
     const openaiResponse = await openai.chat.completions.create({
       model: process.env.OPENAI_MODEL || 'gpt-oss',
@@ -209,9 +263,23 @@ IMPORTANT: Return ONLY valid JSON. Do not include any explanatory text, comments
       max_tokens: 6000,
     });
 
+    const openaiProcessingTime = Date.now() - openaiStartTime;
+
+    logger.info('OpenAI API call completed', {
+      requestId,
+      processingTime: openaiProcessingTime,
+      model: process.env.OPENAI_MODEL || 'gpt-oss',
+      responseLength: openaiResponse.choices[0]?.message?.content?.length || 0
+    });
+
     const aiResponse = openaiResponse.choices[0]?.message?.content;
 
     if (!aiResponse) {
+      logger.error('No response from AI service', {
+        requestId,
+        openaiProcessingTime,
+        model: process.env.OPENAI_MODEL || 'gpt-oss'
+      });
       return NextResponse.json(
         { error: 'No response from AI service' },
         { status: 500 }
@@ -221,7 +289,11 @@ IMPORTANT: Return ONLY valid JSON. Do not include any explanatory text, comments
     // Parse the AI response
     let cvAnalysisResult: CVAnalysisResult;
     try {
-      console.log('Raw AI Response:', aiResponse);
+      logger.debug('Raw AI Response received', {
+        requestId,
+        responseLength: aiResponse.length,
+        responsePreview: aiResponse.substring(0, 200) + '...'
+      });
 
       // Extract JSON from the response (handle cases where AI adds explanatory text)
       let jsonString = aiResponse.trim();
@@ -230,20 +302,46 @@ IMPORTANT: Return ONLY valid JSON. Do not include any explanatory text, comments
       const jsonStartIndex = jsonString.indexOf('{');
       if (jsonStartIndex > 0) {
         jsonString = jsonString.substring(jsonStartIndex);
+        logger.debug('Extracted JSON from AI response', {
+          requestId,
+          originalLength: aiResponse.length,
+          extractedLength: jsonString.length,
+          jsonStartIndex
+        });
       }
 
       // Find the last closing brace to handle cases where there might be text after JSON
       const lastBraceIndex = jsonString.lastIndexOf('}');
       if (lastBraceIndex !== -1 && lastBraceIndex < jsonString.length - 1) {
         jsonString = jsonString.substring(0, lastBraceIndex + 1);
+        logger.debug('Trimmed JSON response', {
+          requestId,
+          finalLength: jsonString.length
+        });
       }
 
-      console.log('Extracted JSON string:', jsonString);
+      logger.debug('Extracted JSON string for parsing', {
+        requestId,
+        jsonLength: jsonString.length
+      });
+
       cvAnalysisResult = JSON.parse(jsonString);
-      console.log('Parsed CV Analysis Result:', cvAnalysisResult);
+
+      logger.info('CV Analysis Result parsed successfully', {
+        requestId,
+        hasAnalysis: !!cvAnalysisResult.analysis,
+        hasJobMatch: !!cvAnalysisResult.jobMatch,
+        hasJobAnalysis: !!(cvAnalysisResult as any).jobAnalysis,
+        skillsCount: cvAnalysisResult.analysis?.skills?.length || 0,
+        experiencesCount: cvAnalysisResult.analysis?.experience?.length || 0
+      });
     } catch (parseError) {
-      console.error('Failed to parse AI response:', parseError);
-      console.error('AI Response:', aiResponse);
+      logger.error('Failed to parse AI response', {
+        requestId,
+        error: parseError instanceof Error ? parseError.message : String(parseError),
+        stack: parseError instanceof Error ? parseError.stack : undefined,
+        aiResponse: aiResponse.substring(0, 500) + (aiResponse.length > 500 ? '...' : '')
+      });
       return NextResponse.json(
         { error: 'Invalid response format from AI service' },
         { status: 500 }
@@ -251,7 +349,7 @@ IMPORTANT: Return ONLY valid JSON. Do not include any explanatory text, comments
     }
 
     // Update processing time
-    const processingTime = Date.now() - startTime;
+    const processingTime = openaiProcessingTime;
 
     // Initialize metadata if it doesn't exist
     if (!cvAnalysisResult.analysis.metadata) {
@@ -292,7 +390,8 @@ IMPORTANT: Return ONLY valid JSON. Do not include any explanatory text, comments
     }
 
     // Validate and transform the response structure
-    console.log('Validating response structure:', {
+    logger.debug('Validating response structure', {
+      requestId,
       hasAnalysis: !!cvAnalysisResult.analysis,
       hasJobMatch: !!cvAnalysisResult.jobMatch,
       analysisKeys: cvAnalysisResult.analysis ? Object.keys(cvAnalysisResult.analysis) : [],
@@ -302,16 +401,29 @@ IMPORTANT: Return ONLY valid JSON. Do not include any explanatory text, comments
 
     // Handle AI response variations by transforming the structure
     if (!cvAnalysisResult.analysis || !cvAnalysisResult.jobMatch) {
-      console.log('Attempting to transform AI response structure...');
+      logger.warn('AI response missing required fields, attempting transformation', {
+        requestId,
+        hasAnalysis: !!cvAnalysisResult.analysis,
+        hasJobMatch: !!cvAnalysisResult.jobMatch,
+        availableFields: Object.keys(cvAnalysisResult)
+      });
 
       // Check if AI returned alternative field names
       const transformedResult = transformAIResponse(cvAnalysisResult);
 
       if (transformedResult && transformedResult.analysis && transformedResult.jobMatch) {
-        console.log('Successfully transformed AI response');
+        logger.info('Successfully transformed AI response structure', {
+          requestId,
+          originalFields: Object.keys(cvAnalysisResult),
+          transformedFields: Object.keys(transformedResult)
+        });
         cvAnalysisResult = transformedResult;
       } else {
-        console.error('Invalid analysis structure:', cvAnalysisResult);
+        logger.error('Invalid analysis structure from AI service', {
+          requestId,
+          availableFields: Object.keys(cvAnalysisResult),
+          structure: cvAnalysisResult
+        });
         return NextResponse.json(
           { error: 'Invalid analysis structure from AI service. Expected fields: analysis, jobMatch' },
           { status: 500 }
@@ -319,17 +431,41 @@ IMPORTANT: Return ONLY valid JSON. Do not include any explanatory text, comments
       }
     }
 
+    // Extract job analysis from the AI response if available
+    const jobAnalysis = (cvAnalysisResult as any).jobAnalysis || null;
+
     const finalResponse = {
       success: true,
       result: cvAnalysisResult,
+      jobAnalysis: jobAnalysis,
       processingTime
     };
 
-    console.log('Final API response:', finalResponse);
+    const totalProcessingTime = Date.now() - startTime;
+
+    logger.info('CV Analysis completed successfully', {
+      requestId,
+      processingTime: totalProcessingTime,
+      openaiProcessingTime: processingTime,
+      skillsCount: cvAnalysisResult.analysis.skills?.length || 0,
+      experiencesCount: cvAnalysisResult.analysis.experience?.length || 0,
+      overallScore: cvAnalysisResult.analysis.overallScore,
+      jobMatchScore: cvAnalysisResult.jobMatch.overallMatch
+    });
+
     return NextResponse.json(finalResponse);
 
   } catch (error) {
-    console.error('Error analyzing CV:', error);
+    const totalProcessingTime = Date.now() - startTime;
+
+    logger.error('Error analyzing CV', {
+      requestId,
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      processingTime: totalProcessingTime,
+      endpoint: '/api/analyze-cv'
+    });
+
     return NextResponse.json(
       { error: 'Failed to analyze CV' },
       { status: 500 }
