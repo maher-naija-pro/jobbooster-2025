@@ -1,38 +1,5 @@
-'use server'
-
-import { revalidatePath } from 'next/cache'
-import { createClient } from '@/lib/supabase/server'
-import { loginSchema } from '@/lib/auth/validation'
-
-export async function login(formData: FormData) {
-    const supabase = await createClient()
-
-    const data = {
-        email: formData.get('email') as string,
-        password: formData.get('password') as string,
-    }
-
-    try {
-        // Validate input
-        const validatedData = loginSchema.parse(data)
-
-        const { error } = await supabase.auth.signInWithPassword(validatedData)
-
-        if (error) {
-            // Map Supabase errors to user-friendly messages
-            const userFriendlyMessage = mapAuthErrorToMessage(error.message)
-            throw new Error(userFriendlyMessage)
-        }
-
-        revalidatePath('/', 'layout')
-        return { success: true }
-    } catch (error) {
-        if (error instanceof Error) {
-            throw error
-        }
-        throw new Error('An unexpected error occurred. Please try again.')
-    }
-}
+// Simple test utility for error mapping
+// This can be run manually to verify error mapping works correctly
 
 function mapAuthErrorToMessage(errorMessage: string): string {
     const errorMap: Record<string, string> = {
@@ -68,3 +35,59 @@ function mapAuthErrorToMessage(errorMessage: string): string {
     // Default fallback for unknown errors
     return 'Login failed. Please check your credentials and try again.'
 }
+
+// Test cases
+const testCases = [
+    {
+        input: 'Invalid login credentials',
+        expected: 'The email or password you entered is incorrect. Please check your credentials and try again.',
+        description: 'Exact match for invalid credentials'
+    },
+    {
+        input: 'User not found',
+        expected: 'No account found with this email address. Please check your email or create a new account.',
+        description: 'Exact match for user not found'
+    },
+    {
+        input: 'Email not confirmed',
+        expected: 'Please check your email and click the confirmation link before signing in.',
+        description: 'Exact match for unconfirmed email'
+    },
+    {
+        input: 'Too many requests',
+        expected: 'Too many login attempts. Please wait a few minutes before trying again.',
+        description: 'Exact match for rate limiting'
+    },
+    {
+        input: 'Some random error message',
+        expected: 'Login failed. Please check your credentials and try again.',
+        description: 'Fallback for unknown error'
+    }
+]
+
+// Run tests
+console.log('Testing error mapping...')
+let passed = 0
+let failed = 0
+
+testCases.forEach((testCase, index) => {
+    const result = mapAuthErrorToMessage(testCase.input)
+    const success = result === testCase.expected
+
+    console.log(`Test ${index + 1}: ${testCase.description}`)
+    console.log(`  Input: "${testCase.input}"`)
+    console.log(`  Expected: "${testCase.expected}"`)
+    console.log(`  Got: "${result}"`)
+    console.log(`  Result: ${success ? 'PASS' : 'FAIL'}`)
+    console.log('')
+
+    if (success) {
+        passed++
+    } else {
+        failed++
+    }
+})
+
+console.log(`\nTest Results: ${passed} passed, ${failed} failed`)
+
+export { mapAuthErrorToMessage }

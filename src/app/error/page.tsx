@@ -1,13 +1,14 @@
 import Link from 'next/link'
 
 interface ErrorPageProps {
-    searchParams: {
+    searchParams: Promise<{
         message?: string
-    }
+    }>
 }
 
-export default function ErrorPage({ searchParams }: ErrorPageProps) {
-    const message = searchParams.message || 'An unexpected error occurred'
+export default async function ErrorPage({ searchParams }: ErrorPageProps) {
+    const params = await searchParams
+    const message = params.message || 'An unexpected error occurred'
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -41,12 +42,12 @@ export default function ErrorPage({ searchParams }: ErrorPageProps) {
                             >
                                 Return to home
                             </Link>
-                            <button
-                                onClick={() => window.history.back()}
+                            <Link
+                                href="javascript:history.back()"
                                 className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                             >
                                 Go back
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 </div>

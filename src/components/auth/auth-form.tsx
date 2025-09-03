@@ -25,8 +25,10 @@ export function AuthForm({ isLogin, onToggleMode, onSuccess }: AuthFormProps) {
 
     try {
       if (isLogin) {
-        await login(formData)
-        onSuccess()
+        const result = await login(formData)
+        if (result?.success) {
+          onSuccess()
+        }
       } else {
         await register(formData)
         setSuccess('Registration successful! Please check your email for confirmation.')
@@ -36,7 +38,13 @@ export function AuthForm({ isLogin, onToggleMode, onSuccess }: AuthFormProps) {
         }, 2000)
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred'
+      setError(errorMessage)
+
+      // If it's a "user not found" error, suggest creating an account
+      if (errorMessage.includes('No account found') && isLogin) {
+        setError(errorMessage + ' Would you like to create a new account instead?')
+      }
     } finally {
       setIsLoading(false)
     }
@@ -45,8 +53,24 @@ export function AuthForm({ isLogin, onToggleMode, onSuccess }: AuthFormProps) {
   return (
     <form action={handleSubmit} className="space-y-4">
       {error && (
-        <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">
-          {error}
+        <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md border border-red-200">
+          <div className="flex items-start space-x-2">
+            <svg className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+            </svg>
+            <div className="flex-1">
+              <p>{error}</p>
+              {error.includes('No account found') && isLogin && (
+                <button
+                  type="button"
+                  onClick={onToggleMode}
+                  className="mt-2 text-sm text-blue-600 hover:text-blue-800 underline"
+                >
+                  Create a new account instead
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       )}
 

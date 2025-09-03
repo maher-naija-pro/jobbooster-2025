@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
-import { createUserProfile } from '@/lib/auth/profile-utils'
+import { prisma } from '@/lib/prisma'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -16,18 +16,50 @@ export async function GET(request: Request) {
       const { data: { user } } = await supabase.auth.getUser()
 
       if (user) {
-        // Create user profile immediately after email confirmation
+        // Update user profile after email confirmation (profile may already exist from registration)
         const registrationMethod = user.app_metadata?.provider || 'email'
         const additionalData = {
           fullName: user.user_metadata?.full_name || user.user_metadata?.name,
           avatarUrl: user.user_metadata?.avatar_url || user.user_metadata?.picture
         }
 
-        await createUserProfile({
-          user,
-          registrationMethod,
-          additionalData
-        })
+        try {
+          // Update existing profile or create new one
+          await prisma.profile.upsert({
+            where: { userId: user.id },
+            update: {
+              email: user.email!,
+              ...(additionalData.fullName && { fullName: additionalData.fullName }),
+              ...(additionalData.avatarUrl && { avatarUrl: additionalData.avatarUrl }),
+              updatedAt: new Date()
+            },
+            create: {
+              userId: user.id,
+              email: user.email!,
+              fullName: additionalData.fullName,
+              avatarUrl: additionalData.avatarUrl,
+              preferences: {},
+              subscription: { plan: 'free' }
+            }
+          })
+
+          // Log the email confirmation activity
+          await prisma.userActivity.create({
+            data: {
+              userId: user.id,
+              action: 'email_confirmed',
+              resourceType: 'profile',
+              metadata: {
+                email: user.email,
+                registrationMethod,
+                provider: user.app_metadata?.provider,
+                ...additionalData
+              }
+            }
+          })
+        } catch (profileError) {
+          console.error('Error updating user profile after email confirmation:', profileError)
+        }
       }
 
       const forwardedHost = request.headers.get('x-forwarded-host') // original origin before load balancer
