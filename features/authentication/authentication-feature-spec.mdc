@@ -3,7 +3,7 @@
 ## Overview
 This document defines the comprehensive authentication system for JobBooster 2025, enabling secure user registration, login, profile management, and data persistence for personalized CV analysis and content generation. The system leverages Supabase as the backend-as-a-service platform with Prisma ORM for type-safe database operations, built with Next.js 15.5.2, React 19.1.0, TypeScript, Tailwind CSS, and shadcn/ui components.
 
-**Key Design Principle**: Users can access the main application page without registration or login. Authentication is only required when users attempt to use CV analysis features, at which point a popup modal prompts them to register or login.
+**Key Design Principle**: Users can access the main application page without registration or login. Authentication is only required when users attempt to use CV analysis features, user can use any other feature at which point a popup modal prompts them to register or login.
 
 ---
 
@@ -47,7 +47,6 @@ This document defines the comprehensive authentication system for JobBooster 202
   - Email/password authentication
   - "Remember me" functionality (30-day session)
   - Password reset via email
-  - Account lockout after 5 failed attempts
   - Session management with automatic refresh
 
 #### **OAuth Integration**
@@ -57,10 +56,6 @@ This document defines the comprehensive authentication system for JobBooster 202
 - **Account Linking**: Merge OAuth accounts with existing email accounts
 - **Profile Sync**: Auto-populate profile data from OAuth providers
 
-#### **Magic Link Authentication**
-- **Passwordless Login**: Email-based authentication
-- **Secure Token Generation**: Time-limited, single-use tokens
-- **Mobile-Friendly**: Deep link support for mobile devices
 
 ### 2. **User Profile Management**
 
@@ -98,9 +93,7 @@ interface UserProfile {
 #### **Profile Features**
 - **Basic Information**: Name, email, username, avatar
 - **Preferences**: Language, timezone, notification settings
-- **Privacy Controls**: Data visibility, retention policies
 - **Account Settings**: Password change, email verification
-- **Subscription Management**: Plan details, billing information
 
 ### 3. **Session Management & Security**
 
@@ -109,11 +102,7 @@ interface UserProfile {
 - **Refresh Tokens**: Long-lived tokens for session persistence
 - **Session Storage**: HTTP-only cookies for security
 - **Automatic Refresh**: Seamless token renewal
-- **Multi-device Support**: Concurrent sessions across devices
 
-#### **Security Features**
-- **Row Level Security (RLS)**: Database-level access control
-- **CSRF Protection**: Cross-site request forgery prevention
 
 
 
@@ -211,42 +200,9 @@ model UserActivity {
 - **One-to-Many**: User → User Sessions
 - **One-to-Many**: User → Activity Logs
 
-#### **Supabase + Prisma Integration Benefits**
 
-##### **Authentication & Authorization**
-- **Supabase Auth**: Handles user authentication, JWT tokens, and session management
-- **Prisma ORM**: Provides type-safe access to user data and relationships
-- **Row Level Security**: Database-level security policies enforced by Supabase
-- **Type Safety**: Compile-time checking for all database operations
 
-##### **Real-time Features**
-- **Supabase Realtime**: Live updates for user sessions and activity
-- **Prisma Subscriptions**: Type-safe real-time data synchronization
-- **WebSocket Integration**: Efficient real-time communication
 
-##### **Development Experience**
-- **Auto-generated Types**: Prisma generates TypeScript types from database schema
-- **IntelliSense Support**: Full IDE support with autocomplete and error detection
-- **Migration Management**: Version-controlled database schema changes
-- **Query Optimization**: Automatic query optimization and connection pooling
-
-##### **Performance & Scalability**
-- **Connection Pooling**: Efficient database connection management
-- **Query Caching**: Built-in query result caching
-- **Batch Operations**: Efficient bulk database operations
-- **Edge Functions**: Serverless functions for custom business logic
-
----
-
-## 🟡 MEDIUM PRIORITY FEATURES
-
-### 5. **Enhanced User Experience**
-
-#### **Onboarding Flow**
-- **Welcome Tour**: Interactive feature introduction
-- **Profile Setup**: Guided profile completion
-- **First CV Upload**: Tutorial for CV analysis
-- **Preferences Configuration**: Personalized settings
 
 #### **User Dashboard**
 - **Overview**: Recent activity, quick stats
@@ -254,25 +210,12 @@ model UserActivity {
 - **Generated Content**: Cover letters, emails, recommendations
 - **Account Settings**: Profile, preferences, billing
 
-#### **Notification System**
-- **Email Notifications**: Account updates, feature announcements
-- **In-App Notifications**: Real-time updates, tips
-- **Push Notifications**: Mobile app support (future)
-- **Notification Preferences**: Granular control
 
-### 6. **Advanced Authentication Features**
 
-#### **Two-Factor Authentication (2FA)**
-- **TOTP Support**: Time-based one-time passwords
-- **SMS Backup**: Phone number verification
-- **Recovery Codes**: Account recovery options
-- **Device Management**: Trusted device management
+
 
 #### **Social Login Enhancements**
 - **Profile Picture Sync**: Auto-update from OAuth providers
-- **Contact Import**: LinkedIn connections (with permission)
-- **Professional Data**: Job history, skills from LinkedIn
-
 
 
 
