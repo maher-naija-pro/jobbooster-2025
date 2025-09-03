@@ -1,7 +1,7 @@
 # Authentication Feature Architecture
 
 ## Overview
-This document outlines the technical architecture and implementation details for the Authentication system in JobBooster 2025, providing secure user management, session handling, and data persistence using Supabase as the backend-as-a-service platform with Prisma ORM for type-safe database operations.
+This document outlines the technical architecture and implementation details for the Authentication system in JobBooster 2025, providing secure user management, session handling, and data persistence using Supabase as the backend-as-a-service platform with Prisma ORM for type-safe database operations, built with Next.js 15.5.2, React 19.1.0, TypeScript, Tailwind CSS, and shadcn/ui components.
 
 **Key Architecture Principle**: The system supports anonymous access to the main application interface, with authentication only required for specific features like CV analysis. This is implemented through a modal-based authentication flow that preserves user context and form data.
 
@@ -40,6 +40,7 @@ generate mail or generate lettter user can use them without auth                
 │  • React 19.1.0 Components                                   │
 │  • TypeScript for Type Safety                                 │
 │  • Tailwind CSS for Styling                                   │
+│  • shadcn/ui Component Library                                │
 │  • Supabase Client Integration                                │
 │  • Prisma ORM for Database Operations                        │
 │  • Server-Side Rendering (SSR) Support                       │
@@ -354,6 +355,20 @@ export async function updateSession(
 ```
 
 ### 2. Authentication Components
+
+#### shadcn/ui Component Integration
+The authentication system leverages shadcn/ui components for consistent, accessible, and beautiful UI elements:
+
+- **Dialog**: Modal components for authentication flows
+- **Button**: Consistent button styling and variants
+- **Input**: Form input components with validation states
+- **Label**: Accessible form labels
+- **Card**: Container components for forms and content
+- **Alert**: Error and success message displays
+- **Avatar**: User profile picture components
+- **Badge**: Status indicators and tags
+- **Separator**: Visual content dividers
+- **Skeleton**: Loading state components
 
 #### Authentication Modal Component
 ```typescript

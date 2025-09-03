@@ -1,7 +1,7 @@
 # Authentication Feature Specification
 
 ## Overview
-This document defines the comprehensive authentication system for JobBooster 2025, enabling secure user registration, login, profile management, and data persistence for personalized CV analysis and content generation. The system leverages Supabase as the backend-as-a-service platform with Prisma ORM for type-safe database operations.
+This document defines the comprehensive authentication system for JobBooster 2025, enabling secure user registration, login, profile management, and data persistence for personalized CV analysis and content generation. The system leverages Supabase as the backend-as-a-service platform with Prisma ORM for type-safe database operations, built with Next.js 15.5.2, React 19.1.0, TypeScript, Tailwind CSS, and shadcn/ui components.
 
 **Key Design Principle**: Users can access the main application page without registration or login. Authentication is only required when users attempt to use CV analysis features, at which point a popup modal prompts them to register or login.
 
@@ -123,6 +123,11 @@ interface UserProfile {
 - **Supabase**: Backend-as-a-Service platform providing PostgreSQL database, authentication, and real-time features
 - **Prisma ORM**: Type-safe database client with auto-generated TypeScript types
 - **PostgreSQL**: Primary database with Row Level Security (RLS) policies
+- **Next.js 15.5.2**: React framework with server-side rendering and API routes
+- **React 19.1.0**: Frontend library with latest features and performance improvements
+- **TypeScript**: Type-safe development with compile-time error checking
+- **Tailwind CSS**: Utility-first CSS framework for rapid UI development
+- **shadcn/ui**: High-quality, accessible React component library
 
 #### **Prisma Schema Definition**
 ```prisma
@@ -311,7 +316,18 @@ Encryption**: AES-256 for sensitive data
     "prisma": "^5.7.0",
     "next": "^15.5.2",
     "react": "^19.1.0",
-    "typescript": "^5.3.0"
+    "typescript": "^5.3.0",
+    "tailwindcss": "^3.4.0",
+    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/typography": "^0.5.10",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "tailwind-merge": "^2.2.0",
+    "lucide-react": "^0.303.0",
+    "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-label": "^2.0.2",
+    "@radix-ui/react-separator": "^1.0.3",
+    "@radix-ui/react-slot": "^1.0.2"
   }
 }
 ```
@@ -345,6 +361,13 @@ AUTH_REQUIRED_FEATURES=cv_analysis,content_generation
 3. **Migrations**: Run `npx prisma migrate dev` to create initial schema
 4. **Client Generation**: Run `npx prisma generate` to generate TypeScript types
 5. **Row Level Security**: Configure RLS policies in Supabase dashboard
+
+### **Frontend Setup**
+1. **Next.js Project**: Initialize with `npx create-next-app@latest`
+2. **Tailwind CSS**: Configure with `npx tailwindcss init`
+3. **shadcn/ui**: Initialize with `npx shadcn-ui@latest init`
+4. **Components**: Install required shadcn/ui components
+5. **TypeScript**: Configure strict type checking
 
 ---
 

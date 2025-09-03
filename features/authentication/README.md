@@ -70,7 +70,8 @@ Review the technical architecture for:
 
 - **Backend**: Supabase (PostgreSQL + Auth + Storage)
 - **Frontend**: Next.js 15.5.2 + React 19.1.0 + TypeScript
-- **Styling**: Tailwind CSS
+- **Styling**: Tailwind CSS + shadcn/ui components
+- **Database ORM**: Prisma (type-safe database operations)
 - **State Management**: React Context + Supabase Client
 - **Security**: Row Level Security (RLS) + JWT tokens
 - **Monitoring**: Custom analytics + Performance tracking
