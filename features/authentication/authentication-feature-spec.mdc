@@ -1,7 +1,7 @@
 # Authentication Feature Specification
 
 ## Overview
-This document defines the comprehensive authentication system for JobBooster 2025, enabling secure user registration, login, profile management, and data persistence for personalized CV analysis and content generation.
+This document defines the comprehensive authentication system for JobBooster 2025, enabling secure user registration, login, profile management, and data persistence for personalized CV analysis and content generation. The system leverages Supabase as the backend-as-a-service platform with Prisma ORM for type-safe database operations.
 
 ---
 
@@ -91,51 +91,117 @@ interface UserProfile {
 
 ### 4. **Database Integration**
 
-#### **User Data Tables**
-```sql
--- User profiles
-CREATE TABLE profiles (
-  id UUID REFERENCES auth.users PRIMARY KEY,
-  email TEXT UNIQUE NOT NULL,
-  full_name TEXT,
-  username TEXT UNIQUE,
-  avatar_url TEXT,
-  preferences JSONB DEFAULT '{}',
-  subscription JSONB DEFAULT '{"plan": "free"}',
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+#### **Technology Stack**
+- **Supabase**: Backend-as-a-Service platform providing PostgreSQL database, authentication, and real-time features
+- **Prisma ORM**: Type-safe database client with auto-generated TypeScript types
+- **PostgreSQL**: Primary database with Row Level Security (RLS) policies
 
--- User sessions (for analytics)
-CREATE TABLE user_sessions (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id UUID REFERENCES auth.users NOT NULL,
-  session_token TEXT UNIQUE NOT NULL,
-  device_info JSONB,
-  ip_address INET,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  expires_at TIMESTAMP WITH TIME ZONE NOT NULL
-);
+#### **Prisma Schema Definition**
+```prisma
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
 
--- User activity logs
-CREATE TABLE user_activity (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id UUID REFERENCES auth.users NOT NULL,
-  action TEXT NOT NULL,
-  resource_type TEXT,
-  resource_id UUID,
-  metadata JSONB,
-  ip_address INET,
-  user_agent TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Profile {
+  id          String   @id @default(cuid())
+  userId      String   @unique @map("user_id")
+  email       String   @unique
+  fullName    String?  @map("full_name")
+  username    String?  @unique
+  avatarUrl   String?  @map("avatar_url")
+  preferences Json     @default("{}")
+  subscription Json    @default("{\"plan\": \"free\"}")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  userSessions    UserSession[]
+  userActivities  UserActivity[]
+  cvData          CvData[]
+  generatedContent GeneratedContent[]
+
+  @@map("profiles")
+}
+
+model UserSession {
+  id           String   @id @default(cuid())
+  userId       String   @map("user_id")
+  sessionToken String   @unique @map("session_token")
+  deviceInfo   Json?    @map("device_info")
+  ipAddress    String?  @map("ip_address")
+  userAgent    String?  @map("user_agent")
+  createdAt    DateTime @default(now()) @map("created_at")
+  expiresAt    DateTime @map("expires_at")
+  lastActivity DateTime @default(now()) @map("last_activity")
+
+  // Relations
+  profile Profile @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@map("user_sessions")
+}
+
+model UserActivity {
+  id           String   @id @default(cuid())
+  userId       String   @map("user_id")
+  action       String
+  resourceType String?  @map("resource_type")
+  resourceId   String?  @map("resource_id")
+  metadata     Json?
+  ipAddress    String?  @map("ip_address")
+  userAgent    String?  @map("user_agent")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  // Relations
+  profile Profile @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@map("user_activity")
+}
 ```
+
+#### **Database Features**
+- **Type Safety**: Prisma provides compile-time type checking for all database operations
+- **Auto-generated Types**: TypeScript interfaces generated from schema
+- **Query Builder**: Intuitive API for complex database queries
+- **Relations**: Easy handling of database relationships with type safety
+- **Migrations**: Version-controlled database schema changes
+- **Connection Pooling**: Efficient database connection management
 
 #### **Data Relationships**
 - **One-to-Many**: User → CV Data
 - **One-to-Many**: User → Generated Content
 - **One-to-Many**: User → User Sessions
 - **One-to-Many**: User → Activity Logs
+
+#### **Supabase + Prisma Integration Benefits**
+
+##### **Authentication & Authorization**
+- **Supabase Auth**: Handles user authentication, JWT tokens, and session management
+- **Prisma ORM**: Provides type-safe access to user data and relationships
+- **Row Level Security**: Database-level security policies enforced by Supabase
+- **Type Safety**: Compile-time checking for all database operations
+
+##### **Real-time Features**
+- **Supabase Realtime**: Live updates for user sessions and activity
+- **Prisma Subscriptions**: Type-safe real-time data synchronization
+- **WebSocket Integration**: Efficient real-time communication
+
+##### **Development Experience**
+- **Auto-generated Types**: Prisma generates TypeScript types from database schema
+- **IntelliSense Support**: Full IDE support with autocomplete and error detection
+- **Migration Management**: Version-controlled database schema changes
+- **Query Optimization**: Automatic query optimization and connection pooling
+
+##### **Performance & Scalability**
+- **Connection Pooling**: Efficient database connection management
+- **Query Caching**: Built-in query result caching
+- **Batch Operations**: Efficient bulk database operations
+- **Edge Functions**: Serverless functions for custom business logic
 
 ---
 
@@ -205,6 +271,46 @@ Encryption**: AES-256 for sensitive data
 
 ---
 
+## Technical Requirements
+
+### **Dependencies**
+```json
+{
+  "dependencies": {
+    "@supabase/ssr": "^0.1.0",
+    "@supabase/supabase-js": "^2.39.0",
+    "@prisma/client": "^5.7.0",
+    "prisma": "^5.7.0",
+    "next": "^15.5.2",
+    "react": "^19.1.0",
+    "typescript": "^5.3.0"
+  }
+}
+```
+
+### **Environment Variables**
+```env
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+
+# Database Configuration
+DATABASE_URL=postgresql://user:password@host:port/database
+
+# Prisma Configuration
+PRISMA_GENERATE_DATAPROXY=true
+```
+
+### **Database Setup**
+1. **Supabase Project**: Create new Supabase project
+2. **Prisma Schema**: Define database schema in `prisma/schema.prisma`
+3. **Migrations**: Run `npx prisma migrate dev` to create initial schema
+4. **Client Generation**: Run `npx prisma generate` to generate TypeScript types
+5. **Row Level Security**: Configure RLS policies in Supabase dashboard
+
+---
+
 ## User Stories
 
 ### **Registration & Onboarding**
@@ -265,15 +371,17 @@ Acceptance Criteria:
 
 ###  Core Authentication (Weeks 1-2)**
 - Supabase setup and configuration
+- Prisma ORM setup and schema definition
+- Database migration setup and initial schema deployment
 - Basic email/password authentication
 - User registration and login flows
-- Session management
-- Basic profile management
+- Session management with type-safe database operations
+- Basic profile management using Prisma
 - OAuth integration (Google, GitHub, LinkedIn)
 - Magic link authentication
-- User dashboard
-- Profile customization
-- Notification system
+- User dashboard with real-time data
+- Profile customization with type-safe updates
+- Notification system with activity tracking
 
 
 ---

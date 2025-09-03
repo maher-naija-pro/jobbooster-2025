@@ -1,7 +1,7 @@
 # Authentication Feature Architecture
 
 ## Overview
-This document outlines the technical architecture and implementation details for the Authentication system in JobBooster 2025, providing secure user management, session handling, and data persistence using Supabase as the backend-as-a-service platform.
+This document outlines the technical architecture and implementation details for the Authentication system in JobBooster 2025, providing secure user management, session handling, and data persistence using Supabase as the backend-as-a-service platform with Prisma ORM for type-safe database operations.
 
 ## System Architecture
 
@@ -14,6 +14,7 @@ This document outlines the technical architecture and implementation details for
 │  • TypeScript for Type Safety                                 │
 │  • Tailwind CSS for Styling                                   │
 │  • Supabase Client Integration                                │
+│  • Prisma ORM for Database Operations                        │
 │  • Server-Side Rendering (SSR) Support                       │
 └─────────────────────────────────────────────────────────────────┘
                                 │
@@ -49,12 +50,150 @@ This document outlines the technical architecture and implementation details for
 │  • Real-time Subscriptions                                    │
 │  • File Storage (Avatars, CVs)                               │
 │  • Edge Functions                                             │
+│  • Prisma ORM Integration                                     │
+│  • Type-safe Database Queries                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 ## Core Components Architecture
 
 ### 1. Authentication Client Setup
+
+#### Prisma ORM Configuration
+```typescript
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Profile {
+  id          String   @id @default(cuid())
+  userId      String   @unique @map("user_id")
+  email       String   @unique
+  fullName    String?  @map("full_name")
+  username    String?  @unique
+  avatarUrl   String?  @map("avatar_url")
+  preferences Json     @default("{}")
+  subscription Json    @default("{\"plan\": \"free\"}")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  userSessions    UserSession[]
+  userActivities  UserActivity[]
+  cvData          CvData[]
+  generatedContent GeneratedContent[]
+
+  @@map("profiles")
+}
+
+model UserSession {
+  id           String   @id @default(cuid())
+  userId       String   @map("user_id")
+  sessionToken String   @unique @map("session_token")
+  deviceInfo   Json?    @map("device_info")
+  ipAddress    String?  @map("ip_address")
+  userAgent    String?  @map("user_agent")
+  createdAt    DateTime @default(now()) @map("created_at")
+  expiresAt    DateTime @map("expires_at")
+  lastActivity DateTime @default(now()) @map("last_activity")
+
+  // Relations
+  profile Profile @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@map("user_sessions")
+}
+
+model UserActivity {
+  id           String   @id @default(cuid())
+  userId       String   @map("user_id")
+  action       String
+  resourceType String?  @map("resource_type")
+  resourceId   String?  @map("resource_id")
+  metadata     Json?
+  ipAddress    String?  @map("ip_address")
+  userAgent    String?  @map("user_agent")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  // Relations
+  profile Profile @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@map("user_activity")
+}
+
+model CvData {
+  id               String   @id @default(cuid())
+  userId           String   @map("user_id")
+  filename         String
+  fileSize         Int?     @map("file_size")
+  filePath         String?  @map("file_path")
+  uploadDate       DateTime @default(now()) @map("upload_date")
+  processedContent String?  @map("processed_content")
+  experience       Json?
+  education        Json?
+  skills           Json?
+  status           String   @default("processing")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  profile           Profile            @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  generatedContent  GeneratedContent[]
+
+  @@map("cv_data")
+}
+
+model GeneratedContent {
+  id           String   @id @default(cuid())
+  userId       String   @map("user_id")
+  cvId         String?  @map("cv_id")
+  contentType  String   @map("content_type")
+  content      String
+  language     String
+  jobAnalysis  Json?    @map("job_analysis")
+  metadata     Json     @default("{}")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  profile Profile @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  cvData  CvData? @relation(fields: [cvId], references: [id], onDelete: SetNull)
+
+  @@map("generated_content")
+}
+```
+
+#### Prisma Client Setup
+```typescript
+// lib/prisma.ts
+import { PrismaClient } from '@prisma/client'
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined
+}
+
+export const prisma = globalForPrisma.prisma ?? new PrismaClient()
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+
+// lib/prisma-server.ts
+import { PrismaClient } from '@prisma/client'
+
+export async function createPrismaClient() {
+  return new PrismaClient({
+    datasources: {
+      db: {
+        url: process.env.DATABASE_URL,
+      },
+    },
+  })
+}
+```
 
 #### Supabase Client Configuration
 ```typescript
@@ -235,14 +374,25 @@ export function UserProfile({ user, onUpdate }: UserProfileProps) {
   const loadProfile = useCallback(async () => {
     try {
       setIsLoading(true)
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single()
+      // Using Prisma for type-safe database operations
+      const profile = await prisma.profile.findUnique({
+        where: { userId: user.id },
+        include: {
+          userSessions: {
+            where: { expiresAt: { gt: new Date() } },
+            orderBy: { lastActivity: 'desc' },
+            take: 5
+          },
+          userActivities: {
+            orderBy: { createdAt: 'desc' },
+            take: 10
+          }
+        }
+      })
 
-      if (error) throw error
-      setProfile(data)
+      if (profile) {
+        setProfile(profile)
+      }
     } catch (error) {
       console.error('Error loading profile:', error)
     } finally {
@@ -253,19 +403,28 @@ export function UserProfile({ user, onUpdate }: UserProfileProps) {
   const updateProfile = async (updates: Partial<UserProfile>) => {
     try {
       setIsUpdating(true)
-      const { data, error } = await supabase
-        .from('profiles')
-        .update({
+      // Using Prisma for type-safe database operations
+      const updatedProfile = await prisma.profile.update({
+        where: { userId: user.id },
+        data: {
           ...updates,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id)
-        .select()
-        .single()
+          updatedAt: new Date()
+        },
+        include: {
+          userSessions: {
+            where: { expiresAt: { gt: new Date() } },
+            orderBy: { lastActivity: 'desc' },
+            take: 5
+          },
+          userActivities: {
+            orderBy: { createdAt: 'desc' },
+            take: 10
+          }
+        }
+      })
 
-      if (error) throw error
-      setProfile(data)
-      onUpdate?.(data)
+      setProfile(updatedProfile)
+      onUpdate?.(updatedProfile)
     } catch (error) {
       console.error('Error updating profile:', error)
     } finally {
@@ -508,6 +667,8 @@ export async function POST(request: NextRequest) {
 #### User Management Routes
 ```typescript
 // app/api/user/profile/route.ts
+import { prisma } from '@/lib/prisma'
+
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient()
@@ -520,16 +681,34 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const { data: profile, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single()
+    // Using Prisma for type-safe database operations
+    const profile = await prisma.profile.findUnique({
+      where: { userId: user.id },
+      include: {
+        userSessions: {
+          where: { expiresAt: { gt: new Date() } },
+          orderBy: { lastActivity: 'desc' },
+          take: 5
+        },
+        userActivities: {
+          orderBy: { createdAt: 'desc' },
+          take: 10
+        },
+        cvData: {
+          orderBy: { createdAt: 'desc' },
+          take: 5
+        },
+        generatedContent: {
+          orderBy: { createdAt: 'desc' },
+          take: 10
+        }
+      }
+    })
 
-    if (error) {
+    if (!profile) {
       return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
+        { error: 'Profile not found' },
+        { status: 404 }
       )
     }
 
@@ -556,22 +735,25 @@ export async function PUT(request: NextRequest) {
 
     const updates = await request.json()
     
-    const { data: profile, error } = await supabase
-      .from('profiles')
-      .update({
+    // Using Prisma for type-safe database operations
+    const profile = await prisma.profile.update({
+      where: { userId: user.id },
+      data: {
         ...updates,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', user.id)
-      .select()
-      .single()
-
-    if (error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      )
-    }
+        updatedAt: new Date()
+      },
+      include: {
+        userSessions: {
+          where: { expiresAt: { gt: new Date() } },
+          orderBy: { lastActivity: 'desc' },
+          take: 5
+        },
+        userActivities: {
+          orderBy: { createdAt: 'desc' },
+          take: 10
+        }
+      }
+    })
 
     return NextResponse.json({ profile })
   } catch (error) {
@@ -638,14 +820,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loadUserProfile = async (userId: string) => {
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single()
+      // Using Prisma for type-safe database operations
+      const profile = await prisma.profile.findUnique({
+        where: { userId },
+        include: {
+          userSessions: {
+            where: { expiresAt: { gt: new Date() } },
+            orderBy: { lastActivity: 'desc' },
+            take: 5
+          },
+          userActivities: {
+            orderBy: { createdAt: 'desc' },
+            take: 10
+          }
+        }
+      })
 
-      if (error) throw error
-      setProfile(data)
+      if (profile) {
+        setProfile(profile)
+      }
     } catch (error) {
       console.error('Error loading profile:', error)
     }
@@ -680,18 +873,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const updateProfile = async (updates: Partial<UserProfile>) => {
     if (!user) throw new Error('No user logged in')
     
-    const { data, error } = await supabase
-      .from('profiles')
-      .update({
+    // Using Prisma for type-safe database operations
+    const updatedProfile = await prisma.profile.update({
+      where: { userId: user.id },
+      data: {
         ...updates,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', user.id)
-      .select()
-      .single()
+        updatedAt: new Date()
+      },
+      include: {
+        userSessions: {
+          where: { expiresAt: { gt: new Date() } },
+          orderBy: { lastActivity: 'desc' },
+          take: 5
+        },
+        userActivities: {
+          orderBy: { createdAt: 'desc' },
+          take: 10
+        }
+      }
+    })
 
-    if (error) throw error
-    setProfile(data)
+    setProfile(updatedProfile)
   }
 
   const refreshProfile = async () => {
@@ -932,20 +1134,23 @@ WHERE expires_at > NOW();
 ### User Activity Tracking
 ```typescript
 // lib/analytics/user-activity.ts
+import { prisma } from '@/lib/prisma'
+
 export async function trackUserActivity(
   userId: string,
   action: string,
   metadata: Record<string, any> = {},
   request?: NextRequest
 ) {
-  const supabase = await createClient()
-  
-  await supabase.from('user_activity').insert({
-    user_id: userId,
-    action,
-    metadata,
-    ip_address: request?.ip,
-    user_agent: request?.headers.get('user-agent'),
+  // Using Prisma for type-safe database operations
+  await prisma.userActivity.create({
+    data: {
+      userId,
+      action,
+      metadata,
+      ipAddress: request?.ip,
+      userAgent: request?.headers.get('user-agent'),
+    }
   })
 }
 
@@ -954,6 +1159,25 @@ await trackUserActivity(user.id, 'login', { method: 'email' })
 await trackUserActivity(user.id, 'cv_upload', { filename: file.name, size: file.size })
 await trackUserActivity(user.id, 'content_generated', { type: 'cover_letter', language: 'en' })
 ```
+
+### Prisma ORM Benefits
+
+#### Type Safety
+- **Compile-time Type Checking**: All database operations are type-safe
+- **Auto-generated Types**: Prisma generates TypeScript types from schema
+- **IntelliSense Support**: Full IDE support with autocomplete and error detection
+
+#### Database Operations
+- **Query Builder**: Intuitive API for complex queries
+- **Relations**: Easy handling of database relationships
+- **Transactions**: Built-in support for database transactions
+- **Migrations**: Version-controlled database schema changes
+
+#### Performance Features
+- **Connection Pooling**: Efficient database connection management
+- **Query Optimization**: Automatic query optimization
+- **Caching**: Built-in query result caching
+- **Batch Operations**: Efficient bulk operations
 
 ### Performance Monitoring
 ```typescript
@@ -987,6 +1211,10 @@ export const authConfig = {
     anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
   },
+  prisma: {
+    databaseUrl: process.env.DATABASE_URL!,
+    logLevel: process.env.NODE_ENV === 'development' ? 'query' : 'error',
+  },
   security: {
     sessionTimeout: 24 * 60 * 60 * 1000, // 24 hours
     refreshThreshold: 60 * 60 * 1000, // 1 hour
@@ -1009,11 +1237,13 @@ export const authConfig = {
 ### Health Checks
 ```typescript
 // app/api/health/auth/route.ts
+import { prisma } from '@/lib/prisma'
+
 export async function GET() {
   try {
     const supabase = await createClient()
     
-    // Test database connection
+    // Test Supabase connection
     const { data, error } = await supabase
       .from('profiles')
       .select('count')
@@ -1021,8 +1251,13 @@ export async function GET() {
     
     if (error) throw error
     
+    // Test Prisma connection
+    await prisma.$queryRaw`SELECT 1`
+    
     return NextResponse.json({
       status: 'healthy',
+      supabase: 'connected',
+      prisma: 'connected',
       database: 'connected',
       timestamp: new Date().toISOString(),
     })
@@ -1039,4 +1274,4 @@ export async function GET() {
 }
 ```
 
-This authentication feature architecture provides a comprehensive, scalable, and secure foundation for implementing user authentication in JobBooster 2025, leveraging Supabase's powerful backend-as-a-service capabilities while maintaining full control over the user experience and data security.
+This authentication feature architecture provides a comprehensive, scalable, and secure foundation for implementing user authentication in JobBooster 2025, leveraging Supabase's powerful backend-as-a-service capabilities combined with Prisma ORM for type-safe database operations, while maintaining full control over the user experience and data security.
