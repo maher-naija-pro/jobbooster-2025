@@ -17,6 +17,7 @@ import { useAuth } from '@/components/auth/auth-provider'
 import { logout } from '@/app/auth/logout/actions'
 import { AuthModal } from '@/components/auth/auth-modal'
 import { User, Settings, LogOut, ChevronDown } from 'lucide-react'
+import Link from 'next/link'
 
 export function UserProfile() {
     const { user, signOut } = useAuth()
@@ -122,15 +123,19 @@ export function UserProfile() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    <DropdownMenuItem>
-                        <User className="mr-2 h-4 w-4" />
-                        <span>Profile</span>
-                        <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                    <DropdownMenuItem asChild>
+                        <Link href="/profile" className="flex items-center w-full">
+                            <User className="mr-2 h-4 w-4" />
+                            <span>Profile</span>
+                            <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                        </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
-                        <Settings className="mr-2 h-4 w-4" />
-                        <span>Settings</span>
-                        <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+                    <DropdownMenuItem asChild>
+                        <Link href="/settings" className="flex items-center w-full">
+                            <Settings className="mr-2 h-4 w-4" />
+                            <span>Settings</span>
+                            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+                        </Link>
                     </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
