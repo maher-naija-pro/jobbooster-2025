@@ -3,17 +3,45 @@
 ## Overview
 This document defines the comprehensive authentication system for JobBooster 2025, enabling secure user registration, login, profile management, and data persistence for personalized CV analysis and content generation. The system leverages Supabase as the backend-as-a-service platform with Prisma ORM for type-safe database operations.
 
+**Key Design Principle**: Users can access the main application page without registration or login. Authentication is only required when users attempt to use CV analysis features, at which point a popup modal prompts them to register or login.
+
 ---
 
-### 1. **User Registration & Login System**
+### 1. **Anonymous Access & Authentication Flow**
+
+#### **Anonymous Access**
+- **Main Page Access**: Users can access the main application page without registration or login
+- **Feature Preview**: Users can view the interface, upload CVs, and input job descriptions
+- **Authentication Trigger**: Authentication is only required when users click "Analyze CV" button
+- **Popup Modal**: A modal appears prompting users to either register or login
+- **Seamless Transition**: After authentication, users are redirected back to their previous action
+
+#### **Authentication Modal Flow**
+- **Trigger**: CV Analysis button click
+- **Modal Options**: 
+  - Quick registration (email/password)
+  - Quick login (existing users)
+  - OAuth options (Google)
+
+- **Post-Authentication**: Automatic redirect to CV analysis with preserved form data
+
+---
+
+### 2. **User Registration & Login System**
 
 #### **Email/Password Authentication**
 - **Registration Flow**:
-  - Email validation and uniqueness check
+  - Configurable email validation (enabled/disabled via environment variables)
   - Password strength requirements (8+ chars, mixed case, numbers)
-  - Email confirmation via magic link
+  - Email confirmation via magic link (configurable)
   - Automatic profile creation upon verification
   - Welcome email with onboarding instructions
+
+#### **Configurable Email Validation**
+- **Environment Variables**:
+  - `REQUIRE_EMAIL_VERIFICATION=true/false` - Enable/disable email verification requirement
+
+- **Validation Levels**:
 
 - **Login Flow**:
   - Email/password authentication
@@ -300,6 +328,15 @@ DATABASE_URL=postgresql://user:password@host:port/database
 
 # Prisma Configuration
 PRISMA_GENERATE_DATAPROXY=true
+
+# Email Validation Configuration
+REQUIRE_EMAIL_VERIFICATION=true
+EMAIL_VALIDATION_STRICT=true
+ALLOW_DISPOSABLE_EMAILS=false
+
+# Authentication Flow Configuration
+ENABLE_ANONYMOUS_ACCESS=true
+AUTH_REQUIRED_FEATURES=cv_analysis,content_generation
 ```
 
 ### **Database Setup**

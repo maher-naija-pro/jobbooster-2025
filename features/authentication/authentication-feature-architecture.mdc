@@ -3,7 +3,34 @@
 ## Overview
 This document outlines the technical architecture and implementation details for the Authentication system in JobBooster 2025, providing secure user management, session handling, and data persistence using Supabase as the backend-as-a-service platform with Prisma ORM for type-safe database operations.
 
+**Key Architecture Principle**: The system supports anonymous access to the main application interface, with authentication only required for specific features like CV analysis. This is implemented through a modal-based authentication flow that preserves user context and form data.
+
 ## System Architecture
+
+### Anonymous Access Architecture
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Anonymous User Flow                        │
+├─────────────────────────────────────────────────────────────────┤
+│  • Access main page without authentication                    │
+│  • Upload CV files (stored temporarily)                      │
+│  • Input job descriptions                                     │
+│  • Preview interface and features   
+generate mail or generate lettter user can use them without auth                     │
+│  • Click "Analyze CV" → Authentication Modal                 │
+└─────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    Authentication Modal                        │
+├─────────────────────────────────────────────────────────────────┤
+│  • Quick registration/login options                           │
+│  • OAuth providers (Google,)                │
+
+│  • Preserve form data and context                             │
+│  • Redirect to CV analysis after authentication               │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ### High-Level Architecture
 ```
@@ -237,14 +264,38 @@ export async function createClient() {
 }
 ```
 
-#### Middleware Configuration
+#### Middleware Configuration with Anonymous Access Support
 ```typescript
 // middleware.ts
 import { type NextRequest } from 'next/server'
 import { updateSession } from '@/utils/supabase/middleware'
 
 export async function middleware(request: NextRequest) {
-  return await updateSession(request)
+  // Allow anonymous access to main page and public routes
+  const { pathname } = request.nextUrl
+  
+  // Public routes that don't require authentication
+  const publicRoutes = [
+    '/',
+    '/about',
+    '/pricing',
+    '/contact',
+    '/api/health',
+    '/api/public'
+  ]
+  
+  // Check if current route is public
+  const isPublicRoute = publicRoutes.some(route => 
+    pathname === route || pathname.startsWith(route + '/')
+  )
+  
+  // For public routes, just update session without requiring auth
+  if (isPublicRoute) {
+    return await updateSession(request, { requireAuth: false })
+  }
+  
+  // For protected routes, require authentication
+  return await updateSession(request, { requireAuth: true })
 }
 
 export const config = {
@@ -257,7 +308,14 @@ export const config = {
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-export async function updateSession(request: NextRequest) {
+interface UpdateSessionOptions {
+  requireAuth?: boolean
+}
+
+export async function updateSession(
+  request: NextRequest, 
+  options: UpdateSessionOptions = { requireAuth: true }
+) {
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -282,7 +340,14 @@ export async function updateSession(request: NextRequest) {
   )
 
   // Refresh auth token
-  await supabase.auth.getUser()
+  const { data: { user } } = await supabase.auth.getUser()
+  
+  // If authentication is required and user is not authenticated, redirect to login
+  if (options.requireAuth && !user) {
+    const loginUrl = new URL('/auth/login', request.url)
+    loginUrl.searchParams.set('redirectTo', request.nextUrl.pathname)
+    return NextResponse.redirect(loginUrl)
+  }
   
   return supabaseResponse
 }
@@ -290,12 +355,124 @@ export async function updateSession(request: NextRequest) {
 
 ### 2. Authentication Components
 
+#### Authentication Modal Component
+```typescript
+// components/auth/auth-modal.tsx
+interface AuthModalProps {
+  isOpen: boolean
+  onClose: () => void
+  onSuccess: (user: User) => void
+  onError?: (error: string) => void
+  mode?: 'login' | 'signup' | 'both'
+  preserveData?: {
+    cvFile?: File
+    jobDescription?: string
+    language?: string
+  }
+}
+
+export function AuthModal({ 
+  isOpen, 
+  onClose, 
+  onSuccess, 
+  onError,
+  mode = 'both',
+  preserveData 
+}: AuthModalProps) {
+  const [currentMode, setCurrentMode] = useState<'login' | 'signup'>(mode === 'both' ? 'signup' : mode)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleAuthSuccess = async (user: User) => {
+    // Restore preserved data after authentication
+    if (preserveData) {
+      await restoreUserData(user.id, preserveData)
+    }
+    onSuccess(user)
+    onClose()
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>
+            {currentMode === 'login' ? 'Sign In' : 'Create Account'}
+          </DialogTitle>
+          <DialogDescription>
+            {currentMode === 'login' 
+              ? 'Sign in to analyze your CV and generate personalized content'
+              : 'Create an account to get started with CV analysis'
+            }
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="space-y-4">
+          {/* Quick OAuth Options */}
+          <div className="grid grid-cols-2 gap-2">
+            <Button variant="outline" onClick={() => handleOAuth('google')}>
+              <GoogleIcon className="w-4 h-4 mr-2" />
+              Google
+            </Button>
+
+          </div>
+          
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Or continue with email
+              </span>
+            </div>
+          </div>
+          
+          {/* Email/Password Form */}
+          <AuthForm 
+            mode={currentMode}
+            onSuccess={handleAuthSuccess}
+            onError={onError}
+          />
+          
+          {/* Mode Toggle */}
+          <div className="text-center text-sm">
+            {currentMode === 'login' ? (
+              <>
+                Don't have an account?{' '}
+                <Button 
+                  variant="link" 
+                  className="p-0 h-auto"
+                  onClick={() => setCurrentMode('signup')}
+                >
+                  Sign up
+                </Button>
+              </>
+            ) : (
+              <>
+                Already have an account?{' '}
+                <Button 
+                  variant="link" 
+                  className="p-0 h-auto"
+                  onClick={() => setCurrentMode('login')}
+                >
+                  Sign in
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
+```
+
 #### Login/Signup Form Component
 ```typescript
 // components/auth/auth-form.tsx
 interface AuthFormProps {
   mode: 'login' | 'signup'
-  onSuccess?: () => void
+  onSuccess?: (user: User) => void
   onError?: (error: string) => void
 }
 
@@ -767,24 +944,31 @@ export async function PUT(request: NextRequest) {
 
 ### 5. State Management Architecture
 
-#### Authentication Context
+#### Authentication Context with Anonymous Support
 ```typescript
 // contexts/auth-context.tsx
 interface AuthContextType {
   user: User | null
   profile: UserProfile | null
   isLoading: boolean
+  isAnonymous: boolean
   signIn: (email: string, password: string) => Promise<void>
   signUp: (email: string, password: string, fullName: string) => Promise<void>
   signOut: () => Promise<void>
   updateProfile: (updates: Partial<UserProfile>) => Promise<void>
   refreshProfile: () => Promise<void>
+  requireAuth: (action: string, data?: any) => Promise<boolean>
+  showAuthModal: (mode?: 'login' | 'signup' | 'both', preserveData?: any) => void
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isAnonymous, setIsAnonymous] = useState(true)
+  const [authModalOpen, setAuthModalOpen] = useState(false)
+  const [authModalMode, setAuthModalMode] = useState<'login' | 'signup' | 'both'>('both')
+  const [preservedData, setPreservedData] = useState<any>(null)
   const supabase = createClient()
 
   useEffect(() => {
@@ -792,6 +976,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const getInitialSession = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       setUser(session?.user ?? null)
+      setIsAnonymous(!session?.user)
       
       if (session?.user) {
         await loadUserProfile(session.user.id)
@@ -806,6 +991,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         setUser(session?.user ?? null)
+        setIsAnonymous(!session?.user)
         
         if (session?.user) {
           await loadUserProfile(session.user.id)
@@ -901,18 +1087,64 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await loadUserProfile(user.id)
   }
 
+  const requireAuth = async (action: string, data?: any): Promise<boolean> => {
+    if (user) return true
+    
+    // Show auth modal with preserved data
+    setPreservedData({ action, data })
+    setAuthModalOpen(true)
+    return false
+  }
+
+  const showAuthModal = (mode: 'login' | 'signup' | 'both' = 'both', preserveData?: any) => {
+    setAuthModalMode(mode)
+    setPreservedData(preserveData)
+    setAuthModalOpen(true)
+  }
+
+  const handleAuthSuccess = async (authenticatedUser: User) => {
+    setAuthModalOpen(false)
+    setPreservedData(null)
+    
+    // If there was preserved data, trigger the original action
+    if (preservedData?.action) {
+      // Handle the preserved action (e.g., CV analysis)
+      await handlePreservedAction(authenticatedUser, preservedData)
+    }
+  }
+
+  const handlePreservedAction = async (user: User, data: any) => {
+    // Restore any preserved form data and trigger the original action
+    if (data.action === 'cv_analysis' && data.data) {
+      // Trigger CV analysis with preserved data
+      // This would be implemented in the main application component
+    }
+  }
+
   return (
     <AuthContext.Provider value={{
       user,
       profile,
       isLoading,
+      isAnonymous,
       signIn,
       signUp,
       signOut,
       updateProfile,
-      refreshProfile
+      refreshProfile,
+      requireAuth,
+      showAuthModal
     }}>
       {children}
+      
+      {/* Authentication Modal */}
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        onSuccess={handleAuthSuccess}
+        mode={authModalMode}
+        preserveData={preservedData}
+      />
     </AuthContext.Provider>
   )
 }
@@ -920,18 +1152,58 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 ### 6. Security Architecture
 
-#### Input Validation
+#### Input Validation with Configurable Email Validation
 ```typescript
 // lib/validation/auth-validation.ts
 import { z } from 'zod'
 
+// Email validation configuration
+const emailValidationConfig = {
+  requireVerification: process.env.REQUIRE_EMAIL_VERIFICATION === 'true',
+  strictValidation: process.env.EMAIL_VALIDATION_STRICT === 'true',
+  allowDisposable: process.env.ALLOW_DISPOSABLE_EMAILS === 'true',
+}
+
+// Disposable email domains (configurable)
+const disposableEmailDomains = [
+  '10minutemail.com', 'tempmail.org', 'guerrillamail.com',
+  'mailinator.com', 'yopmail.com', 'temp-mail.org'
+]
+
+// Email validation function
+const createEmailValidation = () => {
+  let emailSchema = z.string()
+  
+  if (emailValidationConfig.strictValidation) {
+    emailSchema = emailSchema
+      .email('Invalid email address')
+      .refine((email) => {
+        // Check for disposable emails if not allowed
+        if (!emailValidationConfig.allowDisposable) {
+          const domain = email.split('@')[1]?.toLowerCase()
+          return !disposableEmailDomains.includes(domain)
+        }
+        return true
+      }, 'Disposable email addresses are not allowed')
+      .refine((email) => {
+        // Additional domain validation
+        const domain = email.split('@')[1]
+        return domain && domain.length > 0
+      }, 'Invalid email domain')
+  } else {
+    emailSchema = emailSchema.email('Invalid email address')
+  }
+  
+  return emailSchema
+}
+
 export const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
+  email: createEmailValidation(),
   password: z.string().min(8, 'Password must be at least 8 characters'),
 })
 
 export const signupSchema = z.object({
-  email: z.string().email('Invalid email address'),
+  email: createEmailValidation(),
   password: z.string()
     .min(8, 'Password must be at least 8 characters')
     .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Password must contain uppercase, lowercase, and number'),
@@ -942,6 +1214,9 @@ export const signupSchema = z.object({
   message: "Passwords don't match",
   path: ["confirmPassword"],
 })
+
+// Environment-based validation helper
+export const getEmailValidationConfig = () => emailValidationConfig
 
 export const profileUpdateSchema = z.object({
   fullName: z.string().min(2, 'Full name must be at least 2 characters').optional(),

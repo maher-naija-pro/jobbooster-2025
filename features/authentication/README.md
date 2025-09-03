@@ -2,6 +2,8 @@
 
 This directory contains the complete authentication system specification and architecture for JobBooster 2025.
 
+**Key Feature**: Users can access the main application page without registration or login. Authentication is only required when users attempt to use CV analysis features, at which point a popup modal prompts them to register or login all other feature dont need authetification.
+
 ## Files Overview
 
 ### 📋 [authentication-feature-spec.mdc](./authentication-feature-spec.mdc)
@@ -35,10 +37,13 @@ Review the technical architecture for:
 
 #### **Phase 1: Core Authentication (Weeks 1-2)**
 - [ ] Supabase setup and configuration
+- [ ] Anonymous access implementation
+- [ ] Authentication modal component
 - [ ] Basic email/password authentication
 - [ ] User registration and login flows
 - [ ] Session management
 - [ ] Basic profile management
+- [ ] Configurable email validation
 
 #### **Phase 2: Enhanced Features (Weeks 3-4)**
 - [ ] OAuth integration (Google, GitHub, LinkedIn)
@@ -118,8 +123,9 @@ Review the technical architecture for:
 ```
 components/
 ├── auth/
+│   ├── auth-modal.tsx         # Authentication modal for anonymous users
 │   ├── auth-form.tsx          # Login/signup form
-│   ├── auth-provider.tsx      # Authentication context
+│   ├── auth-provider.tsx      # Authentication context with anonymous support
 │   ├── protected-route.tsx    # Route protection wrapper
 │   └── auth-guard.tsx         # Authentication guard
 ├── user/
@@ -144,6 +150,15 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 # Security Configuration
 NEXTAUTH_SECRET=your_nextauth_secret
 NEXTAUTH_URL=http://localhost:3000
+
+# Email Validation Configuration
+REQUIRE_EMAIL_VERIFICATION=true
+EMAIL_VALIDATION_STRICT=true
+ALLOW_DISPOSABLE_EMAILS=false
+
+# Authentication Flow Configuration
+ENABLE_ANONYMOUS_ACCESS=true
+AUTH_REQUIRED_FEATURES=cv_analysis,content_generation
 
 
 
