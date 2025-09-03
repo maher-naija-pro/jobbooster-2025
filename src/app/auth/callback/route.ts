@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
+import { createUserProfile } from '@/lib/auth/profile-utils'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -11,6 +12,24 @@ export async function GET(request: Request) {
     const supabase = await createClient()
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
+      // Get the user after successful session exchange
+      const { data: { user } } = await supabase.auth.getUser()
+
+      if (user) {
+        // Create user profile immediately after email confirmation
+        const registrationMethod = user.app_metadata?.provider || 'email'
+        const additionalData = {
+          fullName: user.user_metadata?.full_name || user.user_metadata?.name,
+          avatarUrl: user.user_metadata?.avatar_url || user.user_metadata?.picture
+        }
+
+        await createUserProfile({
+          user,
+          registrationMethod,
+          additionalData
+        })
+      }
+
       const forwardedHost = request.headers.get('x-forwarded-host') // original origin before load balancer
       const isLocalEnv = process.env.NODE_ENV === 'development'
       if (isLocalEnv) {

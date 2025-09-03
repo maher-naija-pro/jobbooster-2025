@@ -1,7 +1,6 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { registerSchema } from '@/lib/auth/validation'
 
@@ -26,9 +25,9 @@ export async function register(formData: FormData) {
     })
 
     if (error) {
-        redirect('/error?message=' + encodeURIComponent(error.message))
+        throw new Error(error.message)
     }
 
     revalidatePath('/', 'layout')
-    redirect('/auth/confirm?email=' + encodeURIComponent(validatedData.email))
+    // Don't redirect - let the modal close naturally
 }

@@ -16,18 +16,25 @@ interface AuthFormProps {
 export function AuthForm({ isLogin, onToggleMode, onSuccess }: AuthFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
 
   const handleSubmit = async (formData: FormData) => {
     setIsLoading(true)
     setError('')
+    setSuccess('')
 
     try {
       if (isLogin) {
         await login(formData)
+        onSuccess()
       } else {
         await register(formData)
+        setSuccess('Registration successful! Please check your email for confirmation.')
+        // Close modal after a short delay to show success message
+        setTimeout(() => {
+          onSuccess()
+        }, 2000)
       }
-      onSuccess()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
@@ -40,6 +47,12 @@ export function AuthForm({ isLogin, onToggleMode, onSuccess }: AuthFormProps) {
       {error && (
         <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">
           {error}
+        </div>
+      )}
+
+      {success && (
+        <div className="text-sm text-green-600 bg-green-50 p-3 rounded-md">
+          {success}
         </div>
       )}
 

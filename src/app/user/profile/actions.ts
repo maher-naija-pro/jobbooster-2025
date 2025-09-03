@@ -5,10 +5,11 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
 import { updateProfileSchema } from '@/lib/auth/validation'
+import { ensureUserProfile } from '@/lib/auth/profile-utils'
 
 export async function getProfile(userId: string) {
   try {
-    const profile = await prisma.profile.findUnique({
+    let profile = await prisma.profile.findUnique({
       where: { userId },
       include: {
         userSessions: {
@@ -30,6 +31,19 @@ export async function getProfile(userId: string) {
       }
     })
 
+    // If profile doesn't exist, create it as a fallback
+    if (!profile) {
+      const supabase = await createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+
+      if (user && user.id === userId) {
+        const result = await ensureUserProfile(userId, user.email!)
+        if (result.success && result.profile) {
+          profile = result.profile
+        }
+      }
+    }
+
     return profile
   } catch (error) {
     console.error('Error fetching profile:', error)
@@ -39,9 +53,9 @@ export async function getProfile(userId: string) {
 
 export async function updateProfile(formData: FormData) {
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
-  
+
   if (!user) {
     redirect('/auth/login')
   }
@@ -92,9 +106,9 @@ export async function updateProfile(formData: FormData) {
 
 export async function updatePreferences(formData: FormData) {
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
-  
+
   if (!user) {
     redirect('/auth/login')
   }
@@ -147,9 +161,9 @@ export async function updatePreferences(formData: FormData) {
 
 export async function deleteAccount() {
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
-  
+
   if (!user) {
     redirect('/auth/login')
   }
@@ -159,26 +173,26 @@ export async function deleteAccount() {
     await prisma.userActivity.deleteMany({
       where: { userId: user.id }
     })
-    
+
     await prisma.userSession.deleteMany({
       where: { userId: user.id }
     })
-    
+
     await prisma.generatedContent.deleteMany({
       where: { userId: user.id }
     })
-    
+
     await prisma.cvData.deleteMany({
       where: { userId: user.id }
     })
-    
+
     await prisma.profile.delete({
       where: { userId: user.id }
     })
 
     // Sign out and delete auth user
     await supabase.auth.signOut()
-    
+
     redirect('/?message=' + encodeURIComponent('Account deleted successfully'))
   } catch (error) {
     console.error('Error deleting account:', error)
