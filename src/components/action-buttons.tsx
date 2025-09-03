@@ -4,6 +4,7 @@ import React from 'react';
 import { FileText, FileDown, Mail, Loader, Square, BarChart3 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Button } from './ui/button';
+import { FeatureGate } from './auth/feature-gate';
 
 interface ActionButtonsProps {
     isCVUploaded: boolean;
@@ -96,26 +97,28 @@ export function ActionButtons({
                     )}
                 </Button>
 
-                {/* Analyze CV Button */}
-                <Button
-                    onClick={handleAnalyzeCVClick}
-                    disabled={isDisabled || isGenerating}
-                    variant={isDisabled ? "secondary" : isAnalyzingCV ? "secondary" : "default"}
-                    size="sm"
-                    className="w-full gap-1 text-xs font-semibold bg-violet-600 hover:bg-violet-700 text-white"
-                >
-                    {isAnalyzingCV ? (
-                        <>
-                            <Loader className="w-2 h-2 animate-spin" />
-                            Analyzing CV...
-                        </>
-                    ) : (
-                        <>
-                            <BarChart3 className="w-2 h-2" />
-                            Analyze CV
-                        </>
-                    )}
-                </Button>
+                {/* Analyze CV Button - Protected Feature */}
+                <FeatureGate feature="CV Analysis">
+                    <Button
+                        onClick={handleAnalyzeCVClick}
+                        disabled={isDisabled || isGenerating}
+                        variant={isDisabled ? "secondary" : isAnalyzingCV ? "secondary" : "default"}
+                        size="sm"
+                        className="w-full gap-1 text-xs font-semibold bg-violet-600 hover:bg-violet-700 text-white"
+                    >
+                        {isAnalyzingCV ? (
+                            <>
+                                <Loader className="w-2 h-2 animate-spin" />
+                                Analyzing CV...
+                            </>
+                        ) : (
+                            <>
+                                <BarChart3 className="w-2 h-2" />
+                                Analyze CV
+                            </>
+                        )}
+                    </Button>
+                </FeatureGate>
 
                 {/* Stop Generation Button */}
                 {isGenerating && (

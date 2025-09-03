@@ -11,6 +11,7 @@ import { ContentGenerator } from '../components/content-generator';
 import { ErrorBoundary } from '../components/error-boundary';
 import { Language } from '../lib/types';
 import { useState } from 'react';
+import { FeatureGate } from '../components/auth/feature-gate';
 
 export default function Home() {
   const { state, dispatch } = useApp();
