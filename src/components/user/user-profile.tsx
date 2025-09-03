@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
@@ -22,6 +22,8 @@ export function UserProfile() {
     const { user, signOut } = useAuth()
     const [isSigningOut, setIsSigningOut] = useState(false)
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
     const handleSignOut = async () => {
         setIsSigningOut(true)
@@ -43,6 +45,28 @@ export function UserProfile() {
         setIsAuthModalOpen(false)
     }
 
+    const handleMouseEnter = () => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current)
+        }
+        setIsDropdownOpen(true)
+    }
+
+    const handleMouseLeave = () => {
+        timeoutRef.current = setTimeout(() => {
+            setIsDropdownOpen(false)
+        }, 150) // Small delay to prevent flickering
+    }
+
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current)
+            }
+        }
+    }, [])
+
     if (!user) {
         return (
             <>
@@ -63,26 +87,29 @@ export function UserProfile() {
     }
 
     return (
-        <DropdownMenu>
+        <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
             <DropdownMenuTrigger asChild>
-      
-                    <div className="flex items-center ">
-                        <div className="hidden sm:block">
-                     
-                                {user.email?.split('@')[0]}
-                        
-                        </div>
-                        <Avatar className="ml-10- h-10 w-10">
-                            <AvatarImage src={user.avatar_url} alt={user.email} />
-                            <AvatarFallback className="text-xs">
-                                {user.email?.charAt(0).toUpperCase()}
-                            </AvatarFallback>
-                        </Avatar>
-                      
+                <div
+                    className="flex items-center cursor-pointer"
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                >
+                    <div className="hidden sm:block">
+                        {user.email?.split('@')[0]}
                     </div>
-              
+                    <Avatar className="ml-2 h-10 w-10">
+                        <AvatarFallback className="text-xs">
+                            {user.email?.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                    </Avatar>
+                </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end">
+            <DropdownMenuContent
+                className="w-56"
+                align="end"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+            >
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                         <p className="text-sm font-medium leading-none">
