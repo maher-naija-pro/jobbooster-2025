@@ -23,6 +23,14 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Prevent horizontal scrolling on all elements */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /* Mobile optimizations */
@@ -46,6 +54,84 @@ body {
   .mobile-spacing {
     padding-left: 1rem;
     padding-right: 1rem;
+  }
+}
+
+/* Navigation responsive improvements */
+@media (max-width: 640px) {
+
+  /* Reduce spacing on very small screens */
+  .nav-container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Ensure navigation items don't overflow */
+  .nav-items {
+    gap: 0.5rem;
+  }
+}
+
+/* High zoom level handling */
+@media (min-resolution: 2dppx) {
+
+  /* Ensure elements don't break at high zoom */
+  header {
+    min-width: 0;
+  }
+}
+
+/* Prevent extreme spacing at different zoom levels */
+header .flex {
+  gap: 1rem;
+  max-width: 100%;
+}
+
+/* Alternative grid-based layout for better control */
+.nav-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 100%;
+}
+
+.nav-left {
+  justify-self: start;
+  min-width: 0;
+}
+
+.nav-center {
+  justify-self: center;
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-right {
+  justify-self: end;
+  min-width: 0;
+}
+
+/* Ensure navigation doesn't spread too far apart */
+@media (min-width: 1024px) {
+  header .flex {
+    gap: 2rem;
+  }
+
+  .nav-grid {
+    gap: 2rem;
+  }
+}
+
+/* Constrain maximum spacing on very wide screens */
+@media (min-width: 1536px) {
+  header .flex {
+    gap: 3rem;
+  }
+
+  .nav-grid {
+    gap: 3rem;
   }
 }
 

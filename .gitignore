@@ -260,3 +260,5 @@ ehthumbs.db
 # Local development
 .local
 .dev
+
+/src/generated/prisma
