@@ -3,6 +3,7 @@
 import React from 'react';
 import { Upload, CheckCircle, AlertCircle } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { Progress } from './ui/progress';
 
 interface UploadProgressProps {
     progress: number;
@@ -78,20 +79,10 @@ export function UploadProgress({
             </div>
 
             {/* Progress Bar */}
-            <div className="w-full bg-slate-200 rounded-full h-3 mb-3">
-                <div
-                    className={cn(
-                        "h-3 rounded-full transition-all duration-300 ease-out",
-                        getProgressColor()
-                    )}
-                    style={{ width: `${status === 'completed' ? 100 : progress}%` }}
-                    role="progressbar"
-                    aria-valuenow={status === 'completed' ? 100 : progress}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-label={`Upload progress: ${status === 'completed' ? 100 : Math.round(progress)}%`}
-                />
-            </div>
+            <Progress
+                value={status === 'completed' ? 100 : progress}
+                className="w-full h-3 mb-3"
+            />
 
             {/* Progress Percentage */}
             <div className="flex justify-between items-center text-sm text-gray-600">

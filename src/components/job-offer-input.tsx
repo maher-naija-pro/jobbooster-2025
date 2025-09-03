@@ -1,7 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FileText, Trash2 } from 'lucide-react';
+import { Button } from './ui/button';
+import { Alert, AlertDescription } from './ui/alert';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 interface JobOfferInputProps {
     value: string;
@@ -22,37 +25,10 @@ export function JobOfferInput({
     className
 }: JobOfferInputProps) {
     const [characterCount, setCharacterCount] = useState(0);
-    const [showTooltip, setShowTooltip] = useState(false);
-    const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         setCharacterCount(value.length);
     }, [value]);
-
-    const handleMouseEnter = () => {
-        if (tooltipTimeoutRef.current) {
-            clearTimeout(tooltipTimeoutRef.current);
-        }
-        setShowTooltip(true);
-        tooltipTimeoutRef.current = setTimeout(() => {
-            setShowTooltip(false);
-        }, 3000);
-    };
-
-    const handleMouseLeave = () => {
-        if (tooltipTimeoutRef.current) {
-            clearTimeout(tooltipTimeoutRef.current);
-        }
-        setShowTooltip(false);
-    };
-
-    useEffect(() => {
-        return () => {
-            if (tooltipTimeoutRef.current) {
-                clearTimeout(tooltipTimeoutRef.current);
-            }
-        };
-    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const newValue = e.target.value;
@@ -77,51 +53,48 @@ export function JobOfferInput({
                     <h3 className="text-xs font-semibold text-gray-900">Job Offer Input</h3>
                 </div>
                 {value && (
-                    <button
+                    <Button
                         onClick={onClear}
-                        className="p-2 text-gray-400 hover:text-red-600 transition-colors rounded-lg hover:bg-red-50"
-                        title="Clear content"
+                        variant="ghost"
+                        size="sm"
+                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50"
                     >
                         <Trash2 className="w-4 h-4" />
-                    </button>
+                    </Button>
                 )}
             </div>
 
             <div className="space-y-3">
                 <div className="relative">
-                    <textarea
-                        value={value}
-                        onChange={handleChange}
-                        onMouseEnter={handleMouseEnter}
-                        onMouseLeave={handleMouseLeave}
-                        placeholder="Paste your job offer here...&#10;&#10;Include job title, company name, requirements, responsibilities, and any other relevant details from the job posting."
-                        className={`w-full min-h-[80px] p-2 border rounded-md resize-vertical focus:ring-1 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-in-out hover:min-h-[120px] hover:shadow-md text-sm ${error
-                            ? 'border-red-300 focus:ring-red-500'
-                            : 'border-gray-300 focus:border-blue-500'
-                            }`}
-                        style={{ minHeight: '80px', maxHeight: '200px' }}
-                    />
-
-                    {/* Tooltip */}
-                    {showTooltip && (
-                        <div className="absolute top-full left-0 mt-2 w-80 bg-gray-900 text-white text-sm rounded-lg p-4 shadow-lg z-50 animate-in fade-in-0 zoom-in-95 duration-200">
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <textarea
+                                value={value}
+                                onChange={handleChange}
+                                placeholder="Paste your job offer here...&#10;&#10;Include job title, company name, requirements, responsibilities, and any other relevant details from the job posting."
+                                className={`w-full min-h-[80px] p-2 border rounded-md resize-vertical focus:ring-1 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-in-out hover:min-h-[120px] hover:shadow-md text-sm ${error
+                                    ? 'border-red-300 focus:ring-red-500'
+                                    : 'border-gray-300 focus:border-blue-500'
+                                    }`}
+                                style={{ minHeight: '80px', maxHeight: '200px' }}
+                            />
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-sm">
                             <div className="space-y-2">
-                                <h4 className="font-semibold text-white mb-2">Analysis Tips:</h4>
-                                <ul className="space-y-1 text-gray-200">
+                                <h4 className="font-semibold mb-2">Analysis Tips:</h4>
+                                <ul className="space-y-1">
                                     <li>• <strong>Job Title:</strong> Include the specific position name</li>
                                     <li>• <strong>Company Information:</strong> Company name, size, industry</li>
                                     <li>• <strong>Key Responsibilities:</strong> Main duties and tasks</li>
                                     <li>• <strong>Required Skills:</strong> Technical and soft skills needed</li>
                                     <li>• <strong>Qualifications:</strong> Education, experience, certifications</li>
                                 </ul>
-                                <p className="text-xs text-gray-300 mt-3 pt-2 border-t border-gray-700">
+                                <p className="text-xs mt-3 pt-2 border-t">
                                     Minimum {MIN_LENGTH} characters required for analysis.
                                 </p>
                             </div>
-                            {/* Tooltip arrow */}
-                            <div className="absolute -top-1 left-4 w-2 h-2 bg-gray-900 rotate-45"></div>
-                        </div>
-                    )}
+                        </TooltipContent>
+                    </Tooltip>
 
                     {/* Character count */}
                     <div className="absolute bottom-2 right-2 text-xs">
@@ -135,10 +108,11 @@ export function JobOfferInput({
 
                 {/* Error message */}
                 {error && (
-                    <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 p-3 rounded-lg">
-                        <div className="w-2 h-2 bg-red-600 rounded-full"></div>
-                        {error}
-                    </div>
+                    <Alert variant="destructive">
+                        <AlertDescription>
+                            {error}
+                        </AlertDescription>
+                    </Alert>
                 )}
 
 

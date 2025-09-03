@@ -5,6 +5,9 @@ import { Upload, FileText, Trash2, CheckCircle, AlertCircle, Loader } from 'luci
 import { cn, validateFile, formatFileSize } from '../lib/utils';
 import { CVData } from '../lib/types';
 import { UploadProgress } from './upload-progress';
+import { Button } from './ui/button';
+import { Card, CardContent, CardHeader } from './ui/card';
+import { Alert, AlertDescription } from './ui/alert';
 
 interface CVUploadProps {
     onFileUpload: (file: File) => Promise<void>;
@@ -35,6 +38,8 @@ export function CVUpload({
         const validation = validateFile(file);
         if (!validation.isValid) {
             // Handle error through parent component
+            // You might want to call an error handler here if available
+            console.error('File validation failed:', validation.error);
             return;
         }
 
@@ -91,22 +96,21 @@ export function CVUpload({
     };
 
     return (
-        <div className={cn("space-y-1", className)}>
+        <div className={cn("space-y-0.5", className)}>
             {/* Main Header with Title and Description */}
-            <div className="text-center mb-1">
-                <div className="flex justify-center gap-1 mb-1">
-                    <div className="w-3 h-3 bg-blue-100 rounded-full flex items-center justify-center">
-                        <svg className="w-1.5 h-1.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
+            <div className="text-center mb-0.5">
+                <div className="flex justify-center gap-1 mb-0.5">
+                    <div className="w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center">
+                        <svg className="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}>n                            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />n                        </svg>
+
                     </div>
-                    <div className="w-3 h-3 bg-green-100 rounded-full flex items-center justify-center">
-                        <svg className="w-1.5 h-1.5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-7 h-7 bg-green-100 rounded-full flex items-center justify-center">
+                        <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
                     </div>
                 </div>
-                <h2 className="text-lg font-bold text-gray-900 mb-1">
+                <h2 className="text-lg font-bold text-gray-900 mb-0.5">
                     Job Application Enhancer
                 </h2>
                 <p className="text-gray-600 max-w-lg mx-auto text-xs leading-tight">
@@ -119,57 +123,57 @@ export function CVUpload({
 
             {/* Upload Area - Show when not uploading, processing, or has CV data */}
             {!cvData && !isProcessing && !isUploading && (
-                <div className="bg-white border border-gray-200 rounded-md overflow-hidden shadow-sm">
-                    {/* Header */}
-                    <div className="bg-gray-50 px-1.5 py-1 border-b border-gray-200">
-                        <div className="flex items-center gap-0.5">
-                            <Upload className="w-2 h-2 text-gray-600" />
-                            <span className="text-xs font-medium text-gray-900">Upload CV/Resume</span>
-                        </div>
+                <Card className="overflow-hidden">
+
+                    <div className="flex items-center gap-0.5 ml-5 ">
+                        <Upload className="w-2 h-2 text-gray-600" />
+                        <span className="text-xs font-medium text-gray-900">Upload CV/Resume</span>
                     </div>
 
-                    {/* Upload Content */}
-                    <div
-                        className={cn(
-                            "relative border-2 border-dashed rounded-none border-gray-300 p-1 text-center transition-colors cursor-pointer",
-                            isDragOver
-                                ? "border-blue-400 bg-blue-50"
-                                : "hover:border-gray-400",
-                            error && "border-red-300 bg-red-50"
-                        )}
-                        onDragOver={handleDragOver}
-                        onDragLeave={handleDragLeave}
-                        onDrop={handleDrop}
-                        onClick={handleClick}
-                    >
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept=".pdf,.doc,.docx"
-                            onChange={handleFileSelect}
-                            className="hidden"
-                        />
 
-                        <div className="flex flex-col items-center gap-0.5">
-                            <Upload className={cn(
-                                "w-2 h-2",
-                                isDragOver ? "text-blue-500" : "text-gray-400"
-                            )} />
+                    <CardContent className="p-2-">
+                        <div
+                            className={cn(
+                                "relative border-2 border-dashed  border-gray-300 p-0.5 text-center transition-colors cursor-pointer",
+                                isDragOver
+                                    ? "border-blue-400 bg-blue-50"
+                                    : "hover:border-gray-400",
+                                error && "border-red-300 bg-red-50"
+                            )}
+                            onDragOver={handleDragOver}
+                            onDragLeave={handleDragLeave}
+                            onDrop={handleDrop}
+                            onClick={handleClick}
+                        >
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept=".pdf,.doc,.docx"
+                                onChange={handleFileSelect}
+                                className="hidden"
+                            />
 
-                            <div className="space-y-0.5">
-                                <p className="text-xs font-medium text-gray-900">
-                                    {isDragOver ? "Drop your CV here" : "Drop your CV/Resume here"}
-                                </p>
-                                <p className="text-xs text-gray-600">
-                                    or <span className="text-blue-600 hover:text-blue-700 font-medium">click to browse</span>
-                                </p>
-                                <p className="text-xs text-gray-500">
-                                    PDF, DOC, DOCX up to 10MB
-                                </p>
+                            <div className="flex flex-col items-center gap-0.5">
+                                <Upload className={cn(
+                                    "w-2 h-2",
+                                    isDragOver ? "text-blue-500" : "text-gray-400"
+                                )} />
+
+                                <div className="space-y-0.5">
+                                    <p className="text-xs font-medium text-gray-900">
+                                        {isDragOver ? "Drop your CV here" : "Drop your CV/Resume here"}
+                                    </p>
+                                    <p className="text-xs text-gray-600">
+                                        or <span className="text-blue-600 hover:text-blue-700 font-medium">click to browse</span>
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                        PDF, DOC, DOCX up to 10MB
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </CardContent>
+                </Card>
             )}
 
             {/* Upload Progress - Show when uploading or processing */}
@@ -179,7 +183,7 @@ export function CVUpload({
                     filename={currentFile.name}
                     filesize={currentFile.size}
                     status={isUploading ? 'uploading' : cvData?.status || 'uploading'}
-                    className="mb-3"
+                    className="mb-1"
                 />
             )}
 
@@ -187,24 +191,23 @@ export function CVUpload({
 
             {/* CV Data Display - Show when upload and processing are complete */}
             {cvData && cvData.status === 'completed' && !isUploading && (
-                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-                    {/* Header */}
-                    <div className="bg-gray-50 px-2 py-1.5 border-b border-gray-200 flex items-center justify-between">
+                <Card className="overflow-hidden">
+                    <CardHeader className="bg-gray-50 px-5 border-b border-gray-200 flex items-center justify-between">
                         <div className="flex items-center gap-1">
                             <CheckCircle className="w-3 h-3 text-green-600" />
                             <span className="text-sm font-medium text-gray-900">CV Uploaded Successfully</span>
                         </div>
-                        <button
+                        <Button
                             onClick={handleRemove}
-                            className="p-1.5 text-gray-400 hover:text-red-600 transition-colors rounded-lg hover:bg-red-50"
-                            title="Remove file"
+                            variant="ghost"
+                            size="sm"
+                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50"
                         >
                             <Trash2 className="w-3 h-3" />
-                        </button>
-                    </div>
+                        </Button>
+                    </CardHeader>
 
-                    {/* Content */}
-                    <div className="px-2 py-1.5">
+                    <CardContent className="px-5 ">
                         <div className="flex items-center gap-1.5">
                             <CheckCircle className="w-3 h-3 text-green-600" />
                             <div>
@@ -214,29 +217,24 @@ export function CVUpload({
                                 </p>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </CardContent>
+                </Card>
             )}
 
             {/* Error Display */}
             {error && (
-                <div className="bg-white border border-red-200 rounded-lg overflow-hidden shadow-sm">
-                    {/* Header */}
-                    <div className="bg-red-50 px-4 py-3 border-b border-red-200">
-                        <div className="flex items-center gap-2">
-                            <AlertCircle className="w-4 h-4 text-red-600" />
-                            <span className="text-sm font-medium text-red-900">Upload Error</span>
+                <Alert variant="destructive">
+                    <AlertCircle className="w-4 h-4" />
+                    <AlertDescription>
+                        <div className="space-y-1">
+                            <p className="text-sm font-medium">Upload Error</p>
+                            <p className="text-sm">{error}</p>
+                            <p className="text-xs text-red-600">
+                                Please try uploading a different file or contact support if the issue persists.
+                            </p>
                         </div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="p-4">
-                        <p className="text-sm text-red-700">{error}</p>
-                        <p className="text-xs text-red-600 mt-2">
-                            Please try uploading a different file or contact support if the issue persists.
-                        </p>
-                    </div>
-                </div>
+                    </AlertDescription>
+                </Alert>
             )}
         </div>
     );

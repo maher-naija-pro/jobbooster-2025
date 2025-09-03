@@ -3,6 +3,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FileText, CheckCircle, Copy, TrendingUp, TrendingDown, Star, Target, Award, BookOpen, Briefcase, Users, Lightbulb, AlertTriangle, ChevronDown, ChevronUp, Eye, EyeOff, Building, MapPin, DollarSign, Calendar, GraduationCap, Code, Heart, Globe, Wrench } from 'lucide-react';
 import { GeneratedContent, CVAnalysisResult, JobAnalysis } from '../lib/types';
+import { Button } from './ui/button';
+import { Card, CardContent, CardHeader } from './ui/card';
+import { Badge } from './ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
+import { Progress } from './ui/progress';
 
 interface ContentGeneratorProps {
     content: GeneratedContent | null;
@@ -126,26 +131,24 @@ export function ContentGenerator({
                 <div className="flex items-center justify-between">
                     <h2 className="text-2xl font-bold text-gray-900">CV Analysis Results</h2>
                     <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
-                        <button
+                        <Button
                             onClick={() => setAnalysisMode('compact')}
-                            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${analysisMode === 'compact'
-                                ? 'bg-white text-gray-900 shadow-sm'
-                                : 'text-gray-600 hover:text-gray-900'
-                                }`}
+                            variant={analysisMode === 'compact' ? 'default' : 'ghost'}
+                            size="sm"
+                            className="gap-1"
                         >
-                            <Eye className="w-4 h-4 inline mr-1" />
+                            <Eye className="w-4 h-4" />
                             Compact
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                             onClick={() => setAnalysisMode('detailed')}
-                            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${analysisMode === 'detailed'
-                                ? 'bg-white text-gray-900 shadow-sm'
-                                : 'text-gray-600 hover:text-gray-900'
-                                }`}
+                            variant={analysisMode === 'detailed' ? 'default' : 'ghost'}
+                            size="sm"
+                            className="gap-1"
                         >
-                            <EyeOff className="w-4 h-4 inline mr-1" />
+                            <EyeOff className="w-4 h-4" />
                             Detailed
-                        </button>
+                        </Button>
                     </div>
                 </div>
 
@@ -374,26 +377,24 @@ export function ContentGenerator({
                 <div className="flex items-center justify-between">
                     <h2 className="text-2xl font-bold text-gray-900">Detailed CV Analysis</h2>
                     <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
-                        <button
+                        <Button
                             onClick={() => setAnalysisMode('compact')}
-                            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${analysisMode === 'compact'
-                                ? 'bg-white text-gray-900 shadow-sm'
-                                : 'text-gray-600 hover:text-gray-900'
-                                }`}
+                            variant={analysisMode === 'compact' ? 'default' : 'ghost'}
+                            size="sm"
+                            className="gap-1"
                         >
-                            <Eye className="w-4 h-4 inline mr-1" />
+                            <Eye className="w-4 h-4" />
                             Compact
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                             onClick={() => setAnalysisMode('detailed')}
-                            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${analysisMode === 'detailed'
-                                ? 'bg-white text-gray-900 shadow-sm'
-                                : 'text-gray-600 hover:text-gray-900'
-                                }`}
+                            variant={analysisMode === 'detailed' ? 'default' : 'ghost'}
+                            size="sm"
+                            className="gap-1"
                         >
-                            <EyeOff className="w-4 h-4 inline mr-1" />
+                            <EyeOff className="w-4 h-4" />
                             Detailed
-                        </button>
+                        </Button>
                     </div>
                 </div>
 
@@ -769,23 +770,24 @@ export function ContentGenerator({
                 {/* Strengths */}
                 {jobMatch.strengths && jobMatch.strengths.length > 0 && (
                     <div className="bg-green-50 rounded-xl border border-green-200">
-                        <button
+                        <Button
                             onClick={() => setIsStrengthsExpanded(!isStrengthsExpanded)}
-                            className="w-full flex items-center justify-between p-6 text-left hover:bg-green-100 transition-colors duration-200 rounded-xl"
+                            variant="ghost"
+                            className="w-full flex items-center justify-between p-6 text-left hover:bg-green-100 h-auto"
                         >
                             <div className="flex items-center gap-3">
                                 <TrendingUp className="w-6 h-6 text-green-600" />
                                 <h3 className="text-lg font-semibold text-gray-900">Strengths</h3>
-                                <span className="bg-green-200 text-green-800 text-sm px-2 py-1 rounded-full">
+                                <Badge variant="secondary" className="bg-green-200 text-green-800">
                                     {jobMatch.strengths.length}
-                                </span>
+                                </Badge>
                             </div>
                             {isStrengthsExpanded ? (
                                 <ChevronUp className="w-5 h-5 text-green-600" />
                             ) : (
                                 <ChevronDown className="w-5 h-5 text-green-600" />
                             )}
-                        </button>
+                        </Button>
                         {isStrengthsExpanded && (
                             <div className="px-6 pb-6">
                                 <div className="grid gap-3">
@@ -804,23 +806,24 @@ export function ContentGenerator({
                 {/* Missing Skills */}
                 {jobMatch.missingSkills && jobMatch.missingSkills.length > 0 && (
                     <div className="bg-orange-50 rounded-xl border border-orange-200">
-                        <button
+                        <Button
                             onClick={() => setIsMissingSkillsExpanded(!isMissingSkillsExpanded)}
-                            className="w-full flex items-center justify-between p-6 text-left hover:bg-orange-100 transition-colors duration-200 rounded-xl"
+                            variant="ghost"
+                            className="w-full flex items-center justify-between p-6 text-left hover:bg-orange-100 h-auto"
                         >
                             <div className="flex items-center gap-3">
                                 <TrendingDown className="w-6 h-6 text-orange-600" />
                                 <h3 className="text-lg font-semibold text-gray-900">Missing Skills</h3>
-                                <span className="bg-orange-200 text-orange-800 text-sm px-2 py-1 rounded-full">
+                                <Badge variant="secondary" className="bg-orange-200 text-orange-800">
                                     {jobMatch.missingSkills.length}
-                                </span>
+                                </Badge>
                             </div>
                             {isMissingSkillsExpanded ? (
                                 <ChevronUp className="w-5 h-5 text-orange-600" />
                             ) : (
                                 <ChevronDown className="w-5 h-5 text-orange-600" />
                             )}
-                        </button>
+                        </Button>
                         {isMissingSkillsExpanded && (
                             <div className="px-6 pb-6">
                                 <div className="grid gap-3">
@@ -906,10 +909,10 @@ export function ContentGenerator({
     return (
         <div className={`h-full flex flex-col ${className}`}>
             {/* Content Area */}
-            <div className="flex-1 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+            <Card className="flex-1 overflow-hidden">
                 {/* Content Header */}
                 {content && !isGenerating && (
-                    <div className="bg-gray-50 px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+                    <CardHeader className="bg-gray-50 px-4 py-3 border-b border-gray-200 flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <CheckCircle className="w-4 h-4 text-green-600" />
                             <span className="text-sm font-medium text-gray-900">
@@ -918,10 +921,11 @@ export function ContentGenerator({
                             </span>
                         </div>
                         <div className="flex items-center gap-3">
-                            <button
+                            <Button
                                 onClick={handleCopyContent}
-                                className="flex items-center gap-1.5 px-2 py-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-md transition-colors duration-200"
-                                title="Copy content to clipboard"
+                                variant="ghost"
+                                size="sm"
+                                className="gap-1.5 text-gray-500 hover:text-gray-700"
                             >
                                 {isCopied ? (
                                     <CheckCircle className="w-3.5 h-3.5 text-green-600" />
@@ -931,16 +935,16 @@ export function ContentGenerator({
                                 <span className="text-xs font-medium">
                                     {isCopied ? 'Copied!' : 'Copy'}
                                 </span>
-                            </button>
+                            </Button>
                             <div className="text-xs text-gray-600">
                                 {content.metadata.wordCount} words • {content.metadata.estimatedReadTime} min read
                             </div>
                         </div>
-                    </div>
+                    </CardHeader>
                 )}
 
                 {/* Main Content */}
-                <div
+                <CardContent
                     ref={contentRef}
                     className="flex-1 p-6 overflow-y-auto"
                 >
@@ -974,22 +978,10 @@ export function ContentGenerator({
                                         )}
                                     </div>
                                 </div>
-                                <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
-                                    <div
-                                        className={`h-2 rounded-full transition-all duration-300 ${generationType === 'cv-analysis'
-                                            ? 'bg-violet-500'
-                                            : generationType === 'email'
-                                                ? 'bg-emerald-500'
-                                                : 'bg-indigo-500'
-                                            }`}
-                                        style={{ width: `${currentProgress}%` }}
-                                        role="progressbar"
-                                        aria-valuenow={currentProgress}
-                                        aria-valuemin={0}
-                                        aria-valuemax={100}
-                                        aria-label={`${generationType === 'cv-analysis' ? 'CV analysis' : generationType === 'email' ? 'Email generation' : 'Cover letter generation'} progress: ${currentProgress}%`}
-                                    ></div>
-                                </div>
+                                <Progress
+                                    value={currentProgress}
+                                    className="w-full h-2"
+                                />
                                 <div className="flex items-center justify-between mt-2">
                                     <p className="text-sm text-gray-600">
                                         {generationType === 'cv-analysis'
@@ -1020,28 +1012,28 @@ export function ContentGenerator({
                             )}
                         </div>
                     ) : null}
-                </div>
 
-                {/* Action Buttons at Bottom */}
-                {content && !isGenerating && (
-                    <div className="px-6 pb-6">
-                        <div className="flex flex-wrap items-center justify-between gap-3">
-                            {/* Left side - ATS status */}
-                            <div className="flex items-center gap-3">
-                                {content.metadata.atsOptimized && (
-                                    <div className="flex items-center gap-1 text-xs text-green-600">
-                                        <CheckCircle className="w-3 h-3" />
-                                        ATS Optimized
+                    {/* Action Buttons at Bottom */}
+                    {content && !isGenerating && (
+                        <div className="px-6 pb-6">
+                            <div className="flex flex-wrap items-center justify-between gap-3">
+                                {/* Left side - ATS status */}
+                                <div className="flex items-center gap-3">
+                                    {content.metadata.atsOptimized && (
+                                        <div className="flex items-center gap-1 text-xs text-green-600">
+                                            <CheckCircle className="w-3 h-3" />
+                                            ATS Optimized
+                                        </div>
+                                    )}
+                                    <div className="text-xs text-gray-500">
+                                        {content.metadata.wordCount} words • {content.metadata.estimatedReadTime} min read
                                     </div>
-                                )}
-                                <div className="text-xs text-gray-500">
-                                    {content.metadata.wordCount} words • {content.metadata.estimatedReadTime} min read
                                 </div>
                             </div>
                         </div>
-                    </div>
-                )}
-            </div>
+                    )}
+                </CardContent>
+            </Card>
         </div>
     );
 }

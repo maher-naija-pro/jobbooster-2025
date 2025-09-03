@@ -3,6 +3,7 @@
 import React from 'react';
 import { FileText, FileDown, Mail, Loader, Square, BarChart3 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { Button } from './ui/button';
 
 interface ActionButtonsProps {
     isCVUploaded: boolean;
@@ -54,18 +55,12 @@ export function ActionButtons({
             {/* Generate Buttons */}
             <div className="space-y-2">
                 {/* Generate Cover Letter Button */}
-                <button
+                <Button
                     onClick={handleGenerateLetterClick}
                     disabled={isDisabled || isGenerating}
-                    aria-label={isGeneratingLetter ? "Generating cover letter..." : "Generate cover letter"}
-                    className={cn(
-                        "w-full flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-xs font-semibold transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-offset-1",
-                        isDisabled
-                            ? "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
-                            : isGeneratingLetter
-                                ? "bg-indigo-50 text-indigo-700 cursor-not-allowed border border-indigo-200"
-                                : "bg-indigo-600 text-white hover:bg-indigo-700 active:bg-indigo-800 shadow-lg hover:shadow-xl border border-indigo-600 focus:ring-indigo-500"
-                    )}
+                    variant={isDisabled ? "secondary" : isGeneratingLetter ? "secondary" : "default"}
+                    size="sm"
+                    className="w-full gap-1 text-xs font-semibold"
                 >
                     {isGeneratingLetter ? (
                         <>
@@ -78,21 +73,15 @@ export function ActionButtons({
                             Generate Cover Letter
                         </>
                     )}
-                </button>
+                </Button>
 
                 {/* Generate Email Button */}
-                <button
+                <Button
                     onClick={handleGenerateMailClick}
                     disabled={isDisabled || isGenerating}
-                    aria-label={isGeneratingEmail ? "Generating email..." : "Generate email"}
-                    className={cn(
-                        "w-full flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-xs font-semibold transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-offset-1",
-                        isDisabled
-                            ? "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
-                            : isGeneratingEmail
-                                ? "bg-emerald-50 text-emerald-700 cursor-not-allowed border border-emerald-200"
-                                : "bg-emerald-600 text-white hover:bg-emerald-700 active:bg-emerald-800 shadow-lg hover:shadow-xl border border-emerald-600 focus:ring-emerald-500"
-                    )}
+                    variant={isDisabled ? "secondary" : isGeneratingEmail ? "secondary" : "default"}
+                    size="sm"
+                    className="w-full gap-1 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white"
                 >
                     {isGeneratingEmail ? (
                         <>
@@ -105,21 +94,15 @@ export function ActionButtons({
                             Generate Email
                         </>
                     )}
-                </button>
+                </Button>
 
                 {/* Analyze CV Button */}
-                <button
+                <Button
                     onClick={handleAnalyzeCVClick}
                     disabled={isDisabled || isGenerating}
-                    aria-label={isAnalyzingCV ? "Analyzing CV..." : "Analyze CV"}
-                    className={cn(
-                        "w-full flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-xs font-semibold transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-offset-1",
-                        isDisabled
-                            ? "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
-                            : isAnalyzingCV
-                                ? "bg-violet-50 text-violet-700 cursor-not-allowed border border-violet-200"
-                                : "bg-violet-600 text-white hover:bg-violet-700 active:bg-violet-800 shadow-lg hover:shadow-xl border border-violet-600 focus:ring-violet-500"
-                    )}
+                    variant={isDisabled ? "secondary" : isAnalyzingCV ? "secondary" : "default"}
+                    size="sm"
+                    className="w-full gap-1 text-xs font-semibold bg-violet-600 hover:bg-violet-700 text-white"
                 >
                     {isAnalyzingCV ? (
                         <>
@@ -132,18 +115,19 @@ export function ActionButtons({
                             Analyze CV
                         </>
                     )}
-                </button>
+                </Button>
 
                 {/* Stop Generation Button */}
                 {isGenerating && (
-                    <button
+                    <Button
                         onClick={onStopGeneration}
-                        aria-label="Stop current generation process"
-                        className="w-full flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-xs font-semibold bg-rose-600 text-white hover:bg-rose-700 active:bg-rose-800 shadow-md hover:shadow-lg transition-all duration-300 border border-rose-600 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-rose-500"
+                        variant="destructive"
+                        size="sm"
+                        className="w-full gap-1 text-xs font-semibold"
                     >
                         <Square className="w-2 h-2" />
                         Stop Generation
-                    </button>
+                    </Button>
                 )}
             </div>
         </div>
