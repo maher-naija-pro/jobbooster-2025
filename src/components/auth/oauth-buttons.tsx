@@ -11,8 +11,9 @@ export function OAuthButtons() {
         setIsLoading(provider)
 
         try {
+            const currentPath = window.location.pathname
             const action = provider === 'google' ? signInWithGoogle : signInWithGitHub
-            const result = await action()
+            const result = await action(currentPath)
 
             if (result.error) {
                 console.error('OAuth error:', result.error)

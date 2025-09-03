@@ -37,12 +37,6 @@ export function Header() {
 
                     {/* Navigation and login button grouped on the right */}
                     <div className="flex items-center space-x-4 sm:space-x-8 min-w-0 flex-shrink-0 max-w-[50%] justify-end">
-                        <nav className="flex space-x-4 sm:space-x-8">
-                            <Link href="/" className="text-gray-900 hover:text-blue-600 font-medium whitespace-nowrap">
-                                Home
-                            </Link>
-                        </nav>
-
                         <AuthProvider>
                             <UserProfile />
                         </AuthProvider>

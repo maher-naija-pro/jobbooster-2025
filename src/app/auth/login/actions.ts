@@ -23,5 +23,6 @@ export async function login(formData: FormData) {
     }
 
     revalidatePath('/', 'layout')
-    redirect('/dashboard')
+    // Don't redirect - let the user stay on the current page
+    // The AuthModal will close automatically due to the onSuccess callback
 }

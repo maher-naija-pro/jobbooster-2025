@@ -4,10 +4,12 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/components/auth/auth-provider'
 import { logout } from '@/app/auth/logout/actions'
+import { AuthModal } from '@/components/auth/auth-modal'
 
 export function UserProfile() {
     const { user, signOut } = useAuth()
     const [isSigningOut, setIsSigningOut] = useState(false)
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
 
     const handleSignOut = async () => {
         setIsSigningOut(true)
@@ -21,8 +23,31 @@ export function UserProfile() {
         }
     }
 
+    const handleLoginClick = () => {
+        setIsAuthModalOpen(true)
+    }
+
+    const handleAuthModalClose = () => {
+        setIsAuthModalOpen(false)
+    }
+
     if (!user) {
-        return null
+        return (
+            <>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleLoginClick}
+                    className="text-gray-900 hover:text-blue-600 font-medium whitespace-nowrap"
+                >
+                    Login
+                </Button>
+                <AuthModal
+                    isOpen={isAuthModalOpen}
+                    onClose={handleAuthModalClose}
+                />
+            </>
+        )
     }
 
     return (
@@ -44,7 +69,7 @@ export function UserProfile() {
                 onClick={handleSignOut}
                 disabled={isSigningOut}
             >
-                {isSigningOut ? 'Signing out...' : 'Sign out'}
+                {isSigningOut ? 'Signing out...' : 'Logout'}
             </Button>
         </div>
     )
