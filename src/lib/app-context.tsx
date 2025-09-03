@@ -6,7 +6,11 @@ import { AppState, AppAction, SUPPORTED_LANGUAGES } from './types';
 const initialState: AppState = {
     cvData: null,
     language: SUPPORTED_LANGUAGES[0], // English by default
-    jobOffer: ` telnet company is looking for a skilled DevOps Engineer to join our team and drive the automation, scalability, and reliability of our infrastructure. The ideal candidate will have hands-on experience with cloud platforms (AWS, Azure, or GCP), infrastructure as code (Terraform, Ansible), and CI/CD pipelines (Jenkins, GitLab CI, or GitHub Actions). Strong knowledge of Docker, Kubernetes, and monitoring tools such as Prometheus, Grafana, or ELK is essential, along with a mindset for security and continuous improvement. In this role, you will collaborate closely with developers and operations teams to streamline deployments, implement observability, and ensure resilient, secure, and high-performing systems.`,
+    jobOffer: `We are hiring a DevOps Engineer to join our innovative Telent team, managing CI/CD pipelines and cloud infrastructure (AWS/GCP).
+You'll automate deployments using tools like Terraform, Ansible, and orchestrate with Kubernetes.
+Hands-on experience with Jenkins, GitLab CI, and scripting in Python/Bash is essential.
+Hybrid work model, competitive salary, training, and career growth opportunities provided.
+Apply now to be part of digital transformation across telecom and transport sectors.`,
     jobAnalysis: null,
     cvAnalysis: null,
     generatedContent: null,
