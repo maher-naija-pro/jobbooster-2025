@@ -153,7 +153,7 @@ export function ContentGenerator({
                 </div>
 
                 {/* Overall Match Score - Always visible */}
-                <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200">
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6 border border-blue-200">
                     <div className="flex items-center gap-3 mb-4">
                         <Target className="w-6 h-6 text-blue-600" />
                         <h3 className="text-xl font-semibold text-gray-900">Overall Match Score</h3>
@@ -217,7 +217,7 @@ export function ContentGenerator({
 
                 {/* Technical Skills Table */}
                 {jobMatch.skillMatches && jobMatch.skillMatches.length > 0 && (
-                    <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                    <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
                         <h3 className="text-lg font-semibold text-gray-900 mb-4">Technical Skills Analysis</h3>
                         <div className="overflow-x-auto">
                             <table className="w-full border-collapse">
@@ -285,7 +285,7 @@ export function ContentGenerator({
 
                 {/* Soft Skills Table */}
                 {jobMatch.skillMatches && jobMatch.skillMatches.length > 0 && (
-                    <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
+                    <div className="bg-blue-50 rounded-lg p-6 border border-blue-200">
                         <h3 className="text-lg font-semibold text-gray-900 mb-4">Soft Skills Analysis</h3>
                         <div className="overflow-x-auto">
                             <table className="w-full border-collapse">
@@ -353,7 +353,7 @@ export function ContentGenerator({
 
                 {/* Key Recommendations */}
                 {jobMatch.recommendations && jobMatch.recommendations.length > 0 && (
-                    <div className="bg-purple-50 rounded-xl p-6 border border-purple-200">
+                    <div className="bg-purple-50 rounded-lg p-6 border border-purple-200">
                         <div className="flex items-center gap-3 mb-4">
                             <Lightbulb className="w-6 h-6 text-purple-600" />
                             <h3 className="text-lg font-semibold text-gray-900">Key Recommendations</h3>
@@ -399,7 +399,7 @@ export function ContentGenerator({
                 </div>
 
                 {/* Overall Match Score - First in detailed mode */}
-                <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200">
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6 border border-blue-200">
                     <div className="flex items-center gap-3 mb-4">
                         <Target className="w-6 h-6 text-blue-600" />
                         <h3 className="text-xl font-semibold text-gray-900">Overall Match Score</h3>
@@ -426,7 +426,7 @@ export function ContentGenerator({
 
                 {/* Technical Skills Table - Detailed Mode */}
                 {jobMatch.skillMatches && jobMatch.skillMatches.length > 0 && (
-                    <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                    <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
                         <h3 className="text-lg font-semibold text-gray-900 mb-4">Technical Skills Analysis</h3>
                         <div className="overflow-x-auto">
                             <table className="w-full border-collapse">
@@ -494,7 +494,7 @@ export function ContentGenerator({
 
                 {/* Soft Skills Table - Detailed Mode */}
                 {jobMatch.skillMatches && jobMatch.skillMatches.length > 0 && (
-                    <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
+                    <div className="bg-blue-50 rounded-lg p-6 border border-blue-200">
                         <h3 className="text-lg font-semibold text-gray-900 mb-4">Soft Skills Analysis</h3>
                         <div className="overflow-x-auto">
                             <table className="w-full border-collapse">
@@ -562,7 +562,7 @@ export function ContentGenerator({
 
                 {/* Job Analysis Section */}
                 {jobAnalysis && (
-                    <div className="bg-gradient-to-r from-indigo-50 to-cyan-50 rounded-xl p-6 border border-indigo-200">
+                    <div className="bg-gradient-to-r from-indigo-50 to-cyan-50 rounded-lg p-6 border border-indigo-200">
                         <div className="flex items-center gap-3 mb-4">
                             <Building className="w-6 h-6 text-indigo-600" />
                             <h3 className="text-xl font-semibold text-gray-900">Job Analysis</h3>
@@ -630,7 +630,7 @@ export function ContentGenerator({
 
                 {/* Skills Analysis */}
                 {analysis.skills && analysis.skills.length > 0 && (
-                    <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                    <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
                         <div className="flex items-center gap-3 mb-6">
                             <BookOpen className="w-6 h-6 text-gray-600" />
                             <h3 className="text-lg font-semibold text-gray-900">Extracted Skills Analysis</h3>
@@ -666,7 +666,7 @@ export function ContentGenerator({
 
                 {/* Experience Analysis */}
                 {analysis.experience && analysis.experience.length > 0 && (
-                    <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                    <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
                         <div className="flex items-center gap-3 mb-6">
                             <Briefcase className="w-6 h-6 text-gray-600" />
                             <h3 className="text-lg font-semibold text-gray-900">Experience Analysis</h3>
@@ -726,7 +726,7 @@ export function ContentGenerator({
 
                 {/* Education Analysis */}
                 {analysis.education && analysis.education.length > 0 && (
-                    <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                    <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
                         <div className="flex items-center gap-3 mb-6">
                             <GraduationCap className="w-6 h-6 text-gray-600" />
                             <h3 className="text-lg font-semibold text-gray-900">Education Analysis</h3>
@@ -769,7 +769,7 @@ export function ContentGenerator({
 
                 {/* Strengths */}
                 {jobMatch.strengths && jobMatch.strengths.length > 0 && (
-                    <div className="bg-green-50 rounded-xl border border-green-200">
+                    <div className="bg-green-50 rounded-lg border border-green-200">
                         <Button
                             onClick={() => setIsStrengthsExpanded(!isStrengthsExpanded)}
                             variant="ghost"
@@ -805,7 +805,7 @@ export function ContentGenerator({
 
                 {/* Missing Skills */}
                 {jobMatch.missingSkills && jobMatch.missingSkills.length > 0 && (
-                    <div className="bg-orange-50 rounded-xl border border-orange-200">
+                    <div className="bg-orange-50 rounded-lg border border-orange-200">
                         <Button
                             onClick={() => setIsMissingSkillsExpanded(!isMissingSkillsExpanded)}
                             variant="ghost"
@@ -841,7 +841,7 @@ export function ContentGenerator({
 
                 {/* All Recommendations */}
                 {jobMatch.recommendations && jobMatch.recommendations.length > 0 && (
-                    <div className="bg-purple-50 rounded-xl p-6 border border-purple-200">
+                    <div className="bg-purple-50 rounded-lg p-6 border border-purple-200">
                         <div className="flex items-center gap-3 mb-4">
                             <Lightbulb className="w-6 h-6 text-purple-600" />
                             <h3 className="text-lg font-semibold text-gray-900">Detailed Recommendations</h3>
@@ -859,7 +859,7 @@ export function ContentGenerator({
 
                 {/* Analysis Metadata */}
                 {analysis.metadata && (
-                    <div className="bg-gray-100 rounded-xl p-4 border border-gray-200">
+                    <div className="bg-gray-100 rounded-lg p-4 border border-gray-200">
                         <h4 className="text-sm font-semibold text-gray-900 mb-2">Analysis Details</h4>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
                             <div>
@@ -951,7 +951,7 @@ export function ContentGenerator({
                     {isGenerating ? (
                         <div className="space-y-6">
                             {/* Generating Cover Letter Card */}
-                            <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl">
+                            <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
                                 <div className="flex items-center justify-between mb-3">
                                     <h4 className="text-base font-medium text-gray-900">
                                         {generationType === 'cover-letter' ? 'Generating Cover Letter' :

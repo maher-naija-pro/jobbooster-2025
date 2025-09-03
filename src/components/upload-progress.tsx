@@ -67,7 +67,7 @@ export function UploadProgress({
     };
 
     return (
-        <div className={cn("border border-gray-200 rounded-lg p-6 bg-gray-50", className)}>
+        <div className={cn("border border-gray-200 rounded-md p-6 bg-gray-50", className)}>
             <div className="flex items-center gap-3 mb-4">
                 {getStatusIcon()}
                 <div className="flex-1">
