@@ -80,9 +80,9 @@ export function ActionButtons({
                 <Button
                     onClick={handleGenerateMailClick}
                     disabled={isDisabled || isGenerating}
-                    variant={isDisabled ? "secondary" : isGeneratingEmail ? "secondary" : "default"}
+                    variant={isDisabled ? "secondary" : isGeneratingEmail ? "secondary" : "success"}
                     size="sm"
-                    className="w-full gap-1 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white"
+                    className="w-full gap-1 text-xs font-semibold"
                 >
                     {isGeneratingEmail ? (
                         <>
@@ -102,9 +102,9 @@ export function ActionButtons({
                     <Button
                         onClick={handleAnalyzeCVClick}
                         disabled={isDisabled || isGenerating}
-                        variant={isDisabled ? "secondary" : isAnalyzingCV ? "secondary" : "default"}
+                        variant={isDisabled ? "secondary" : isAnalyzingCV ? "secondary" : "accent"}
                         size="sm"
-                        className="w-full gap-1 text-xs font-semibold bg-violet-600 hover:bg-violet-700 text-white"
+                        className="w-full gap-1 text-xs font-semibold"
                     >
                         {isAnalyzingCV ? (
                             <>

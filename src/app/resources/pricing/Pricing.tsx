@@ -102,7 +102,7 @@ const Pricing = () => {
                         {pricing.popular === PopularPlanType.YES ? (
                           <Badge
                             variant="secondary"
-                            className="text-sm text-white bg-blue-600 dark:bg-blue-500"
+                            className="text-sm"
                             aria-label="Most popular plan"
                           >
                             Most popular
@@ -121,14 +121,11 @@ const Pricing = () => {
                         onClick={handleLogin}
                         onKeyDown={handleKeyDown}
                         aria-label={`${pricing.buttonText} - ${pricing.title} plan for $${pricing.price} per month`}
-                        className={
-                          pricing.popular === PopularPlanType.YES
-                            ? "w-full bg-red-600 hover:bg-red-700 text-white border-0 rounded-lg py-4 px-10 font-semibold transition-colors duration-200 focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                            : "w-full border-2 border-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-900 dark:hover:text-slate-50 text-slate-900 dark:text-slate-100 rounded-lg py-4 px-10 font-semibold transition-colors duration-200 focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
-                        }
+                        variant={pricing.popular === PopularPlanType.YES ? "destructive" : "outline"}
+                        className="w-full py-4 px-10 font-semibold"
                       >
                         {isLoading ? (
-                          <span className="hover:bg-blue-100 flex items-center space-x-2">
+                          <span className="flex items-center space-x-2">
                             <Loader2 className="h-4 w-4 animate-spin" />
                             <span>Loading...</span>
                           </span>
@@ -149,7 +146,7 @@ const Pricing = () => {
                       <ul className="space-y-4" role="list" aria-label={`${pricing.title} plan features`}>
                         {pricing.benefitList.map((benefit: string) => (
                           <li key={benefit} className="flex items-start">
-                            <Check className="text-green-600 dark:text-green-500 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                            <Check className="text-success mt-0.5 flex-shrink-0" aria-hidden="true" />
                             <span className="ml-2 text-sm">{benefit}</span>
                           </li>
                         ))}

@@ -166,7 +166,7 @@ export function ContentGenerator({
                         <div className="flex-1">
                             <div className="w-full bg-gray-200 rounded-full h-3">
                                 <div
-                                    className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500"
+                                    className="bg-gradient-to-r from-primary to-accent h-3 rounded-full transition-all duration-500"
                                     style={{ width: `${jobMatch.overallMatch}%` }}
                                 ></div>
                             </div>
@@ -362,7 +362,7 @@ export function ContentGenerator({
                         <div className="space-y-2">
                             {jobMatch.recommendations.slice(0, 3).map((recommendation, index) => (
                                 <div key={index} className="flex items-start gap-3">
-                                    <div className="w-2 h-2 bg-purple-600 rounded-full mt-2 flex-shrink-0"></div>
+                                    <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0"></div>
                                     <p className="text-gray-700 text-sm">{recommendation}</p>
                                 </div>
                             ))}
@@ -412,7 +412,7 @@ export function ContentGenerator({
                         <div className="flex-1">
                             <div className="w-full bg-gray-200 rounded-full h-3">
                                 <div
-                                    className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500"
+                                    className="bg-gradient-to-r from-primary to-accent h-3 rounded-full transition-all duration-500"
                                     style={{ width: `${jobMatch.overallMatch}%` }}
                                 ></div>
                             </div>
@@ -687,7 +687,7 @@ export function ContentGenerator({
                                             </div>
                                             <div className="w-20 bg-gray-200 rounded-full h-2 mt-1">
                                                 <div
-                                                    className="bg-blue-500 h-2 rounded-full"
+                                                    className="bg-primary h-2 rounded-full"
                                                     style={{ width: `${exp.relevanceScore * 100}%` }}
                                                 ></div>
                                             </div>
@@ -850,7 +850,7 @@ export function ContentGenerator({
                         <div className="space-y-3">
                             {jobMatch.recommendations.map((recommendation, index) => (
                                 <div key={index} className="flex items-start gap-3">
-                                    <div className="w-2 h-2 bg-purple-600 rounded-full mt-2 flex-shrink-0"></div>
+                                    <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0"></div>
                                     <p className="text-gray-700">{recommendation}</p>
                                 </div>
                             ))}
@@ -1006,7 +1006,7 @@ export function ContentGenerator({
                                     {displayContent && (
                                         <div className="text-gray-900 leading-relaxed">
                                             {formatContent(displayContent)}
-                                            <span className="inline-block w-2 h-5 bg-blue-600 animate-pulse ml-1"></span>
+                                            <span className="inline-block w-2 h-5 bg-primary animate-pulse ml-1"></span>
                                         </div>
                                     )}
                                 </>

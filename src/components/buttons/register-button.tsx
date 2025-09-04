@@ -14,8 +14,9 @@ export const RegisterButton = () => {
 
   return (
     <Link className="cursor-pointer" key="register" href="/register">
-      < Button
-        className="border text-slate-900 bg-slate-50 hover:bg-slate-900 hover:text-slate-50 border-slate-700  text-base font-semibold mr-5 py-2 px-8 w-full "
+      <Button
+        variant="default"
+        className="text-base font-semibold mr-5 py-2 px-8 w-full"
       >
         Register
       </Button >

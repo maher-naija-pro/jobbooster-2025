@@ -82,7 +82,7 @@ export const DemoFormContent = () => {
                     <Input
                       {...field}
                       id="name"
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                      className="w-full px-4 py-3 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-colors duration-200 bg-background text-foreground placeholder-muted-foreground"
                       disabled={isPending}
                       placeholder="Enter your full name"
                       autoComplete="name"
@@ -113,7 +113,7 @@ export const DemoFormContent = () => {
                       id="email"
                       disabled={isPending}
                       autoComplete="email"
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                      className="w-full px-4 py-3 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-colors duration-200 bg-background text-foreground placeholder-muted-foreground"
                       placeholder="your.email@example.com"
                       type="email"
                       aria-describedby="email-error"
@@ -166,7 +166,7 @@ export const DemoFormContent = () => {
             <Button
               disabled={isPending}
               type="submit"
-              className="w-full py-4 px-6 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed"
+              className="w-full py-4 px-6 font-semibold"
               aria-describedby={isPending ? "loading-message" : undefined}
             >
               {isPending ? (

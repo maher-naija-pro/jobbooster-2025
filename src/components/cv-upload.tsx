@@ -101,13 +101,13 @@ export function CVUpload({
             {/* Main Header with Title and Description */}
             <div className="text-center mb-2">
                 <div className="flex justify-center gap-1 mb-1">
-                    <div className="w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center">
-                        <svg className="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}>
+                    <div className="w-7 h-7 bg-primary/10 rounded-full flex items-center justify-center">
+                        <svg className="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}>
                             <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                     </div>
-                    <div className="w-7 h-7 bg-green-100 rounded-full flex items-center justify-center">
-                        <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-7 h-7 bg-success/10 rounded-full flex items-center justify-center">
+                        <svg className="w-7 h-7 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
                     </div>
@@ -148,11 +148,11 @@ export function CVUpload({
                             <div className="flex flex-col items-center gap-2">
                                 <div className={cn(
                                     "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110",
-                                    isDragOver ? "bg-blue-100 scale-125" : "bg-gray-100 group-hover:bg-blue-100"
+                                    isDragOver ? "bg-primary/10 scale-125" : "bg-muted group-hover:bg-primary/10"
                                 )}>
                                     <Target className={cn(
                                         "w-5 h-5 transition-all duration-300",
-                                        isDragOver ? "text-blue-500 scale-110" : "text-gray-400 group-hover:text-blue-500"
+                                        isDragOver ? "text-primary scale-110" : "text-muted-foreground group-hover:text-primary"
                                     )} />
                                 </div>
 
@@ -211,7 +211,7 @@ export function CVUpload({
                                 </div>
                                 <div className="w-full bg-gray-200 rounded-full h-1.5">
                                     <div
-                                        className="bg-blue-600 h-1.5 rounded-full transition-all duration-300"
+                                        className="bg-primary h-1.5 rounded-full transition-all duration-300"
                                         style={{ width: `${uploadProgress}%` }}
                                     />
                                 </div>

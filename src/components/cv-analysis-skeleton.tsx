@@ -90,13 +90,13 @@ export function CVAnalysisSkeleton({ progress, className = '' }: CVAnalysisSkele
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-violet-500 rounded-full animate-pulse"></div>
+                        <div className="w-3 h-3 bg-accent rounded-full animate-pulse"></div>
                         <span className="text-sm text-gray-500">Generating...</span>
                     </div>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
                     <div
-                        className="bg-gradient-to-r from-blue-500 to-violet-500 h-2 rounded-full transition-all duration-500"
+                        className="bg-gradient-to-r from-primary to-accent h-2 rounded-full transition-all duration-500"
                         style={{ width: `${progress}%` }}
                     ></div>
                 </div>
@@ -267,13 +267,13 @@ export function CVAnalysisProgressiveSkeleton({ progress, className = '' }: CVAn
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 bg-violet-500 rounded-full animate-pulse"></div>
+                            <div className="w-3 h-3 bg-accent rounded-full animate-pulse"></div>
                             <span className="text-sm text-gray-500">Generating...</span>
                         </div>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
                         <div
-                            className="bg-gradient-to-r from-blue-500 to-violet-500 h-2 rounded-full transition-all duration-500"
+                            className="bg-gradient-to-r from-primary to-accent h-2 rounded-full transition-all duration-500"
                             style={{ width: `${progress}%` }}
                         ></div>
                     </div>

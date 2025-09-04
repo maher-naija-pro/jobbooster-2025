@@ -21,7 +21,8 @@ export const LoginButton = () => {
     <>
       <Button
         onClick={() => (user ? signOut() : handleLogin())}
-        className="hover:border text-slate-50 bg-slate-900 hover:bg-slate-50 hover:text-slate-900 border-slate-700 text-base font-semibold mr-5 py-2 px-8 w-full"
+        variant="outline"
+        className="text-base font-semibold mr-5 py-2 px-8 w-full"
       >
         {user ? "Logout" : "Login"}
         <Icons.next className="h-6 w-4 ml-2" />
