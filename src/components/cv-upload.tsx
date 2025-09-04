@@ -123,16 +123,7 @@ export function CVUpload({
             {/* Ultra Compact Upload Area - Show when not uploading, processing, or has CV data */}
             {!cvData && !isProcessing && !isUploading && (
                 <Card className="overflow-hidden border-0 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02]">
-                    <CardHeader className="px-4 ">
-                        <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 bg-blue-100 rounded-md flex items-center justify-center">
-                                <FileText className="w-3 h-3 text-blue-600" />
-                            </div>
-                            <h3 className="text-sm font-semibold text-gray-900">Upload CV/Resume</h3>
-                        </div>
-                    </CardHeader>
-
-                    <CardContent className="pt-0 px-4 ">
+                    <CardContent className="p-4 ">
                         <div
                             className={cn(
                                 "relative border-2 border-dashed rounded-lg  text-center transition-all duration-300 cursor-pointer min-h-[120px] flex flex-col items-center justify-center group hover:scale-[1.05] hover:shadow-lg",
@@ -170,7 +161,7 @@ export function CVUpload({
                                         "text-sm font-medium transition-colors duration-300",
                                         isDragOver ? "text-blue-600" : "text-gray-900 group-hover:text-blue-600"
                                     )}>
-                                        {isDragOver ? "Drop to Upload" : "Drop files here"}
+                                        {isDragOver ? "Drop to Upload" : "Drop to Upload CV/Resume"}
                                     </h4>
                                     <p className="text-xs text-gray-600 group-hover:text-gray-700">
                                         or <span className="text-blue-600 hover:text-blue-700 font-medium cursor-pointer transition-colors">click to browse</span>
@@ -265,7 +256,7 @@ export function CVUpload({
                                     <span>{formatFileSize(cvData.size)} • {getFileExtension(cvData.filename)}</span>
                                     <span className="text-green-600 font-medium">✓ Processed</span>
                                 </div>
-                 
+
                             </div>
                         </div>
                     </CardContent>
