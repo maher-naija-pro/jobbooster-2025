@@ -957,7 +957,7 @@ export function ContentGenerator({
                             ) : (
                                 // Show regular generation card for other content types
                                 <>
-                                    {/* Generating Cover Letter Card */}
+                                    {/* Generating Content Card */}
                                     <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
                                         <div className="flex items-center justify-between mb-3">
                                             <h4 className="text-base font-medium text-gray-900">
@@ -968,7 +968,7 @@ export function ContentGenerator({
                                             <div className="flex items-center gap-2">
                                                 <div
                                                     className={`w-3 h-3 rounded-full shadow-sm ${isGenerating
-                                                        ? generationType === 'cv-analysis'
+                                                        ? (generationType as string) === 'cv-analysis'
                                                             ? 'bg-violet-500 animate-pulse'
                                                             : generationType === 'email'
                                                                 ? 'bg-emerald-500 animate-pulse'
@@ -991,7 +991,7 @@ export function ContentGenerator({
                                         />
                                         <div className="flex items-center justify-between mt-2">
                                             <p className="text-sm text-gray-600">
-                                                {generationType === 'cv-analysis'
+                                                {(generationType as string) === 'cv-analysis'
                                                     ? 'AI is analyzing your CV and matching it against job requirements'
                                                     : 'AI is analyzing your CV and job requirements to create personalized content'
                                                 }
@@ -1002,11 +1002,116 @@ export function ContentGenerator({
                                         </div>
                                     </div>
 
-                                    {/* Content Preview */}
-                                    {displayContent && (
+                                    {/* Content Preview or Skeleton */}
+                                    {displayContent ? (
                                         <div className="text-gray-900 leading-relaxed">
                                             {formatContent(displayContent)}
                                             <span className="inline-block w-2 h-5 bg-primary animate-pulse ml-1"></span>
+                                        </div>
+                                    ) : (
+                                        // Skeleton loader while waiting for first word of stream - full page space
+                                        <div className="space-y-4 py-8">
+                                            {generationType === 'email' ? (
+                                                // Email skeleton structure
+                                                <>
+                                                    {/* Email header skeleton */}
+                                                    <div className="space-y-2">
+                                                        <div className="h-6 bg-gray-200 rounded animate-pulse w-1/3"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-1/4"></div>
+                                                    </div>
+
+                                                    {/* Email content skeleton */}
+                                                    <div className="space-y-3">
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-full"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-5/6"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-4/5"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-full"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
+                                                    </div>
+
+                                                    <div className="space-y-3">
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-full"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-5/6"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-4/5"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-full"></div>
+                                                    </div>
+
+                                                    <div className="space-y-3">
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-full"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-5/6"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-4/5"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-full"></div>
+                                                    </div>
+
+                                                    <div className="space-y-3">
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-full"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-5/6"></div>
+                                                    </div>
+
+                                                    {/* Email footer skeleton */}
+                                                    <div className="space-y-2 pt-4">
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-1/2"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-1/3"></div>
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                // Cover letter skeleton structure
+                                                <>
+                                                    {/* Cover letter header skeleton */}
+                                                    <div className="space-y-2">
+                                                        <div className="h-6 bg-gray-200 rounded animate-pulse w-1/4"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-1/3"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-1/5"></div>
+                                                    </div>
+
+                                                    {/* Cover letter greeting skeleton */}
+                                                    <div className="space-y-2 pt-4">
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-1/6"></div>
+                                                    </div>
+
+                                                    {/* Cover letter body skeleton - multiple paragraphs */}
+                                                    <div className="space-y-3 pt-4">
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-full"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-5/6"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-4/5"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-full"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-5/6"></div>
+                                                    </div>
+
+                                                    <div className="space-y-3">
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-full"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-4/5"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-full"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-5/6"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
+                                                    </div>
+
+                                                    <div className="space-y-3">
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-full"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-5/6"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-4/5"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-full"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
+                                                    </div>
+
+                                                    <div className="space-y-3">
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-full"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-5/6"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-4/5"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-full"></div>
+                                                    </div>
+
+                                                    {/* Cover letter closing skeleton */}
+                                                    <div className="space-y-2 pt-4">
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-1/6"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-1/4"></div>
+                                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-1/5"></div>
+                                                    </div>
+                                                </>
+                                            )}
                                         </div>
                                     )}
                                 </>
