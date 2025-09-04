@@ -29,12 +29,14 @@ const routeList = {
       {
         label: "Terms of Service",
         href: "/legal/terms-of-service"
-      },
-      {
-        label: "Contact",
-        href: "/company/contact"
       }
     ]
+  },
+
+  Contact: {
+    menu: "false",
+    href: "/company/contact",
+    items: []
   }
 }
 
