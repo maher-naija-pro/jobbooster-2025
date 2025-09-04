@@ -1,0 +1,28 @@
+import { DemoForm } from "@/app/company/contact/_form"
+import { Site_name } from "@/texts-and-menues/site-name";
+import type { Metadata } from "next"
+
+//add this after <GoogleTagManager gtmId="GTM-XYZ" />
+export const metadata: Metadata = {
+  title: Site_name.siteName + " | " + "Contact",
+  keywords: Site_name.keywords,
+  description: Site_name.description,
+  twitter: {
+    title: Site_name.Title,
+    site: " @" + Site_name.siteName,
+    images: [Site_name.cover_twitter]
+  },
+  openGraph: {
+    images: [Site_name.cover_facebook],
+    title: Site_name.Title,
+    url: Site_name.domain,
+    siteName: Site_name.siteName,
+    type: "website",
+    description: Site_name.description,
+  }
+}
+const DemoPage = () => {
+  return <DemoForm />
+}
+
+export default DemoPage

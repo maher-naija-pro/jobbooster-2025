@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "../lib/app-context";
-import { Header } from "../components/header";
+import Navbar from "./layout/Navbar";
+import Footer from "./layout/Footer";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,8 +21,6 @@ export const metadata: Metadata = {
   description: "Create tailored job application materials with AI-powered content generation",
 };
 
-
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -30,13 +29,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 min-h-screen flex flex-col`}
       >
         <AppProvider>
-          <Header />
+          <Navbar />
           <main className="flex-1">
             {children}
           </main>
+          <Footer />
+          <ScrollToTop />
         </AppProvider>
       </body>
     </html>
