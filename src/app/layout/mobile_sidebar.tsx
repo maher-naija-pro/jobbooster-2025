@@ -2,7 +2,7 @@ import { Logo } from "@/components/Logo"
 import { LoginButton } from "@/components/buttons/login-button"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { RiMenuFill } from "react-icons/ri";
+import { RiMenuFill, RiArrowDownSLine, RiArrowRightSLine } from "react-icons/ri";
 import { Icons } from "@/components/icons"
 import { useAuth } from "@/components/auth/auth-provider";
 import { useRouter } from "next/navigation";
@@ -30,6 +30,14 @@ const Mobile_sidebar = () => {
     router.push("/login");
   };
   const [isOpen, setIsOpen] = useState<boolean>(false)
+  const [expandedMenus, setExpandedMenus] = useState<{ [key: string]: boolean }>({})
+
+  const toggleMenu = (menuName: string) => {
+    setExpandedMenus(prev => ({
+      ...prev,
+      [menuName]: !prev[menuName]
+    }))
+  }
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -68,17 +76,54 @@ const Mobile_sidebar = () => {
           <div className="flex-1 mt-8">
             <nav className="space-y-1">
               {Object.keys(routeList).map(template_name => {
-                return (
-                  <Link
-                    key={template_name}
-                    //@ts-ignore
-                    href={routeList[template_name].href}
-                    onClick={() => setIsOpen(false)}
-                    className="block px-3 py-3 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
-                  >
-                    {template_name}
-                  </Link>
-                )
+                //@ts-ignore
+                const route = routeList[template_name]
+
+                //@ts-ignore
+                if (route.menu == "false") {
+                  return (
+                    <Link
+                      key={template_name}
+                      href={route.href}
+                      onClick={() => setIsOpen(false)}
+                      className="block px-3 py-3 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
+                    >
+                      {template_name}
+                    </Link>
+                  )
+                } else {
+                  // Handle dropdown menu
+                  const isExpanded = expandedMenus[template_name]
+                  return (
+                    <div key={template_name}>
+                      <button
+                        onClick={() => toggleMenu(template_name)}
+                        className="w-full flex items-center justify-between px-3 py-3 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
+                      >
+                        {template_name}
+                        {isExpanded ? (
+                          <RiArrowDownSLine className="h-4 w-4" />
+                        ) : (
+                          <RiArrowRightSLine className="h-4 w-4" />
+                        )}
+                      </button>
+                      {isExpanded && (
+                        <div className="ml-4 space-y-1">
+                          {route.items.map((item: any) => (
+                            <Link
+                              key={item.href}
+                              href={item.href}
+                              onClick={() => setIsOpen(false)}
+                              className="block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
+                            >
+                              {item.label}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )
+                }
               })}
             </nav>
           </div>

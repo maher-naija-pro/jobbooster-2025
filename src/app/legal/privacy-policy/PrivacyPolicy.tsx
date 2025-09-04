@@ -30,14 +30,14 @@ const PrivacyPolicy = () => {
               </span>
             </h1>
             <p className="text-base text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-6">
-              Last updated: {new Date().toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
+              Last updated: {new Date().toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
               })}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link 
+              <Link
                 href="/legal"
                 className="inline-flex items-center px-3 py-2 text-slate-600 dark:text-slate-300 hover:text-primary transition-colors text-sm"
               >
@@ -46,7 +46,7 @@ const PrivacyPolicy = () => {
                 </svg>
                 Back to Legal
               </Link>
-              <a 
+              <a
                 href="#toc"
                 className="inline-flex items-center px-3 py-2 text-primary hover:text-primary/80 transition-colors text-sm"
               >
@@ -64,7 +64,7 @@ const PrivacyPolicy = () => {
             <ol className="space-y-2">
               {tableOfContents.map((item, index) => (
                 <li key={item.id}>
-                  <a 
+                  <a
                     href={`#${item.id}`}
                     className="flex items-center text-slate-600 dark:text-slate-300 hover:text-primary transition-colors group text-sm"
                   >
@@ -79,7 +79,7 @@ const PrivacyPolicy = () => {
           </nav>
 
           {/* Privacy Policy Content */}
-          <article className="prose prose-lg max-w-none">
+          <article className="prose prose-sm max-w-none">
             <section id="introduction" className="mb-8 p-6 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700">
               <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Introduction</h2>
               <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-3 text-sm">
@@ -106,29 +106,29 @@ const PrivacyPolicy = () => {
               </p>
             </section>
 
-            <section id="ai-processing" className="mb-12 p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
-              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">AI Processing and Content Generation</h2>
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+            <section id="ai-processing" className="mb-8 p-6 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700">
+              <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">AI Processing and Content Generation</h2>
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-3 text-sm">
                 Our web application uses self-hosted AI technology to generate cover letters, resume improvements, and other job-seeking-related content. This approach ensures complete data privacy and security:
               </p>
-              <ul className="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-2 mb-4">
+              <ul className="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-1 mb-3 text-sm">
                 <li><strong>Self-hosted AI infrastructure</strong> - All AI processing happens on our own servers</li>
                 <li><strong>No external data sharing</strong> - Your personal information never leaves our secure environment</li>
                 <li><strong>Complete data control</strong> - We maintain full control over your data throughout the entire process</li>
                 <li><strong>Enhanced privacy protection</strong> - No third-party AI services have access to your information</li>
                 <li><strong>Secure processing</strong> - All AI operations are performed within our encrypted, private infrastructure</li>
               </ul>
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm">
                 By using our self-hosted AI solution, we guarantee that your personal data, resume information, and job requirements remain completely private and are never shared with external AI providers or third-party services.
               </p>
             </section>
 
-            <section id="log-files" className="mb-12 p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
-              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">Log Files</h2>
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+            <section id="log-files" className="mb-8 p-6 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700">
+              <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Log Files</h2>
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-3 text-sm">
                 We follow standard procedures for collecting log files, which may include:
               </p>
-              <ul className="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-2 mb-4">
+              <ul className="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-1 mb-3 text-sm">
                 <li>IP addresses</li>
                 <li>Browser type and version</li>
                 <li>Internet Service Provider (ISP)</li>
@@ -136,33 +136,33 @@ const PrivacyPolicy = () => {
                 <li>Referring/exit pages</li>
                 <li>Number of clicks</li>
               </ul>
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm">
                 This information is used to analyze trends, administer the site, track user movement, and gather demographic information. It is not linked to any personally identifiable information.
               </p>
             </section>
 
-            <section id="cookies" className="mb-12 p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
-              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">Cookies and Web Beacons</h2>
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+            <section id="cookies" className="mb-8 p-6 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700">
+              <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Cookies and Web Beacons</h2>
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-3 text-sm">
                 We use cookies and similar tracking technologies to enhance your experience on our platform:
               </p>
-              <ul className="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-2 mb-4">
+              <ul className="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-1 mb-3 text-sm">
                 <li><strong>Essential cookies</strong> - Required for basic site functionality</li>
                 <li><strong>Analytics cookies</strong> - Help us understand how visitors use our site</li>
                 <li><strong>Preference cookies</strong> - Remember your settings and preferences</li>
                 <li><strong>Marketing cookies</strong> - Used to deliver relevant advertisements</li>
               </ul>
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm">
                 You can control cookie settings through your browser preferences. However, disabling certain cookies may affect the functionality of our service.
               </p>
             </section>
 
-            <section id="data-protection" className="mb-12 p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
-              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">Data Protection Rights (GDPR)</h2>
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+            <section id="data-protection" className="mb-8 p-6 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700">
+              <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Data Protection Rights (GDPR)</h2>
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-3 text-sm">
                 If you are a resident of the European Economic Area (EEA), you have certain data protection rights:
               </p>
-              <ul className="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-2 mb-4">
+              <ul className="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-1 mb-3 text-sm">
                 <li><strong>Right to access</strong> - Request copies of your personal data</li>
                 <li><strong>Right to rectification</strong> - Request correction of inaccurate data</li>
                 <li><strong>Right to erasure</strong> - Request deletion of your personal data</li>
@@ -170,64 +170,64 @@ const PrivacyPolicy = () => {
                 <li><strong>Right to data portability</strong> - Request transfer of your data</li>
                 <li><strong>Right to object</strong> - Object to processing of your personal data</li>
               </ul>
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm">
                 To exercise any of these rights, please contact us at <a href={`mailto:${Site_name.ContactMail}`} className="text-primary hover:text-primary/80 underline">{Site_name.ContactMail}</a>.
               </p>
             </section>
 
-            <section id="data-security" className="mb-12 p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
-              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">Data Security</h2>
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+            <section id="data-security" className="mb-8 p-6 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700">
+              <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Data Security</h2>
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-3 text-sm">
                 We implement appropriate security measures to protect your personal information:
               </p>
-              <ul className="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-2 mb-4">
+              <ul className="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-1 mb-3 text-sm">
                 <li>Encryption of data in transit and at rest</li>
                 <li>Regular security audits and assessments</li>
                 <li>Access controls and authentication measures</li>
                 <li>Secure data storage and backup procedures</li>
                 <li>Staff training on data protection practices</li>
               </ul>
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm">
                 While we strive to protect your personal information, no method of transmission over the internet or electronic storage is 100% secure. We cannot guarantee absolute security.
               </p>
             </section>
 
-            <section id="data-retention" className="mb-12 p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
-              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">Data Retention</h2>
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+            <section id="data-retention" className="mb-8 p-6 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700">
+              <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Data Retention</h2>
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-3 text-sm">
                 We retain your personal information for as long as necessary to:
               </p>
-              <ul className="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-2 mb-4">
+              <ul className="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-1 mb-3 text-sm">
                 <li>Provide our services to you</li>
                 <li>Comply with legal obligations</li>
                 <li>Resolve disputes and enforce agreements</li>
                 <li>Improve our services and user experience</li>
               </ul>
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm">
                 When you delete your account, we will delete or anonymize your personal information within 30 days, unless we are required to retain it for legal or regulatory purposes.
               </p>
             </section>
 
-            <section id="children-privacy" className="mb-12 p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
-              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">Children's Privacy</h2>
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+            <section id="children-privacy" className="mb-8 p-6 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700">
+              <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Children's Privacy</h2>
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm">
                 Our service is not intended for children under 16 years of age. We do not knowingly collect personal information from children under 16. If you are a parent or guardian and believe your child has provided us with personal information, please contact us immediately. If we discover that we have collected personal information from a child under 16, we will delete such information from our servers.
               </p>
             </section>
 
-            <section id="changes" className="mb-12 p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
-              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">Changes to Privacy Policy</h2>
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+            <section id="changes" className="mb-8 p-6 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700">
+              <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Changes to Privacy Policy</h2>
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm">
                 We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last updated" date. We will also notify you via email if the changes are significant. You are advised to review this Privacy Policy periodically for any changes.
               </p>
             </section>
 
-            <section id="contact" className="mb-12 p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
-              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">Contact Us</h2>
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+            <section id="contact" className="mb-8 p-6 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700">
+              <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Contact Us</h2>
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-3 text-sm">
                 If you have any questions about this Privacy Policy or our data practices, please contact us:
               </p>
-              <div className="space-y-2">
+              <div className="space-y-1 text-sm">
                 <p className="text-slate-600 dark:text-slate-300">
                   <strong>Email:</strong> <a href={`mailto:${Site_name.ContactMail}`} className="text-primary hover:text-primary/80 underline">{Site_name.ContactMail}</a>
                 </p>
@@ -245,21 +245,21 @@ const PrivacyPolicy = () => {
           </article>
 
           {/* Back to top and navigation */}
-          <div className="mt-16 flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
             <a
               href="#toc"
-              className="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors focus:outline-none focus:ring-4 focus:ring-primary/20"
+              className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors focus:outline-none focus:ring-4 focus:ring-primary/20 text-sm"
             >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
               </svg>
               Back to Top
             </a>
             <Link
               href="/legal"
-              className="inline-flex items-center px-6 py-3 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors focus:outline-none focus:ring-4 focus:ring-slate-200 dark:focus:ring-slate-600"
+              className="inline-flex items-center px-4 py-2 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors focus:outline-none focus:ring-4 focus:ring-slate-200 dark:focus:ring-slate-600 text-sm"
             >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
               Back to Legal

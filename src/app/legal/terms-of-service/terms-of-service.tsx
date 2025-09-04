@@ -18,17 +18,17 @@ const TermsOfService = () => {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-      <section className="container mx-auto px-4 py-16 sm:py-24">
+      <section className="container mx-auto px-4 py-8 sm:py-12">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
-          <header className="text-center mb-16">
-            <h1 className="text-4xl lg:text-6xl font-bold text-slate-900 dark:text-white mb-6">
+          <header className="text-center mb-8">
+            <h1 className="text-4xl lg:text-6xl font-bold text-slate-900 dark:text-white mb-4">
               Terms of
               <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
                 {" "}Service
               </span>
             </h1>
-            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-8">
+            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-4">
               Last updated: {new Date().toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long',
@@ -58,8 +58,8 @@ const TermsOfService = () => {
           </header>
 
           {/* Table of Contents */}
-          <nav id="toc" className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg border border-slate-200 dark:border-slate-700 mb-12" aria-label="Table of contents">
-            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-6">Table of Contents</h2>
+          <nav id="toc" className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-lg border border-slate-200 dark:border-slate-700 mb-8" aria-label="Table of contents">
+            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">Table of Contents</h2>
             <ol className="space-y-3">
               {tableOfContents.map((item, index) => (
                 <li key={item.id}>
@@ -79,15 +79,15 @@ const TermsOfService = () => {
 
           {/* Terms Content */}
           <article className="prose prose-lg max-w-none">
-            <section id="acceptance" className="mb-12 p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
-              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">1. Acceptance of Terms</h2>
+            <section id="acceptance" className="mb-6 p-6 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
+              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-3">1. Acceptance of Terms</h2>
               <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
                 By accessing and using the website <strong>{Site_name.siteUrl}</strong> ("Website"), you agree to be bound by these Terms of Service ("Terms") and our <Link href="/legal/privacy-policy" className="text-primary hover:text-primary/80 underline">Privacy Policy</Link>. If you do not agree to these Terms, please do not use our Website.
               </p>
             </section>
 
-            <section id="privacy" className="mb-12 p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
-              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">2. Privacy Policy</h2>
+            <section id="privacy" className="mb-6 p-6 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
+              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-3">2. Privacy Policy</h2>
               <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
                 Our <Link href="/legal/privacy-policy" className="text-primary hover:text-primary/80 underline">Privacy Policy</Link>, which outlines how we collect, use, and protect your personal information, is incorporated here by reference. Please read it carefully.
               </p>
