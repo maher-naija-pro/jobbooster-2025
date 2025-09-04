@@ -72,10 +72,10 @@ export function UserProfile() {
         return (
             <>
                 <Button
-                    variant="outline"
-                    size="sm"
+                    variant="ghost"
+                    size="lg"
                     onClick={handleLoginClick}
-                    className="text-gray-900 hover:text-blue-600 font-medium whitespace-nowrap"
+                    className="text-gray-900 hover:text-blue-600 hover:bg-transparent font-medium whitespace-nowrap text-lg px-6 py-3"
                 >
                     Login
                 </Button>

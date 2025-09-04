@@ -1,10 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { FileText, Trash2 } from 'lucide-react';
+import { FileText, Trash2, Upload, Sparkles } from 'lucide-react';
 import { Button } from './ui/button';
 import { Alert, AlertDescription } from './ui/alert';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Progress } from './ui/progress';
 
 interface JobOfferInputProps {
     value: string;
@@ -14,7 +16,6 @@ interface JobOfferInputProps {
     className?: string;
 }
 
-const MAX_LENGTH = 5000;
 const MIN_LENGTH = 100;
 
 export function JobOfferInput({
@@ -26,6 +27,7 @@ export function JobOfferInput({
 }: JobOfferInputProps) {
     const [characterCount, setCharacterCount] = useState(0);
     const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+    const [isFocused, setIsFocused] = useState(false);
 
     useEffect(() => {
         setCharacterCount(value.length);
@@ -47,18 +49,11 @@ export function JobOfferInput({
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const newValue = e.target.value;
-        if (newValue.length <= MAX_LENGTH) {
-            onChange(newValue);
-        }
+        onChange(newValue);
     };
 
-    const getCharacterCountColor = () => {
-        if (characterCount < MIN_LENGTH) return 'text-red-600';
-        if (characterCount > MAX_LENGTH * 0.9) return 'text-orange-600';
-        return 'text-gray-600';
-    };
 
-    const isValidLength = characterCount >= MIN_LENGTH && characterCount <= MAX_LENGTH;
+    const isValidLength = characterCount >= MIN_LENGTH;
 
     return (
         <div className={className}>
@@ -113,12 +108,6 @@ export function JobOfferInput({
                         </TooltipContent>
                     </Tooltip>
 
-                    {/* Character count */}
-                    <div className="absolute bottom-2 right-2 text-xs">
-                        <span className={`text-xs ${getCharacterCountColor()}`}>
-                            {characterCount}/{MAX_LENGTH}
-                        </span>
-                    </div>
                 </div>
 
 
