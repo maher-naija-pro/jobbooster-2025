@@ -19,36 +19,36 @@ const PrivacyPolicy = () => {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-      <section className="container mx-auto px-4 py-16 sm:py-24">
+      <section className="container mx-auto px-4 py-8 sm:py-12">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
-          <header className="text-center mb-16">
-            <h1 className="text-4xl lg:text-6xl font-bold text-slate-900 dark:text-white mb-6">
+          <header className="text-center mb-8">
+            <h1 className="text-3xl lg:text-5xl font-bold text-slate-900 dark:text-white mb-4">
               Privacy
               <span className="bg-gradient-to-b from-primary/60 to-primary text-transparent bg-clip-text">
                 {" "}Policy
               </span>
             </h1>
-            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-8">
-              Last updated: {new Date().toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
+            <p className="text-base text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-6">
+              Last updated: {new Date().toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
               })}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link 
                 href="/legal"
-                className="inline-flex items-center px-4 py-2 text-slate-600 dark:text-slate-300 hover:text-primary transition-colors"
+                className="inline-flex items-center px-3 py-2 text-slate-600 dark:text-slate-300 hover:text-primary transition-colors text-sm"
               >
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
                 Back to Legal
               </Link>
-              <a
+              <a 
                 href="#toc"
-                className="inline-flex items-center px-4 py-2 text-primary hover:text-primary/80 transition-colors"
+                className="inline-flex items-center px-3 py-2 text-primary hover:text-primary/80 transition-colors text-sm"
               >
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
@@ -59,16 +59,16 @@ const PrivacyPolicy = () => {
           </header>
 
           {/* Table of Contents */}
-          <nav id="toc" className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg border border-slate-200 dark:border-slate-700 mb-12" aria-label="Table of contents">
-            <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-6">Table of Contents</h2>
-            <ol className="space-y-3">
+          <nav id="toc" className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg border border-slate-200 dark:border-slate-700 mb-8" aria-label="Table of contents">
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">Table of Contents</h2>
+            <ol className="space-y-2">
               {tableOfContents.map((item, index) => (
                 <li key={item.id}>
-                  <a
+                  <a 
                     href={`#${item.id}`}
-                    className="flex items-center text-slate-600 dark:text-slate-300 hover:text-primary transition-colors group"
+                    className="flex items-center text-slate-600 dark:text-slate-300 hover:text-primary transition-colors group text-sm"
                   >
-                    <span className="w-8 h-8 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center text-sm font-medium mr-3 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                    <span className="w-6 h-6 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center text-xs font-medium mr-3 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
                       {index + 1}
                     </span>
                     {item.title}
@@ -80,28 +80,28 @@ const PrivacyPolicy = () => {
 
           {/* Privacy Policy Content */}
           <article className="prose prose-lg max-w-none">
-            <section id="introduction" className="mb-12 p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
-              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">Introduction</h2>
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+            <section id="introduction" className="mb-8 p-6 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700">
+              <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Introduction</h2>
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-3 text-sm">
                 At <strong>{Site_name.siteName}</strong>, accessible from <strong>{Site_name.siteUrl}</strong>, we prioritize the privacy of our users. This Privacy Policy outlines the types of information collected by our web application and how we use, store, and protect it.
               </p>
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm">
                 By using our service, you agree to the collection and use of information in accordance with this policy. If you do not agree with our policies and practices, please do not use our service.
               </p>
             </section>
 
-            <section id="data-collection" className="mb-12 p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
-              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">Data Collection and AI Processing</h2>
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+            <section id="data-collection" className="mb-8 p-6 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700">
+              <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Data Collection and AI Processing</h2>
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-3 text-sm">
                 Our web application collects the following types of personal information:
               </p>
-              <ul className="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-2 mb-4">
+              <ul className="list-disc list-inside text-slate-600 dark:text-slate-300 space-y-1 mb-3 text-sm">
                 <li><strong>Email addresses</strong> - For account creation and communication</li>
                 <li><strong>Resume data</strong> - Including work experience, skills, education, and contact information</li>
                 <li><strong>Job preferences</strong> - Industry preferences, location preferences, and salary expectations</li>
                 <li><strong>Usage data</strong> - Information about how you interact with our platform</li>
               </ul>
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm">
                 This data is processed using advanced AI algorithms to offer personalized services such as job recommendations, skill assessments, and career guidance. We use this information to improve our services and provide you with relevant opportunities.
               </p>
             </section>
