@@ -1,7 +1,7 @@
 "use server"
 import { sendcontactEmail } from "@/lib/mail"
 import { DemoSchema } from "@/app/company/contact/_schemas"
-import db from "@/lib/db/db"
+import { db } from "@/lib/db"
 import * as z from "zod"
 
 export const demo = async (values: z.infer<typeof DemoSchema>) => {

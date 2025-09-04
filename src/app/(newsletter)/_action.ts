@@ -1,7 +1,7 @@
 "use server"
 
 import { NewsletterSchema } from "@/app/(newsletter)/_schemas"
-import db from "@/lib/db/db"
+import { db } from "@/lib/db"
 import * as z from "zod"
 
 export const subscribe_newsletter = async (

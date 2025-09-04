@@ -230,8 +230,7 @@ export const sendcontactEmail = async (
   email: string,
   message: string
 ) => {
-  console.log("🚀 ~ contactEmail sent to:");
-
+  console.log("🚀 ~ contactEmail sent to:", email);
 
   const htmlTemplate = `
   <!DOCTYPE html>
@@ -304,12 +303,12 @@ export const sendcontactEmail = async (
     <div class="email-container">
       <div class="header">
         <h1>${Site_name.siteUrl}</h1>
-        from :   ${name} ${email}
+        <p>From: ${name} (${email})</p>
       </div>
       <div class="content">
-      ${message}
+        <h2>Contact Message</h2>
+        <p>${message}</p>
       </div>
-    </div>
     </div>
     </body>
     </html>
