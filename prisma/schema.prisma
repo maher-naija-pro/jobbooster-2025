@@ -170,7 +170,7 @@ model UserNotification {
   @@map("user_notifications")
 }
 
-model Demo {
+model ContactMessage {
   id        String   @id @default(cuid())
   name      String
   email     String
@@ -178,7 +178,7 @@ model Demo {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("demo")
+  @@map("contact_messages")
 }
 
 model Newsletter {

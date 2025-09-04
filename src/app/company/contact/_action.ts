@@ -18,7 +18,7 @@ export const demo = async (values: z.infer<typeof DemoSchema>) => {
   console.log("🚀 ~ demo ~ message:", message)
 
   try {
-    await db.demo.create({
+    await db.contactMessage.create({
       data: {
         name,
         email,
