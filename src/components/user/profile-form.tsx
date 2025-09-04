@@ -15,7 +15,41 @@ export function ProfileForm({ profile }: ProfileFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [username, setUsername] = useState(profile?.username || '')
+  const [fullName, setFullName] = useState(profile?.fullName || '')
   const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle')
+
+  // Show loading state if profile is not loaded yet
+  if (!profile) {
+    return (
+      <div className="space-y-6">
+        <div className="animate-pulse">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-200 rounded w-20"></div>
+              <div className="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-200 rounded w-20"></div>
+              <div className="h-10 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <div className="h-4 bg-gray-200 rounded w-24"></div>
+            <div className="h-10 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+
+  // Update state when profile changes
+  useEffect(() => {
+    if (profile) {
+      setUsername(profile.username || '')
+      setFullName(profile.fullName || '')
+    }
+  }, [profile])
 
   // Check username uniqueness
   useEffect(() => {
@@ -54,10 +88,6 @@ export function ProfileForm({ profile }: ProfileFormProps) {
     setIsLoading(true)
     setError('')
 
-    // Optimistic update - update local state immediately
-    const fullName = formData.get('fullName') as string
-    const newUsername = formData.get('username') as string
-
     try {
       const result = await updateProfile(formData)
 
@@ -65,12 +95,14 @@ export function ProfileForm({ profile }: ProfileFormProps) {
         toast.success(result.message)
         setError('')
         // Update local state to reflect the changes
-        setUsername(newUsername)
+        setUsername(formData.get('username') as string)
+        setFullName(formData.get('fullName') as string)
       } else {
         setError(result.error)
         toast.error(result.error)
         // Revert optimistic update on error
         setUsername(profile?.username || '')
+        setFullName(profile?.fullName || '')
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An error occurred'
@@ -78,6 +110,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
       toast.error(errorMessage)
       // Revert optimistic update on error
       setUsername(profile?.username || '')
+      setFullName(profile?.fullName || '')
     } finally {
       setIsLoading(false)
     }
@@ -99,7 +132,8 @@ export function ProfileForm({ profile }: ProfileFormProps) {
             name="fullName"
             type="text"
             placeholder="Enter your full name"
-            defaultValue={profile?.fullName || ''}
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
             disabled={isLoading}
           />
         </div>
