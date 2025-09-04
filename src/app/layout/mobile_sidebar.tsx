@@ -17,6 +17,7 @@ import {
 import routeList from "@/texts-and-menues/menu"
 import Link from "next/link"
 import { useState } from "react"
+import { useApp } from "@/lib/app-context"
 
 interface RouteProps {
   href: string
@@ -26,9 +27,25 @@ interface RouteProps {
 const Mobile_sidebar = () => {
   const router = useRouter();
   const { user, signOut } = useAuth();
+  const { dispatch } = useApp();
+
   const handleLogin = () => {
     router.push("/login");
   };
+
+  const handleHomeClick = () => {
+    // Reset all generator state when home is clicked
+    dispatch({ type: 'CLEAR_CV_DATA' });
+    dispatch({ type: 'CLEAR_JOB_OFFER' });
+    dispatch({ type: 'CLEAR_CV_ANALYSIS' });
+    dispatch({ type: 'CLEAR_GENERATED_CONTENT' });
+    dispatch({ type: 'STOP_GENERATION' });
+    dispatch({ type: 'STOP_CV_ANALYSIS' });
+    dispatch({ type: 'STOP_JOB_ANALYSIS' });
+    dispatch({ type: 'CLEAR_ERROR' });
+    setIsOpen(false); // Close mobile menu
+  };
+
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const [expandedMenus, setExpandedMenus] = useState<{ [key: string]: boolean }>({})
 
@@ -85,7 +102,7 @@ const Mobile_sidebar = () => {
                     <Link
                       key={template_name}
                       href={route.href}
-                      onClick={() => setIsOpen(false)}
+                      onClick={template_name === "Home" ? handleHomeClick : () => setIsOpen(false)}
                       className="block px-3 py-3 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
                     >
                       {template_name}

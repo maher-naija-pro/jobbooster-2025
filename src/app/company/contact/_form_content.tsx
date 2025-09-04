@@ -41,6 +41,10 @@ export const DemoFormContent = () => {
         console.log("🚀 ~ register ~ data:", data)
         setSuccess(data?.success)
         setError(data?.error)
+        // Clear form after successful submission
+        if (data?.success) {
+          form.reset()
+        }
       })
     })
   }
@@ -141,7 +145,7 @@ export const DemoFormContent = () => {
                     <Textarea
                       {...field}
                       id="message"
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-vertical min-h-[120px]"
+                      className="w-full px-4 py-3 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-colors duration-200 bg-background text-foreground placeholder-muted-foreground resize-vertical min-h-[120px]"
                       disabled={isPending}
                       placeholder="Please tell us how we can help you..."
                       aria-describedby="message-error"

@@ -33,5 +33,5 @@ export const demo = async (values: z.infer<typeof DemoSchema>) => {
   await db.$disconnect()
   console.log("🚀 ~ sucess")
   sendcontactEmail(name, email, message)
-  return { success: "your request registred" }
+  return { success: "your request registered" }
 }
