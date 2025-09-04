@@ -15,6 +15,7 @@ const templates = {
   },
   Legal: {
     items: [
+      { name: "Legal Information", href: "/legal" },
       { name: "Privacy Policy", href: "/legal/privacy-policy" },
       { name: "Terms of Service", href: "/legal/terms-of-service" }
     ]

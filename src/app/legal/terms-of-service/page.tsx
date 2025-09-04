@@ -1,4 +1,4 @@
-import Termm from "@/app/legal/terms-of-service/terms-of-service"
+import TermsOfService from "@/app/legal/terms-of-service/terms-of-service"
 import type { Metadata } from "next"
 
 import { Site_name } from "@/texts-and-menues/site-name";
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <>
-      <Termm />
+      <TermsOfService />
     </>
   )
 }

@@ -1,4 +1,4 @@
-import Policy from "@/app/legal/privacy-policy/PrivacyPolicy"
+import PrivacyPolicy from "@/app/legal/privacy-policy/PrivacyPolicy"
 import type { Metadata } from "next"
 
 import { Site_name } from "@/texts-and-menues/site-name";
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <>
-      <Policy />
+      <PrivacyPolicy />
     </>
   )
 }
