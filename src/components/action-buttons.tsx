@@ -1,8 +1,7 @@
 'use client';
 
 import React from 'react';
-import { FileText, FileDown, Mail, Loader, Square, BarChart3 } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { FileDown, Mail, Square, BarChart3 } from 'lucide-react';
 import { Button } from './ui/button';
 import { FeatureGate } from './auth/feature-gate';
 
@@ -35,18 +34,33 @@ export function ActionButtons({
     const isAnalyzingCV = isGenerating && generationType === 'cv-analysis';
 
     const handleGenerateLetterClick = () => {
-        // Clear any existing content immediately before starting generation
-        onGenerateLetter();
+        if (isGeneratingLetter) {
+            // If currently generating letter, stop it
+            onStopGeneration();
+        } else {
+            // Clear any existing content immediately before starting generation
+            onGenerateLetter();
+        }
     };
 
     const handleGenerateMailClick = () => {
-        // Clear any existing content immediately before starting generation
-        onGenerateMail();
+        if (isGeneratingEmail) {
+            // If currently generating email, stop it
+            onStopGeneration();
+        } else {
+            // Clear any existing content immediately before starting generation
+            onGenerateMail();
+        }
     };
 
     const handleAnalyzeCVClick = () => {
-        // Clear any existing content immediately before starting analysis
-        onAnalyzeCV();
+        if (isAnalyzingCV) {
+            // If currently analyzing CV, stop it
+            onStopGeneration();
+        } else {
+            // Clear any existing content immediately before starting analysis
+            onAnalyzeCV();
+        }
     };
 
     return (
@@ -58,15 +72,15 @@ export function ActionButtons({
                 {/* Generate Cover Letter Button */}
                 <Button
                     onClick={handleGenerateLetterClick}
-                    disabled={isDisabled || isGenerating}
-                    variant={isDisabled ? "secondary" : isGeneratingLetter ? "secondary" : "default"}
+                    disabled={isDisabled || (isGenerating && !isGeneratingLetter)}
+                    variant={isDisabled ? "secondary" : isGeneratingLetter ? "destructive" : "default"}
                     size="sm"
                     className="w-full gap-1 text-xs font-semibold"
                 >
                     {isGeneratingLetter ? (
                         <>
-                            <Loader className="w-2 h-2 animate-spin" />
-                            Generating Letter...
+                            <Square className="w-2 h-2" />
+                            Stop Generation
                         </>
                     ) : (
                         <>
@@ -79,15 +93,15 @@ export function ActionButtons({
                 {/* Generate Email Button */}
                 <Button
                     onClick={handleGenerateMailClick}
-                    disabled={isDisabled || isGenerating}
-                    variant={isDisabled ? "secondary" : isGeneratingEmail ? "secondary" : "success"}
+                    disabled={isDisabled || (isGenerating && !isGeneratingEmail)}
+                    variant={isDisabled ? "secondary" : isGeneratingEmail ? "destructive" : "success"}
                     size="sm"
                     className="w-full gap-1 text-xs font-semibold"
                 >
                     {isGeneratingEmail ? (
                         <>
-                            <Loader className="w-2 h-2 animate-spin" />
-                            Generating Email...
+                            <Square className="w-2 h-2" />
+                            Stop Generation
                         </>
                     ) : (
                         <>
@@ -101,15 +115,15 @@ export function ActionButtons({
                 <FeatureGate feature="CV Analysis">
                     <Button
                         onClick={handleAnalyzeCVClick}
-                        disabled={isDisabled || isGenerating}
-                        variant={isDisabled ? "secondary" : isAnalyzingCV ? "secondary" : "accent"}
+                        disabled={isDisabled || (isGenerating && !isAnalyzingCV)}
+                        variant={isDisabled ? "secondary" : isAnalyzingCV ? "destructive" : "accent"}
                         size="sm"
                         className="w-full gap-1 text-xs font-semibold"
                     >
                         {isAnalyzingCV ? (
                             <>
-                                <Loader className="w-2 h-2 animate-spin" />
-                                Analyzing CV...
+                                <Square className="w-2 h-2" />
+                                Stop Generation
                             </>
                         ) : (
                             <>
@@ -120,18 +134,6 @@ export function ActionButtons({
                     </Button>
                 </FeatureGate>
 
-                {/* Stop Generation Button */}
-                {isGenerating && (
-                    <Button
-                        onClick={onStopGeneration}
-                        variant="destructive"
-                        size="sm"
-                        className="w-full gap-1 text-xs font-semibold"
-                    >
-                        <Square className="w-2 h-2" />
-                        Stop Generation
-                    </Button>
-                )}
             </div>
         </div>
     );
