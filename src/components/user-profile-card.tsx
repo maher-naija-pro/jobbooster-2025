@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Icons } from "@/components/icons"
 import { Button } from "@/components/ui/button"
@@ -21,8 +21,10 @@ export const UserProfileCard = ({ className }: UserProfileCardProps) => {
     const [isOpen, setIsOpen] = useState(false)
 
     const handleLogout = async () => {
+        console.log('🚀 UserProfileCard: Logout clicked')
+        setIsOpen(false) // Close immediately for better UX
         await signOut()
-        setIsOpen(false)
+        console.log('🚀 UserProfileCard: Logout completed')
     }
 
     const handleProfile = () => {
@@ -39,6 +41,13 @@ export const UserProfileCard = ({ className }: UserProfileCardProps) => {
         router.push("/dashboard")
         setIsOpen(false)
     }
+
+    // Close the card when user logs out
+    useEffect(() => {
+        if (!user) {
+            setIsOpen(false)
+        }
+    }, [user])
 
     if (loading) {
         return (
