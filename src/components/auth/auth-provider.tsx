@@ -9,6 +9,7 @@ interface AuthContextType {
   session: Session | null
   loading: boolean
   signOut: () => Promise<void>
+  refreshAuth: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -31,23 +32,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        // Only update state if there's actually a change
-        setSession(prevSession => {
-          if (prevSession?.user?.id !== session?.user?.id) {
-            setUser(session?.user ?? null)
-            setLoading(false)
-            return session
-          }
-          return prevSession
-        })
+        console.log('Auth state changed:', event, session?.user?.id)
+
+        // Always update the state for any auth change
+        setSession(session)
+        setUser(session?.user ?? null)
+        setLoading(false)
+
+        // Force a re-render by updating state even if values are the same
+        if (event === 'SIGNED_OUT') {
+          setUser(null)
+          setSession(null)
+        }
       }
     )
 
-    return () => subscription.unsubscribe()
+    // Also refresh auth state when window regains focus
+    // This helps catch auth changes that might have happened in other tabs
+    const handleFocus = () => {
+      getSession()
+    }
+
+    window.addEventListener('focus', handleFocus)
+
+    return () => {
+      subscription.unsubscribe()
+      window.removeEventListener('focus', handleFocus)
+    }
   }, [supabase.auth])
 
   const signOut = async () => {
     await supabase.auth.signOut()
+  }
+
+  const refreshAuth = async () => {
+    setLoading(true)
+    const { data: { session } } = await supabase.auth.getSession()
+    setSession(session)
+    setUser(session?.user ?? null)
+    setLoading(false)
   }
 
   const value = {
@@ -55,6 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     session,
     loading,
     signOut,
+    refreshAuth,
   }
 
   return (

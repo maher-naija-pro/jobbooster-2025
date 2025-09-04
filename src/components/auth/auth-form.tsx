@@ -28,7 +28,10 @@ export function AuthForm({ isLogin, onToggleMode, onSuccess }: AuthFormProps) {
       if (isLogin) {
         const result = await login(formData)
         if (result?.success) {
-          onSuccess()
+          // Add a small delay to ensure the auth state has time to update
+          setTimeout(() => {
+            onSuccess()
+          }, 100)
         }
       } else {
         await register(formData)

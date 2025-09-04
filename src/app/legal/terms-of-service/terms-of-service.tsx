@@ -93,15 +93,15 @@ const TermsOfService = () => {
               </p>
             </section>
 
-            <section id="changes" className="mb-12 p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
-              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">3. Changes to Terms</h2>
+            <section id="changes" className="mb-6 p-6 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
+              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-3">3. Changes to Terms</h2>
               <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
                 We may modify these Terms at any time. We will notify you of significant changes by posting a notice on our Website or by sending you an email. Your continued use of the Website after such changes have been notified will constitute your consent to such changes. It is your responsibility to review these Terms periodically for changes.
               </p>
             </section>
 
-            <section id="account" className="mb-12 p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
-              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">4. Account Registration and Use</h2>
+            <section id="account" className="mb-6 p-6 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
+              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-3">4. Account Registration and Use</h2>
               <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
                 You may need to register for an account to use certain features of our Website. By registering, you agree to provide accurate, current, and complete information about yourself as requested.
               </p>
@@ -110,8 +110,8 @@ const TermsOfService = () => {
               </p>
             </section>
 
-            <section id="newsletter" className="mb-12 p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
-              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">5. Newsletter and Marketing Emails</h2>
+            <section id="newsletter" className="mb-6 p-6 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
+              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-3">5. Newsletter and Marketing Emails</h2>
               <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
                 By creating an account, you consent to be subscribed to our newsletter, and to receive marketing emails from us and our partners. You can unsubscribe at any time by following the unsubscribe link in any of these emails.
               </p>
@@ -120,8 +120,8 @@ const TermsOfService = () => {
               </p>
             </section>
 
-            <section id="conduct" className="mb-12 p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
-              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">6. User Conduct</h2>
+            <section id="conduct" className="mb-6 p-6 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
+              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-3">6. User Conduct</h2>
               <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
                 You agree to use the Website only for lawful purposes and in a way that does not infringe the rights of, restrict, or inhibit anyone else's use and enjoyment of the Website.
               </p>
@@ -130,8 +130,8 @@ const TermsOfService = () => {
               </p>
             </section>
 
-            <section id="intellectual" className="mb-12 p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
-              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">7. Intellectual Property</h2>
+            <section id="intellectual" className="mb-6 p-6 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
+              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-3">7. Intellectual Property</h2>
               <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
                 The content on the Website is owned by us or our licensors and is protected by copyright and other intellectual property laws. You may not use the content except as permitted under these Terms.
               </p>
@@ -140,8 +140,8 @@ const TermsOfService = () => {
               </p>
             </section>
 
-            <section id="third-party" className="mb-12 p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
-              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">8. Third-Party Links</h2>
+            <section id="third-party" className="mb-6 p-6 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
+              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-3">8. Third-Party Links</h2>
               <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
                 Our Website may contain links to third-party websites that are not operated by us. We are not responsible for the content, privacy, or practices of any third-party websites.
               </p>
@@ -150,15 +150,15 @@ const TermsOfService = () => {
               </p>
             </section>
 
-            <section id="dispute" className="mb-12 p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
-              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">9. Dispute Resolution</h2>
+            <section id="dispute" className="mb-6 p-6 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
+              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-3">9. Dispute Resolution</h2>
               <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
                 Any disputes arising out of or related to these Terms will be governed by the laws of France, without regard to its conflict of law provisions. You agree to submit to the exclusive jurisdiction of the courts located in France to resolve any legal matter arising from these Terms.
               </p>
             </section>
 
-            <section id="contact" className="mb-12 p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
-              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">10. Contact Information</h2>
+            <section id="contact" className="mb-6 p-6 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
+              <h2 className="text-2xl font-semibold text-slate-900 dark:text-white mb-3">10. Contact Information</h2>
               <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
                 If you have any questions about these Terms, please contact us:
               </p>
@@ -177,7 +177,7 @@ const TermsOfService = () => {
           </article>
 
           {/* Back to top and navigation */}
-          <div className="mt-16 flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="#toc"
               className="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors focus:outline-none focus:ring-4 focus:ring-primary/20"
