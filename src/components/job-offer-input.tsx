@@ -89,11 +89,11 @@ export function JobOfferInput({
                                 onMouseEnter={() => setIsTooltipOpen(true)}
                                 onMouseLeave={() => setIsTooltipOpen(false)}
                                 placeholder="Paste your job offer here...&#10;&#10;Include job title, company name, requirements, responsibilities, and any other relevant details from the job posting."
-                                className={`w-full min-h-[80px] p-2 border rounded-md resize-vertical focus:ring-1 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-in-out hover:min-h-[120px] hover:shadow-md text-sm ${error
+                                className={`w-full min-h-[300px] p-2 border rounded-md resize-vertical focus:ring-1 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ease-in-out hover:min-h-[240px] hover:shadow-md text-sm ${error
                                     ? 'border-red-300 focus:ring-red-500'
                                     : 'border-gray-300 focus:border-blue-500'
                                     }`}
-                                style={{ minHeight: '80px', maxHeight: '200px' }}
+                                style={{ minHeight: '80px', maxHeight: '900px' }}
                             />
                         </TooltipTrigger>
                         <TooltipContent side="top" className="max-w-sm">
