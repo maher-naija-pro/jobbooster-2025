@@ -57,7 +57,7 @@ export async function updateProfile(formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect('/auth/login')
+    return { success: false, error: 'Not authenticated' }
   }
 
   const data = {
@@ -65,10 +65,22 @@ export async function updateProfile(formData: FormData) {
     username: formData.get('username') as string,
   }
 
-  // Validate input
-  const validatedData = updateProfileSchema.parse(data)
-
   try {
+    // Validate input
+    const validatedData = updateProfileSchema.parse(data)
+
+    // Check username uniqueness
+    const existingProfile = await prisma.profile.findFirst({
+      where: {
+        username: validatedData.username,
+        userId: { not: user.id }
+      }
+    })
+
+    if (existingProfile) {
+      return { success: false, error: 'Username is already taken' }
+    }
+
     await prisma.profile.upsert({
       where: { userId: user.id },
       update: {
@@ -98,9 +110,13 @@ export async function updateProfile(formData: FormData) {
 
     revalidatePath('/profile')
     revalidatePath('/dashboard')
+    return { success: true, message: 'Profile updated successfully' }
   } catch (error) {
     console.error('Error updating profile:', error)
-    redirect('/error?message=' + encodeURIComponent('Failed to update profile'))
+    if (error instanceof Error && error.name === 'ZodError') {
+      return { success: false, error: 'Invalid input data' }
+    }
+    return { success: false, error: 'Failed to update profile' }
   }
 }
 
@@ -110,7 +126,7 @@ export async function updatePreferences(formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect('/auth/login')
+    return { success: false, error: 'Not authenticated' }
   }
 
   const preferences = {
@@ -153,9 +169,10 @@ export async function updatePreferences(formData: FormData) {
 
     revalidatePath('/profile')
     revalidatePath('/dashboard')
+    return { success: true, message: 'Preferences updated successfully' }
   } catch (error) {
     console.error('Error updating preferences:', error)
-    redirect('/error?message=' + encodeURIComponent('Failed to update preferences'))
+    return { success: false, error: 'Failed to update preferences' }
   }
 }
 

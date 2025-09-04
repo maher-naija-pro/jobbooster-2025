@@ -7,28 +7,28 @@ import { prisma } from '@/lib/prisma'
 
 export async function uploadAvatar(formData: FormData) {
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
-  
+
   if (!user) {
-    redirect('/auth/login')
+    return { success: false, error: 'Not authenticated' }
   }
 
   const file = formData.get('avatar') as File
-  
+
   if (!file) {
-    redirect('/error?message=' + encodeURIComponent('No file provided'))
+    return { success: false, error: 'No file provided' }
   }
 
   // Validate file
   const maxSize = 5 * 1024 * 1024 // 5MB
   if (file.size > maxSize) {
-    redirect('/error?message=' + encodeURIComponent('File size must be less than 5MB'))
+    return { success: false, error: 'File size must be less than 5MB' }
   }
 
   const allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
   if (!allowedTypes.includes(file.type)) {
-    redirect('/error?message=' + encodeURIComponent('Only JPEG, PNG, and WebP images are allowed'))
+    return { success: false, error: 'Only JPEG, PNG, and WebP images are allowed' }
   }
 
   try {
@@ -47,7 +47,7 @@ export async function uploadAvatar(formData: FormData) {
 
     if (uploadError) {
       console.error('Upload error:', uploadError)
-      redirect('/error?message=' + encodeURIComponent('Failed to upload avatar'))
+      return { success: false, error: 'Failed to upload avatar' }
     }
 
     // Get public URL
@@ -86,19 +86,20 @@ export async function uploadAvatar(formData: FormData) {
 
     revalidatePath('/profile')
     revalidatePath('/dashboard')
+    return { success: true, message: 'Avatar uploaded successfully' }
   } catch (error) {
     console.error('Error uploading avatar:', error)
-    redirect('/error?message=' + encodeURIComponent('Failed to upload avatar'))
+    return { success: false, error: 'Failed to upload avatar' }
   }
 }
 
 export async function deleteAvatar() {
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
-  
+
   if (!user) {
-    redirect('/auth/login')
+    return { success: false, error: 'Not authenticated' }
   }
 
   try {
@@ -138,8 +139,9 @@ export async function deleteAvatar() {
 
     revalidatePath('/profile')
     revalidatePath('/dashboard')
+    return { success: true, message: 'Avatar deleted successfully' }
   } catch (error) {
     console.error('Error deleting avatar:', error)
-    redirect('/error?message=' + encodeURIComponent('Failed to delete avatar'))
+    return { success: false, error: 'Failed to delete avatar' }
   }
 }

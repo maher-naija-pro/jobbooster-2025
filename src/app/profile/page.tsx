@@ -8,22 +8,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 interface ProfilePageProps {
-  searchParams: {
+  searchParams: Promise<{
     message?: string
-  }
+  }>
 }
 
 export default async function ProfilePage({ searchParams }: ProfilePageProps) {
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
-  
+
   if (!user) {
     redirect('/auth/login')
   }
 
   const profile = await getProfile(user.id)
-  const message = searchParams.message
+  const resolvedSearchParams = await searchParams
+  const message = resolvedSearchParams.message
 
   return (
     <div className="container mx-auto py-8 px-4">

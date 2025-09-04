@@ -1,13 +1,14 @@
 import { Suspense } from 'react'
 
 interface ConfirmPageProps {
-    searchParams: {
+    searchParams: Promise<{
         email?: string
-    }
+    }>
 }
 
-export default function ConfirmPage({ searchParams }: ConfirmPageProps) {
-    const email = searchParams.email
+export default async function ConfirmPage({ searchParams }: ConfirmPageProps) {
+    const resolvedSearchParams = await searchParams
+    const email = resolvedSearchParams.email
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">

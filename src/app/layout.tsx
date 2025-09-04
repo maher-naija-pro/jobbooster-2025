@@ -6,6 +6,7 @@ import { AuthProvider } from "@/components/auth/auth-provider";
 import Navbar from "./layout/Navbar";
 import Footer from "./layout/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,6 +41,7 @@ export default function RootLayout({
             </main>
             <Footer />
             <ScrollToTop />
+            <Toaster position="top-right" richColors />
           </AuthProvider>
         </AppProvider>
       </body>

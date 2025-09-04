@@ -5,13 +5,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { requestPasswordReset } from './actions'
 
 interface ResetPasswordPageProps {
-    searchParams: {
+    searchParams: Promise<{
         message?: string
-    }
+    }>
 }
 
-export default function ResetPasswordPage({ searchParams }: ResetPasswordPageProps) {
-    const message = searchParams.message
+export default async function ResetPasswordPage({ searchParams }: ResetPasswordPageProps) {
+    const resolvedSearchParams = await searchParams
+    const message = resolvedSearchParams.message
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">

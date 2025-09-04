@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { updateProfile } from '@/app/user/profile/actions'
+import { toast } from 'sonner'
 
 interface ProfileFormProps {
   profile: any
@@ -13,15 +14,70 @@ interface ProfileFormProps {
 export function ProfileForm({ profile }: ProfileFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [username, setUsername] = useState(profile?.username || '')
+  const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle')
+
+  // Check username uniqueness
+  useEffect(() => {
+    const checkUsername = async () => {
+      if (username.length < 3) {
+        setUsernameStatus('idle')
+        return
+      }
+
+      if (username === profile?.username) {
+        setUsernameStatus('available')
+        return
+      }
+
+      setUsernameStatus('checking')
+
+      try {
+        const response = await fetch('/api/check-username', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username })
+        })
+
+        const data = await response.json()
+        setUsernameStatus(data.available ? 'available' : 'taken')
+      } catch (error) {
+        setUsernameStatus('idle')
+      }
+    }
+
+    const timeoutId = setTimeout(checkUsername, 500)
+    return () => clearTimeout(timeoutId)
+  }, [username, profile?.username])
 
   const handleSubmit = async (formData: FormData) => {
     setIsLoading(true)
     setError('')
 
+    // Optimistic update - update local state immediately
+    const fullName = formData.get('fullName') as string
+    const newUsername = formData.get('username') as string
+
     try {
-      await updateProfile(formData)
+      const result = await updateProfile(formData)
+
+      if (result.success) {
+        toast.success(result.message)
+        setError('')
+        // Update local state to reflect the changes
+        setUsername(newUsername)
+      } else {
+        setError(result.error)
+        toast.error(result.error)
+        // Revert optimistic update on error
+        setUsername(profile?.username || '')
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred'
+      setError(errorMessage)
+      toast.error(errorMessage)
+      // Revert optimistic update on error
+      setUsername(profile?.username || '')
     } finally {
       setIsLoading(false)
     }
@@ -50,14 +106,39 @@ export function ProfileForm({ profile }: ProfileFormProps) {
 
         <div className="space-y-2">
           <Label htmlFor="username">Username</Label>
-          <Input
-            id="username"
-            name="username"
-            type="text"
-            placeholder="Enter your username"
-            defaultValue={profile?.username || ''}
-            disabled={isLoading}
-          />
+          <div className="relative">
+            <Input
+              id="username"
+              name="username"
+              type="text"
+              placeholder="Enter your username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              disabled={isLoading}
+              className={usernameStatus === 'taken' ? 'border-red-500' : usernameStatus === 'available' ? 'border-green-500' : ''}
+            />
+            {usernameStatus === 'checking' && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900"></div>
+              </div>
+            )}
+            {usernameStatus === 'available' && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500">
+                ✓
+              </div>
+            )}
+            {usernameStatus === 'taken' && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-red-500">
+                ✗
+              </div>
+            )}
+          </div>
+          {usernameStatus === 'taken' && (
+            <p className="text-sm text-red-600">Username is already taken</p>
+          )}
+          {usernameStatus === 'available' && (
+            <p className="text-sm text-green-600">Username is available</p>
+          )}
         </div>
       </div>
 
@@ -77,7 +158,10 @@ export function ProfileForm({ profile }: ProfileFormProps) {
       </div>
 
       <div className="flex justify-end">
-        <Button type="submit" disabled={isLoading}>
+        <Button
+          type="submit"
+          disabled={isLoading || usernameStatus === 'taken' || usernameStatus === 'checking'}
+        >
           {isLoading ? 'Updating...' : 'Update Profile'}
         </Button>
       </div>

@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { updatePreferences } from '@/app/user/profile/actions'
+import { toast } from 'sonner'
 
 interface PreferencesFormProps {
   profile: any
@@ -25,9 +26,19 @@ export function PreferencesForm({ profile }: PreferencesFormProps) {
     setError('')
 
     try {
-      await updatePreferences(formData)
+      const result = await updatePreferences(formData)
+
+      if (result.success) {
+        toast.success(result.message)
+        setError('')
+      } else {
+        setError(result.error)
+        toast.error(result.error)
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred'
+      setError(errorMessage)
+      toast.error(errorMessage)
     } finally {
       setIsLoading(false)
     }
@@ -41,51 +52,10 @@ export function PreferencesForm({ profile }: PreferencesFormProps) {
         </div>
       )}
 
-      <div className="space-y-4">
-        <h3 className="text-lg font-medium">Language & Region</h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="language">Language</Label>
-            <Select name="language" defaultValue={preferences.language || 'en'}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select language" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="en">English</SelectItem>
-                <SelectItem value="es">Spanish</SelectItem>
-                <SelectItem value="fr">French</SelectItem>
-                <SelectItem value="de">German</SelectItem>
-                <SelectItem value="it">Italian</SelectItem>
-                <SelectItem value="pt">Portuguese</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="timezone">Timezone</Label>
-            <Select name="timezone" defaultValue={preferences.timezone || 'UTC'}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select timezone" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="UTC">UTC</SelectItem>
-                <SelectItem value="America/New_York">Eastern Time</SelectItem>
-                <SelectItem value="America/Chicago">Central Time</SelectItem>
-                <SelectItem value="America/Denver">Mountain Time</SelectItem>
-                <SelectItem value="America/Los_Angeles">Pacific Time</SelectItem>
-                <SelectItem value="Europe/London">London</SelectItem>
-                <SelectItem value="Europe/Paris">Paris</SelectItem>
-                <SelectItem value="Asia/Tokyo">Tokyo</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div>
 
       <div className="space-y-4">
         <h3 className="text-lg font-medium">Notifications</h3>
-        
+
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
@@ -133,7 +103,7 @@ export function PreferencesForm({ profile }: PreferencesFormProps) {
 
       <div className="space-y-4">
         <h3 className="text-lg font-medium">Privacy</h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="profileVisibility">Profile Visibility</Label>

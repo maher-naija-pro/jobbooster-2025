@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { uploadAvatar, deleteAvatar } from '@/app/user/avatar/actions'
+import { toast } from 'sonner'
 
 interface AvatarUploadProps {
   profile: any
@@ -18,9 +19,19 @@ export function AvatarUpload({ profile }: AvatarUploadProps) {
     setError('')
 
     try {
-      await uploadAvatar(formData)
+      const result = await uploadAvatar(formData)
+
+      if (result.success) {
+        toast.success(result.message)
+        setError('')
+      } else {
+        setError(result.error)
+        toast.error(result.error)
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred'
+      setError(errorMessage)
+      toast.error(errorMessage)
     } finally {
       setIsLoading(false)
     }
@@ -31,9 +42,19 @@ export function AvatarUpload({ profile }: AvatarUploadProps) {
     setError('')
 
     try {
-      await deleteAvatar()
+      const result = await deleteAvatar()
+
+      if (result.success) {
+        toast.success(result.message)
+        setError('')
+      } else {
+        setError(result.error)
+        toast.error(result.error)
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred'
+      setError(errorMessage)
+      toast.error(errorMessage)
     } finally {
       setIsLoading(false)
     }
