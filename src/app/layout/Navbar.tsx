@@ -4,7 +4,6 @@ import Mobile_sidebar from "@/app/layout/mobile_sidebar"
 import Nav_buttons from "@/app/layout/nav_buttons"
 import Nav_desktop from "@/app/layout/nav_desktop"
 import { Logo } from "@/components/Logo"
-import { AuthProvider } from "@/components/auth/auth-provider";
 import { useApp } from "@/lib/app-context";
 import Link from "next/link";
 
@@ -47,9 +46,7 @@ const Navbar = () => {
             <div className="hidden lg:flex">
               <Nav_buttons />
             </div>
-            <AuthProvider>
-              <Mobile_sidebar />
-            </AuthProvider>
+            <Mobile_sidebar />
           </div>
         </div>
       </div>

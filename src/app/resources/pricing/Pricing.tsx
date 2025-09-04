@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/components/auth/auth-provider";
 import {
   Card,
   CardContent,
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
 const Pricing = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { data: session } = useSession();
+  const { session } = useAuth();
   const handleLogin = () => {
     setIsLoading(true)
     router.push("/stripe-subscription");
