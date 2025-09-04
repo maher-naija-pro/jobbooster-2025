@@ -6,9 +6,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { ChevronDownIcon, FileText, Shield, ExternalLink } from "lucide-react"
+import { ChevronDownIcon, FileText } from "lucide-react"
 import { useApp } from "@/lib/app-context"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useState, useEffect, useRef } from "react"
 
 const Nav_desktop = () => {
@@ -76,38 +75,18 @@ const Nav_desktop = () => {
                 </button>
 
                 {showLegalCards && (
-                  <div className="absolute top-full left-0 mt-2 w-80 z-50">
-                    <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-4 space-y-3">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Shield className="h-5 w-5 text-blue-600" />
-                        <h3 className="font-semibold text-gray-900">Legal Documents</h3>
-                      </div>
-
+                  <div className="absolute top-full left-0 mt-2 w-48 z-50">
+                    <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-1">
                       {route.items.map((item: any) => (
-                        <Card key={item.href} className="hover:shadow-md transition-shadow cursor-pointer group">
-                          <Link
-                            href={item.href}
-                            className="block"
-                            onClick={() => setShowLegalCards(false)}
-                          >
-                            <CardContent className="p-4">
-                              <div className="flex items-start gap-3">
-                                <div className="p-2 rounded-md bg-blue-100 group-hover:bg-blue-200 transition-colors">
-                                  <FileText className="h-4 w-4 text-blue-600" />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <h4 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
-                                    {item.label}
-                                  </h4>
-                                  <p className="text-sm text-gray-500 mt-1">
-                                    Click to view full document
-                                  </p>
-                                </div>
-                                <ExternalLink className="h-4 w-4 text-gray-400 group-hover:text-blue-600 transition-colors" />
-                              </div>
-                            </CardContent>
-                          </Link>
-                        </Card>
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
+                          onClick={() => setShowLegalCards(false)}
+                        >
+                          <FileText className="h-4 w-4 text-blue-600" />
+                          {item.label}
+                        </Link>
                       ))}
                     </div>
                   </div>
