@@ -3,6 +3,11 @@ import { CVData } from '../../../lib/types';
 import PDFParser from 'pdf2json';
 import mammoth from 'mammoth';
 import { logger } from '../../../lib/logger';
+import { createClient } from '../../../lib/supabase/server';
+import { prisma } from '../../../lib/prisma';
+import { nanoid } from 'nanoid';
+import { generateDateFolder } from '../../../lib/supabase/upload_supa';
+import { generateAnonymousSessionId } from '../../../lib/anonymous-session';
 
 export async function POST(request: NextRequest) {
     const startTime = Date.now();
@@ -145,30 +150,142 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Basic CV data structure with extracted content
-        const cvData: CVData = {
-            id: `cv_${Date.now()}`,
+        // Upload file to Supabase storage
+        logger.cvUpload('Uploading file to Supabase storage', {
             filename: file.name,
-            size: file.size,
-            uploadDate: new Date(),
-            processedContent: extractedText,
-            status: 'completed'
-        };
-
-        const processingTime = Date.now() - startTime;
-
-        logger.cvUpload('CV upload completed successfully', {
-            filename: file.name,
-            cvId: cvData.id,
-            textLength: extractedText.length,
-            processingTime
+            size: file.size
         });
 
-        return NextResponse.json({
-            success: true,
-            cvData,
-            processingTime
+        const supabase = await createClient();
+        const fileId = nanoid();
+        const fileExtension = file.name.split('.').pop();
+
+        // Create date-based folder structure: YYYY/MM/DD/filename
+        const dateFolder = generateDateFolder();
+        const storageFilename = `${dateFolder}/${fileId}.${fileExtension}`;
+
+        const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('pdfs')
+            .upload(storageFilename, file);
+
+        if (uploadError) {
+            logger.error('Supabase storage upload failed', {
+                filename: file.name,
+                error: uploadError.message
+            });
+            return NextResponse.json(
+                { error: 'Failed to upload file to storage' },
+                { status: 500 }
+            );
+        }
+
+        // Get public URL for the uploaded file
+        const { data: urlData } = await supabase.storage
+            .from('pdfs')
+            .getPublicUrl(uploadData.path);
+
+        logger.cvUpload('File uploaded to Supabase storage successfully', {
+            filename: file.name,
+            storagePath: uploadData.path,
+            publicUrl: urlData.publicUrl
         });
+
+        // Save to database using FileUpload table
+        logger.cvUpload('Saving file upload to database', {
+            filename: file.name,
+            storagePath: uploadData.path
+        });
+
+        try {
+            // Get user ID from Supabase auth
+            const { data: { user } } = await supabase.auth.getUser();
+            const isAuthenticated = !!user;
+            const userId = user?.id || generateAnonymousSessionId();
+
+            logger.cvUpload('User authentication status', {
+                isAuthenticated,
+                userId: isAuthenticated ? userId : 'anonymous-session',
+                filename: file.name
+            });
+
+            const fileRecord = await prisma.fileUpload.create({
+                data: {
+                    userId: userId,
+                    fileName: file.name,
+                    fileUrl: urlData.publicUrl,
+                    fileSize: file.size,
+                    mimeType: file.type,
+                    bucket: 'pdfs',
+                    path: uploadData.path,
+                    isPublic: true,
+                    metadata: {
+                        originalFilename: file.name,
+                        uploadTimestamp: new Date().toISOString(),
+                        processingTime: Date.now() - startTime,
+                        extractedText: extractedText,
+                        fileType: 'cv',
+                        dateFolder: dateFolder,
+                        uploadDate: {
+                            year: new Date().getFullYear(),
+                            month: String(new Date().getMonth() + 1).padStart(2, '0'),
+                            day: String(new Date().getDate()).padStart(2, '0')
+                        },
+                        isAuthenticated: isAuthenticated,
+                        sessionInfo: {
+                            isAnonymous: !isAuthenticated,
+                            uploadSource: isAuthenticated ? 'authenticated' : 'anonymous'
+                        }
+                    }
+                }
+            });
+
+            logger.cvUpload('File upload saved to database successfully', {
+                fileId: fileRecord.id,
+                filename: file.name
+            });
+
+            // Create CVData object for response
+            const cvData: CVData = {
+                id: fileRecord.id,
+                filename: fileRecord.fileName,
+                size: fileRecord.fileSize,
+                uploadDate: fileRecord.createdAt,
+                processedContent: fileRecord.metadata?.extractedText || '',
+                status: 'completed',
+                fileUrl: fileRecord.fileUrl
+            };
+
+            const processingTime = Date.now() - startTime;
+
+            logger.cvUpload('CV upload completed successfully', {
+                filename: file.name,
+                cvId: cvData.id,
+                textLength: extractedText.length,
+                processingTime
+            });
+
+            return NextResponse.json({
+                success: true,
+                cvData,
+                processingTime
+            });
+
+        } catch (dbError) {
+            logger.error('Database save failed', {
+                filename: file.name,
+                error: dbError
+            });
+
+            // Try to clean up uploaded file from storage
+            await supabase.storage
+                .from('pdfs')
+                .remove([uploadData.path]);
+
+            return NextResponse.json(
+                { error: 'Failed to save file upload to database' },
+                { status: 500 }
+            );
+        }
 
     } catch (error) {
         const processingTime = Date.now() - startTime;

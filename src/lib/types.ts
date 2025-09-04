@@ -5,6 +5,7 @@ export interface CVData {
   uploadDate: Date;
   processedContent: string;
   status: 'processing' | 'completed' | 'error';
+  fileUrl?: string;
 }
 
 export interface PersonalInfo {
