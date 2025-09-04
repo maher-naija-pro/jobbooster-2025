@@ -37,15 +37,6 @@ const PrivacyPolicy = () => {
               })}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link
-                href="/legal"
-                className="inline-flex items-center px-3 py-2 text-slate-600 dark:text-slate-300 hover:text-primary transition-colors text-sm"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-                Back to Legal
-              </Link>
               <a
                 href="#toc"
                 className="inline-flex items-center px-3 py-2 text-primary hover:text-primary/80 transition-colors text-sm"
@@ -255,15 +246,7 @@ const PrivacyPolicy = () => {
               </svg>
               Back to Top
             </a>
-            <Link
-              href="/legal"
-              className="inline-flex items-center px-4 py-2 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors focus:outline-none focus:ring-4 focus:ring-slate-200 dark:focus:ring-slate-600 text-sm"
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              Back to Legal
-            </Link>
+
           </div>
         </div>
       </section>
