@@ -9,7 +9,9 @@ export const demo = async (values: z.infer<typeof DemoSchema>) => {
   console.log("🚀 ~ demo ~ validatedFields:", validatedFields)
 
   if (!validatedFields.success) {
-    return { error: "Invalid fields!" }
+    console.log("🚀 ~ validation errors:", validatedFields.error.errors)
+    const errorMessages = validatedFields.error.errors.map(err => err.message).join(", ")
+    return { error: `Validation failed: ${errorMessages}` }
   }
 
   const { email, message, name } = validatedFields.data
