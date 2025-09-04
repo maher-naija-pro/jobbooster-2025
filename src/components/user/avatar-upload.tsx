@@ -1,44 +1,69 @@
 'use client'
 
 import { useState } from 'react'
+import { useFormStatus } from 'react-dom'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { uploadAvatar, deleteAvatar } from '@/app/user/avatar/actions'
 import { toast } from 'sonner'
+import { Icons } from '@/components/icons'
 
 interface AvatarUploadProps {
   profile: any
 }
 
-export function AvatarUpload({ profile }: AvatarUploadProps) {
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
+function UploadButton() {
+  const { pending } = useFormStatus()
 
-  const handleUpload = async (formData: FormData) => {
-    setIsLoading(true)
-    setError('')
+  return (
+    <Button type="submit" disabled={pending}>
+      {pending ? (
+        <>
+          <Icons.Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          Upgrading...
+        </>
+      ) : (
+        'Upload Avatar'
+      )}
+    </Button>
+  )
+}
 
+function DeleteButton({ onDelete }: { onDelete: () => void }) {
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  const handleDelete = async () => {
+    setIsDeleting(true)
     try {
-      const result = await uploadAvatar(formData)
-
-      if (result.success) {
-        toast.success(result.message)
-        setError('')
-      } else {
-        setError(result.error)
-        toast.error(result.error)
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred'
-      setError(errorMessage)
-      toast.error(errorMessage)
+      await onDelete()
     } finally {
-      setIsLoading(false)
+      setIsDeleting(false)
     }
   }
 
+  return (
+    <Button
+      type="button"
+      variant="outline"
+      onClick={handleDelete}
+      disabled={isDeleting}
+    >
+      {isDeleting ? (
+        <>
+          <Icons.Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          Upgrading...
+        </>
+      ) : (
+        'Remove Avatar'
+      )}
+    </Button>
+  )
+}
+
+export function AvatarUpload({ profile }: AvatarUploadProps) {
+  const [error, setError] = useState('')
+
   const handleDelete = async () => {
-    setIsLoading(true)
     setError('')
 
     try {
@@ -55,8 +80,6 @@ export function AvatarUpload({ profile }: AvatarUploadProps) {
       const errorMessage = err instanceof Error ? err.message : 'An error occurred'
       setError(errorMessage)
       toast.error(errorMessage)
-    } finally {
-      setIsLoading(false)
     }
   }
 
@@ -87,7 +110,7 @@ export function AvatarUpload({ profile }: AvatarUploadProps) {
         </div>
       </div>
 
-      <form action={handleUpload} className="space-y-4">
+      <form action={uploadAvatar} className="space-y-4">
         <div className="space-y-2">
           <label htmlFor="avatar" className="text-sm font-medium">
             Choose File
@@ -98,24 +121,14 @@ export function AvatarUpload({ profile }: AvatarUploadProps) {
             type="file"
             accept="image/jpeg,image/png,image/webp"
             className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
-            disabled={isLoading}
           />
         </div>
 
         <div className="flex space-x-2">
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? 'Uploading...' : 'Upload Avatar'}
-          </Button>
+          <UploadButton />
 
           {profile?.avatarUrl && (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleDelete}
-              disabled={isLoading}
-            >
-              {isLoading ? 'Deleting...' : 'Remove Avatar'}
-            </Button>
+            <DeleteButton onDelete={handleDelete} />
           )}
         </div>
       </form>

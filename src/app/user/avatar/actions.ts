@@ -32,6 +32,19 @@ export async function uploadAvatar(formData: FormData) {
   }
 
   try {
+    // Check if avatars bucket exists
+    const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets()
+    if (bucketsError) {
+      console.error('Error listing buckets:', bucketsError)
+      return { success: false, error: 'Failed to access storage buckets' }
+    }
+
+    const avatarsBucket = buckets?.find(bucket => bucket.name === 'avatars')
+    if (!avatarsBucket) {
+      console.error('Avatars bucket not found')
+      return { success: false, error: 'Storage bucket not configured. Please contact support.' }
+    }
+
     // Generate unique filename
     const fileExt = file.name.split('.').pop()
     const fileName = `${user.id}-${Date.now()}.${fileExt}`
@@ -47,7 +60,10 @@ export async function uploadAvatar(formData: FormData) {
 
     if (uploadError) {
       console.error('Upload error:', uploadError)
-      return { success: false, error: 'Failed to upload avatar' }
+      return {
+        success: false,
+        error: `Failed to upload avatar: ${uploadError.message || 'Unknown storage error'}`
+      }
     }
 
     // Get public URL
