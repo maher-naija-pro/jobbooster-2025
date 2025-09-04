@@ -1,5 +1,11 @@
 
 const routeList = {
+  Home: {
+    menu: "false",
+    href: "/",
+    items: []
+  },
+
   Support: {
     menu: "false",
     href: "/company/contact",
