@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader } from './ui/card';
 import { Badge } from './ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 import { Progress } from './ui/progress';
+import { CVAnalysisSkeleton } from './cv-analysis-skeleton';
 
 interface ContentGeneratorProps {
     content: GeneratedContent | null;
@@ -950,57 +951,65 @@ export function ContentGenerator({
                 >
                     {isGenerating ? (
                         <div className="space-y-6">
-                            {/* Generating Cover Letter Card */}
-                            <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                                <div className="flex items-center justify-between mb-3">
-                                    <h4 className="text-base font-medium text-gray-900">
-                                        {generationType === 'cover-letter' ? 'Generating Cover Letter' :
-                                            generationType === 'email' ? 'Generating Email' : 'Analyzing CV'}
-                                    </h4>
-                                    {/* LED Indicator */}
-                                    <div className="flex items-center gap-2">
-                                        <div
-                                            className={`w-3 h-3 rounded-full shadow-sm ${isGenerating
-                                                ? generationType === 'cv-analysis'
-                                                    ? 'bg-violet-500 animate-pulse'
-                                                    : generationType === 'email'
-                                                        ? 'bg-emerald-500 animate-pulse'
-                                                        : 'bg-indigo-500 animate-pulse'
-                                                : content
-                                                    ? 'bg-emerald-500'
-                                                    : 'bg-slate-400'
-                                                }`}
-                                            title={isGenerating ? 'Generating...' : content ? 'Generation Complete' : 'Ready'}
-                                            aria-label={isGenerating ? 'Generating content' : content ? 'Generation complete' : 'Ready to generate'}
-                                        ></div>
-                                        {isGenerating && (
-                                            <span className="text-xs text-gray-500">Generating...</span>
-                                        )}
+                            {generationType === 'cv-analysis' ? (
+                                // Show CV Analysis Skeleton for CV analysis generation
+                                <CVAnalysisSkeleton progress={currentProgress} />
+                            ) : (
+                                // Show regular generation card for other content types
+                                <>
+                                    {/* Generating Cover Letter Card */}
+                                    <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                                        <div className="flex items-center justify-between mb-3">
+                                            <h4 className="text-base font-medium text-gray-900">
+                                                {generationType === 'cover-letter' ? 'Generating Cover Letter' :
+                                                    generationType === 'email' ? 'Generating Email' : 'Analyzing CV'}
+                                            </h4>
+                                            {/* LED Indicator */}
+                                            <div className="flex items-center gap-2">
+                                                <div
+                                                    className={`w-3 h-3 rounded-full shadow-sm ${isGenerating
+                                                        ? generationType === 'cv-analysis'
+                                                            ? 'bg-violet-500 animate-pulse'
+                                                            : generationType === 'email'
+                                                                ? 'bg-emerald-500 animate-pulse'
+                                                                : 'bg-indigo-500 animate-pulse'
+                                                        : content
+                                                            ? 'bg-emerald-500'
+                                                            : 'bg-slate-400'
+                                                        }`}
+                                                    title={isGenerating ? 'Generating...' : content ? 'Generation Complete' : 'Ready'}
+                                                    aria-label={isGenerating ? 'Generating content' : content ? 'Generation complete' : 'Ready to generate'}
+                                                ></div>
+                                                {isGenerating && (
+                                                    <span className="text-xs text-gray-500">Generating...</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <Progress
+                                            value={currentProgress}
+                                            className="w-full h-2"
+                                        />
+                                        <div className="flex items-center justify-between mt-2">
+                                            <p className="text-sm text-gray-600">
+                                                {generationType === 'cv-analysis'
+                                                    ? 'AI is analyzing your CV and matching it against job requirements'
+                                                    : 'AI is analyzing your CV and job requirements to create personalized content'
+                                                }
+                                            </p>
+                                            <span className="text-sm text-blue-600 font-medium">
+                                                {Math.round(currentProgress)}% Complete
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
-                                <Progress
-                                    value={currentProgress}
-                                    className="w-full h-2"
-                                />
-                                <div className="flex items-center justify-between mt-2">
-                                    <p className="text-sm text-gray-600">
-                                        {generationType === 'cv-analysis'
-                                            ? 'AI is analyzing your CV and matching it against job requirements'
-                                            : 'AI is analyzing your CV and job requirements to create personalized content'
-                                        }
-                                    </p>
-                                    <span className="text-sm text-blue-600 font-medium">
-                                        {Math.round(currentProgress)}% Complete
-                                    </span>
-                                </div>
-                            </div>
 
-                            {/* Content Preview */}
-                            {displayContent && (
-                                <div className="text-gray-900 leading-relaxed">
-                                    {formatContent(displayContent)}
-                                    <span className="inline-block w-2 h-5 bg-blue-600 animate-pulse ml-1"></span>
-                                </div>
+                                    {/* Content Preview */}
+                                    {displayContent && (
+                                        <div className="text-gray-900 leading-relaxed">
+                                            {formatContent(displayContent)}
+                                            <span className="inline-block w-2 h-5 bg-blue-600 animate-pulse ml-1"></span>
+                                        </div>
+                                    )}
+                                </>
                             )}
                         </div>
                     ) : content ? (
