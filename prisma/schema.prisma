@@ -85,8 +85,27 @@ model Profile {
   avatarUrl        String?            @map("avatar_url") @db.VarChar(500)
   preferences      Json               @default("{}")
   subscription     Json               @default("{\"plan\": \"free\"}")
+
+  // === Status & Processing ===
+  isActive                Boolean  @default(true) @map("is_active") // Is this record active
+  archiveDate             DateTime? @map("archive_date") // Date archived
+  deletedAt               DateTime? @map("deleted_at") // Soft delete timestamp
+
+  // === Processing Timestamps & Error Tracking ===
   createdAt        DateTime           @default(now()) @map("created_at")
   updatedAt        DateTime           @updatedAt @map("updated_at")
+
+
+
+  // === Privacy & Compliance ===
+  gdprConsent             Boolean  @default(false) @map("gdpr_consent") // GDPR consent flag
+  retentionPolicy         String?  @map("retention_policy") @db.VarChar(100) // Retention policy applied
+  consentDate             DateTime? @map("consent_date") // Date consent was given
+  consentVersion          String?  @map("consent_version") @db.VarChar(20) // Consent version
+
+
+
+  // === Relations ===
   cvData           CvData[]
   cvJobMatches     CvJobMatch[]
   generatedContent GeneratedContent[]
@@ -155,17 +174,25 @@ model CvData {
   updatedAt               DateTime @updatedAt @map("updated_at") // Last update timestamp
   processingStartedAt     DateTime? @map("processing_started_at") // When processing started
   processingCompletedAt   DateTime? @map("processing_completed_at") // When processing finished
-  lastAnalyzedAt          DateTime? @map("last_analyzed_at") // Last analysis timestamp
   processingError         String?  @map("processing_error") // Processing error details
+  processingTime          Int?     @map("processing_time") // Processing time in milliseconds
+  retryCount              Int      @default(0) @map("retry_count") // Number of retry attempts
+  lastRetryAt             DateTime? @map("last_retry_at") // Last retry timestamp
+  lastAnalyzedAt          DateTime? @map("last_analyzed_at") // Last analysis timestamp
 
   // === Analysis & Versioning ===
   analysisCount           Int      @default(0) @map("analysis_count") // Number of analyses performed
-  lastAnalyzedAt          DateTime?    @map("last_analyzed_at") // Last analysis timestamp 
+  version                 Int      @default(1) // Version number
   // === Privacy & Compliance ===
   gdprConsent             Boolean  @default(false) @map("gdpr_consent") // GDPR consent flag
+  dataClassification      String?  @map("data_classification") @db.VarChar(50) // Data classification level
+  retentionPolicy         String?  @map("retention_policy") @db.VarChar(100) // Retention policy applied
+  consentDate             DateTime? @map("consent_date") // Date consent was given
+  consentVersion          String?  @map("consent_version") @db.VarChar(20) // Consent version
  
   // === View & Priority ===
   viewCount               Int      @default(0) @map("view_count") // Number of times viewed
+  lastViewedAt            DateTime? @map("last_viewed_at") // Last view timestamp
 
             
   // === Extracted Raw Data ===
@@ -215,8 +242,6 @@ model CvData {
   @@index([version, isLatest])
   @@index([email])
   @@index([fullName])
-  @@index([industry])
-  @@index([experienceLevel])
   @@map("cv_data")
 }
 
@@ -239,8 +264,8 @@ model GeneratedContent {
   wordCount       Int?            @map("word_count") // Word count of content
   readingTime     Int?            @map("reading_time") // Estimated reading time in minutes
   
-  // === Versioning & Status ===
-  version         Int             @default(1)
+  // === Status & Processing ===
+  processingStatus        ProcessingStatus @default(UPLOADED) @map("processing_status") // Processing pipeline status
   isActive        Boolean         @default(true) @map("is_active")
   isArchived      Boolean         @default(false) @map("is_archived")
   isPublic        Boolean         @default(false) @map("is_public")
@@ -257,9 +282,23 @@ model GeneratedContent {
   copyCount         Int        @default(0) @map("copy_count") // How many times content was copied
   lastCopiedAt      DateTime?  @map("last_copied_at")         // Last time content was copied
   
-  // === Timestamps ===
+  // === Processing Timestamps & Error Tracking ===
   createdAt       DateTime        @default(now()) @map("created_at")
   updatedAt       DateTime        @updatedAt @map("updated_at")
+  processingStartedAt     DateTime? @map("processing_started_at") // When processing started
+  processingCompletedAt   DateTime? @map("processing_completed_at") // When processing finished
+  processingError         String?  @map("processing_error") // Processing error details
+  processingTime          Int?     @map("processing_time") // Processing time in milliseconds
+  retryCount              Int      @default(0) @map("retry_count") // Number of retry attempts
+  lastRetryAt             DateTime? @map("last_retry_at") // Last retry timestamp
+
+
+  // === Privacy & Compliance ===
+  gdprConsent             Boolean  @default(false) @map("gdpr_consent") // GDPR consent flag
+  dataClassification      String?  @map("data_classification") @db.VarChar(50) // Data classification level
+  retentionPolicy         String?  @map("retention_policy") @db.VarChar(100) // Retention policy applied
+  consentDate             DateTime? @map("consent_date") // Date consent was given
+  consentVersion          String?  @map("consent_version") @db.VarChar(20) // Consent version
   
   // === Relations ===
   cvData          CvData?         @relation(fields: [cvDataId], references: [id], onDelete: Cascade)
@@ -274,10 +313,6 @@ model GeneratedContent {
   @@index([isActive])
   @@index([isArchived])
   @@index([createdAt])
-  @@index([jobTitle])
-  @@index([companyName])
-  @@index([jobType])
-  @@index([experienceLevel])
   @@index([version, isLatest])
   @@index([confidenceScore])
   @@index([qualityScore])
@@ -416,27 +451,42 @@ model JobData {
 
 
 
-  // === Analysis & Scoring === 
-  analysisCount           Int          @default(0) @map("analysis_count") // Number of analyses performed
-  lastAnalyzedAt          DateTime?    @map("last_analyzed_at") // Last analysis timestamp
- 
-  
   // === Status & Lifecycle ===
-
   processingStatus        ProcessingStatus @default(UPLOADED) @map("processing_status") // Processing status
+  isActive                Boolean      @default(true) @map("is_active") // Is job data active
+  isArchived              Boolean      @default(false) @map("is_archived") // Is job data archived
+  isPublic                Boolean      @default(false) @map("is_public") // Is job data public
+  isLatest                Boolean      @default(true) @map("is_latest") // Is this the latest version
+  priority                Int?         @default(0) // Processing priority
+  archiveDate             DateTime?    @map("archive_date") // Date archived
+  retentionDate           DateTime?    @map("retention_date") // Data retention date
+  deletedAt               DateTime?    @map("deleted_at") // Soft delete timestamp
+
+  // === Processing Timestamps & Error Tracking ===
+  createdAt               DateTime     @default(now()) @map("created_at") // Record creation timestamp
+  updatedAt               DateTime     @updatedAt @map("updated_at") // Last update timestamp
   processingStartedAt     DateTime?    @map("processing_started_at") // Processing start time
   processingCompletedAt   DateTime?    @map("processing_completed_at") // Processing completion time
   processingError         String?      @map("processing_error") // Processing error message
   processingTime          Int?         @map("processing_time") // Processing time in ms
-  isActive                Boolean      @default(true) @map("is_active") // Is job data active
-  isArchived              Boolean      @default(false) @map("is_archived") // Is job data archived
-  archiveDate             DateTime?    @map("archive_date") // Date archived
-  isPublic                Boolean      @default(false) @map("is_public") // Is job data public
-  retentionDate           DateTime?    @map("retention_date") // Data retention date
-  gdprConsent             Boolean      @default(false) @map("gdpr_consent") // GDPR consent
-  isLatest                Boolean      @default(true) @map("is_latest") // Is this the latest version
+  retryCount              Int          @default(0) @map("retry_count") // Number of retry attempts
+  lastRetryAt             DateTime?    @map("last_retry_at") // Last retry timestamp
+
+  // === Analysis & Versioning ===
+  analysisCount           Int          @default(0) @map("analysis_count") // Number of analyses performed
+  lastAnalyzedAt          DateTime?    @map("last_analyzed_at") // Last analysis timestamp
   version                 Int          @default(1) // Version number
-  deletedAt               DateTime?    @map("deleted_at") // Soft delete timestamp
+
+  // === Privacy & Compliance ===
+  gdprConsent             Boolean      @default(false) @map("gdpr_consent") // GDPR consent
+  dataClassification      String?      @map("data_classification") @db.VarChar(50) // Data classification level
+  retentionPolicy         String?      @map("retention_policy") @db.VarChar(100) // Retention policy applied
+  consentDate             DateTime?    @map("consent_date") // Date consent was given
+  consentVersion          String?      @map("consent_version") @db.VarChar(20) // Consent version
+
+  // === View & Priority ===
+  viewCount               Int          @default(0) @map("view_count") // Number of times viewed
+  lastViewedAt            DateTime?    @map("last_viewed_at") // Last view timestamp
 
 
 
@@ -493,7 +543,7 @@ model CvJobMatch {
   extraSkills            Json?     @map("extra_skills") // Extra skills
   matchReasons           Json?     @map("match_reasons") // Reasons for match
   improvementSuggestions Json?     @map("improvement_suggestions") // Suggestions for improvement
-astDownloadedAt       DateTime? @map("last_downloaded_at") // Last time analysis downloaded
+  lastDownloadedAt       DateTime? @map("last_downloaded_at") // Last time analysis downloaded
 
 
   // === Analysis Metadata ===
@@ -502,12 +552,33 @@ astDownloadedAt       DateTime? @map("last_downloaded_at") // Last time analysis
   analysisDate           DateTime  @default(now()) @map("analysis_date") // Date analyzed
   analysisDuration       Int?      @map("analysis_duration") // Analysis duration in milliseconds
 
-  // === Performance & Optimization ===
+  // === Status & Processing ===
+  processingStatus        ProcessingStatus @default(UPLOADED) @map("processing_status") // Processing pipeline status
   isActive               Boolean   @default(true) @map("is_active") // Is this match active
   isArchived             Boolean   @default(false) @map("is_archived") // Is this match archived
   archiveDate            DateTime? @map("archive_date") // Date archived
   retentionDate          DateTime? @map("retention_date") // Data retention date
-  version                Int       @default(1) // Version number for optimistic locking
+  deletedAt              DateTime? @map("deleted_at") // Soft delete timestamp
+
+  // === Processing Timestamps & Error Tracking ===
+  processingStartedAt     DateTime? @map("processing_started_at") // When processing started
+  processingCompletedAt   DateTime? @map("processing_completed_at") // When processing finished
+  processingError         String?  @map("processing_error") // Processing error details
+  processingTime          Int?     @map("processing_time") // Processing time in milliseconds
+  retryCount              Int      @default(0) @map("retry_count") // Number of retry attempts
+  lastRetryAt             DateTime? @map("last_retry_at") // Last retry timestamp
+
+
+  // === Privacy & Compliance ===
+  gdprConsent             Boolean  @default(false) @map("gdpr_consent") // GDPR consent flag
+  dataClassification      String?  @map("data_classification") @db.VarChar(50) // Data classification level
+  retentionPolicy         String?  @map("retention_policy") @db.VarChar(100) // Retention policy applied
+  consentDate             DateTime? @map("consent_date") // Date consent was given
+  consentVersion          String?  @map("consent_version") @db.VarChar(20) // Consent version
+
+  // === View & Priority ===
+  viewCount               Int      @default(0) @map("view_count") // Number of times viewed
+  lastViewedAt            DateTime? @map("last_viewed_at") // Last view timestamp
 
   // === Timestamps ===
   createdAt              DateTime  @default(now()) @map("created_at") // Created at
@@ -519,8 +590,6 @@ astDownloadedAt       DateTime? @map("last_downloaded_at") // Last time analysis
   @@index([cvDataId])
   @@index([jobDataId])
   @@index([overallMatchScore])
-  @@index([status])
-  @@index([isApplied])
   @@index([analysisDate])
   @@map("cv_job_matches")
 }
