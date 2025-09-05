@@ -122,8 +122,8 @@ enum LearningGoalType {
 model Profile {
   id               String             @id @default(cuid())
   userId           String             @unique @map("user_id")
-  email            String             @unique
-  fullName         String?            @map("full_name") @db.VarChar(255)
+  email            String             @unique @db.VarChar(255)
+  fullName         String             @map("full_name") @db.VarChar(255)
   username         String?            @unique @db.VarChar(50)
   avatarUrl        String?            @map("avatar_url") @db.VarChar(500)
   preferences      Json               @default("{}")
@@ -131,12 +131,24 @@ model Profile {
 
   // === Status & Processing ===
   isActive                Boolean  @default(true) @map("is_active") // Is this record active
+  isDeleted               Boolean  @default(false) @map("is_deleted") // Soft delete flag for faster queries
   archiveDate             DateTime? @map("archive_date") // Date archived
   deletedAt               DateTime? @map("deleted_at") // Soft delete timestamp
+  deletedBy               String?   @map("deleted_by") @db.VarChar(50) // Who deleted the record
+
+  // === Security & Authentication ===
+  lastPasswordChange      DateTime? @map("last_password_change") // Last password change
+  failedLoginAttempts     Int       @default(0) @map("failed_login_attempts") // Failed login attempts
+  accountLockedUntil      DateTime? @map("account_locked_until") // Account lockout until
+  twoFactorEnabled        Boolean   @default(false) @map("two_factor_enabled") // 2FA enabled
+  securityQuestions       Json?     @map("security_questions") // Security questions
 
   // === Processing Timestamps & Error Tracking ===
   createdAt        DateTime           @default(now()) @map("created_at")
   updatedAt        DateTime           @updatedAt @map("updated_at")
+  createdBy        String?            @map("created_by") @db.VarChar(50) // Who created the record
+  updatedBy        String?            @map("updated_by") @db.VarChar(50) // Who last updated the record
+  version          Int                @default(1) // Optimistic locking version
 
 
 
@@ -184,11 +196,22 @@ model Profile {
 
 
 
-  @@index([lastLoginAt])
+  // === Data Quality & Monitoring ===
 
+  errorCount              Int       @default(0) @map("error_count") // Error count
+  warningCount            Int       @default(0) @map("warning_count") // Warning count
+
+  @@index([lastLoginAt])
   @@index([subscriptionStatus])
   @@index([isTrialUser])
   @@index([lastActiveAt])
+  @@index([isActive])
+  @@index([isDeleted])
+  @@index([lastLoginAt, isActive])
+  @@index([subscriptionStatus, subscriptionEndDate])
+  @@index([isTrialUser, trialEndsAt])
+  @@index([isActive, isDeleted, createdAt])
+  @@index([lastActiveAt, isActive])
   @@map("profiles")
 }
 
@@ -238,11 +261,17 @@ model CvData {
   processingStatus        ProcessingStatus @default(UPLOADED) @map("processing_status") // Processing pipeline status
   isActive                Boolean?  @default(true) @map("is_active") // Is this record active
   isArchived              Boolean?  @default(false) @map("is_archived") // Is this record archived
+  isDeleted               Boolean?  @default(false) @map("is_deleted") // Soft delete flag
   isPublic                Boolean?  @default(false) @map("is_public") // Is this record public
   isLatest                Boolean?  @default(true) @map("is_latest") // Is this the latest version
   archiveDate             DateTime? @map("archive_date") // Date archived
   retentionDate           DateTime? @map("retention_date") // Data retention date
   deletedAt               DateTime? @map("deleted_at") // Soft delete timestamp
+  deletedBy               String?   @map("deleted_by") @db.VarChar(50) // Who deleted the record
+  
+  // === Audit Trail ===
+  createdBy               String?   @map("created_by") @db.VarChar(50) // Who created the record
+  updatedBy               String?   @map("updated_by") @db.VarChar(50) // Who last updated the record
 
   // === Processing Timestamps & Error Tracking ===
   createdAt               DateTime @default(now()) @map("created_at") // Record creation timestamp
@@ -318,17 +347,29 @@ model CvData {
   cvJobMatches            CvJobMatch[] // Job matches for this CV
   generatedContent        GeneratedContent[] // Generated content for this CV
 
+  // === Data Quality & Monitoring ===
+  dataQualityScore        Decimal?  @map("data_quality_score") @db.Decimal(3, 2) // Overall data quality (0-1)
+  completenessPercentage  Decimal?  @map("completeness_percentage") @db.Decimal(5, 2) // Data completeness %
+  errorCount              Int       @default(0) @map("error_count") // Error count
+  warningCount            Int       @default(0) @map("warning_count") // Warning count
+
+
   // === Indexes & Table Mapping ===
   @@index([userId])
   @@index([processingStatus])
   @@index([isActive])
   @@index([isArchived])
+  @@index([isDeleted])
   @@index([createdAt])
   @@index([version, isLatest])
   @@index([email])
   @@index([fullName])
   @@index([averageMatchScore])
   @@index([bestMatchScore])
+  @@index([userId, isLatest, createdAt])
+  @@index([processingStatus, createdAt])
+  @@index([dataQualityScore, isActive])
+  @@index([isActive, isArchived, createdAt])
   @@map("cv_data")
 }
 
@@ -355,13 +396,22 @@ model GeneratedContent {
   processingStatus        ProcessingStatus @default(UPLOADED) @map("processing_status") // Processing pipeline status
   isActive        Boolean         @default(true) @map("is_active")
   isArchived      Boolean         @default(false) @map("is_archived")
+  isDeleted       Boolean         @default(false) @map("is_deleted") // Soft delete flag
   isPublic        Boolean         @default(false) @map("is_public")
   isLatest        Boolean         @default(true) @map("is_latest")
   
   // === Lifecycle Management ===
   archiveDate     DateTime?       @map("archive_date")
+  archivedBy      String?         @map("archived_by") @db.VarChar(50) // Who archived the record
+  archiveReason   String?         @map("archive_reason") @db.VarChar(100) // Reason for archiving
   retentionDate   DateTime?       @map("retention_date")
   deletedAt       DateTime?       @map("deleted_at")
+  deletedBy       String?         @map("deleted_by") @db.VarChar(50) // Who deleted the record
+  
+  // === Audit Trail ===
+  createdBy       String?         @map("created_by") @db.VarChar(50) // Who created the record
+  updatedBy       String?         @map("updated_by") @db.VarChar(50) // Who last updated the record
+  version         Int             @default(1) // Optimistic locking version
   
   // === Usage & Analytics ===
   viewCount         Int        @default(0) @map("view_count")
@@ -405,6 +455,11 @@ model GeneratedContent {
   jobData         JobData?        @relation(fields: [jobDataId], references: [id], onDelete: Cascade)
   profile         Profile         @relation(fields: [userId], references: [userId], onDelete: Cascade)
   
+  // === Data Quality & Monitoring ===
+  lastHealthCheck         DateTime? @map("last_health_check") // Last health check
+  errorCount              Int       @default(0) @map("error_count") // Error count
+  warningCount            Int       @default(0) @map("warning_count") // Warning count
+
   // === Indexes & Constraints ===
   @@index([userId])
   @@index([cvDataId])
@@ -412,12 +467,16 @@ model GeneratedContent {
   @@index([type])
   @@index([isActive])
   @@index([isArchived])
+  @@index([isDeleted])
   @@index([createdAt])
   @@index([isLatest])
   @@index([confidenceScore])
   @@index([qualityScore])
   @@index([effectivenessScore])
   @@index([userRating])
+  @@index([userId, isActive, createdAt])
+  @@index([processingStatus, createdAt])
+  @@index([isActive, isArchived, createdAt])
   @@map("generated_content")
 }
 
@@ -557,12 +616,21 @@ model JobData {
   processingStatus        ProcessingStatus @default(UPLOADED) @map("processing_status") // Processing status
   isActive                Boolean      @default(true) @map("is_active") // Is job data active
   isArchived              Boolean      @default(false) @map("is_archived") // Is job data archived
+  isDeleted               Boolean      @default(false) @map("is_deleted") // Soft delete flag
   isPublic                Boolean      @default(false) @map("is_public") // Is job data public
   isLatest                Boolean      @default(true) @map("is_latest") // Is this the latest version
   priority                Int?         @default(0) // Processing priority
   archiveDate             DateTime?    @map("archive_date") // Date archived
+  archivedBy              String?      @map("archived_by") @db.VarChar(50) // Who archived the record
+  archiveReason           String?      @map("archive_reason") @db.VarChar(100) // Reason for archiving
   retentionDate           DateTime?    @map("retention_date") // Data retention date
   deletedAt               DateTime?    @map("deleted_at") // Soft delete timestamp
+  deletedBy               String?      @map("deleted_by") @db.VarChar(50) // Who deleted the record
+  
+  // === Audit Trail ===
+  createdBy               String?      @map("created_by") @db.VarChar(50) // Who created the record
+  updatedBy               String?      @map("updated_by") @db.VarChar(50) // Who last updated the record
+  version                 Int          @default(1) // Optimistic locking version
 
   // === Processing Timestamps & Error Tracking ===
   createdAt               DateTime     @default(now()) @map("created_at") // Record creation timestamp
@@ -577,7 +645,6 @@ model JobData {
   // === Analysis & Versioning ===
   analysisCount           Int          @default(0) @map("analysis_count") // Number of analyses performed
   lastAnalyzedAt          DateTime?    @map("last_analyzed_at") // Last analysis timestamp
-  version                 Int          @default(1) // Version number
 
   // === Privacy & Compliance ===
   gdprConsent             Boolean      @default(false) @map("gdpr_consent") // GDPR consent
@@ -618,11 +685,17 @@ model JobData {
   generatedContent        GeneratedContent[] // Generated content for this job
   profile                 Profile      @relation(fields: [userId], references: [userId], onDelete: Cascade) // User profile relation
 
+  // === Data Quality & Monitoring ===
+  lastHealthCheck         DateTime? @map("last_health_check") // Last health check
+  errorCount              Int       @default(0) @map("error_count") // Error count
+  warningCount            Int       @default(0) @map("warning_count") // Warning count
+
   // === Indexes & Mapping ===
   @@index([userId])
   @@index([processingStatus])
   @@index([isActive])
   @@index([isArchived])
+  @@index([isDeleted])
   @@index([createdAt])
   @@index([industry])
   @@index([jobType])
@@ -637,6 +710,10 @@ model JobData {
   @@index([jobQualityScore])
   @@index([companyRating])
   @@index([companyGrowthStage])
+  @@index([userId, isActive, createdAt])
+  @@index([processingStatus, priority, createdAt])
+  @@index([isActive, isArchived, createdAt])
+  @@index([processingStatus, createdAt])
   @@map("job_data")
 }
 
@@ -684,9 +761,18 @@ model CvJobMatch {
   processingStatus        ProcessingStatus @default(UPLOADED) @map("processing_status") // Processing pipeline status
   isActive               Boolean   @default(true) @map("is_active") // Is this match active
   isArchived             Boolean   @default(false) @map("is_archived") // Is this match archived
+  isDeleted              Boolean   @default(false) @map("is_deleted") // Soft delete flag
   archiveDate            DateTime? @map("archive_date") // Date archived
+  archivedBy             String?   @map("archived_by") @db.VarChar(50) // Who archived the record
+  archiveReason          String?   @map("archive_reason") @db.VarChar(100) // Reason for archiving
   retentionDate          DateTime? @map("retention_date") // Data retention date
   deletedAt              DateTime? @map("deleted_at") // Soft delete timestamp
+  deletedBy              String?   @map("deleted_by") @db.VarChar(50) // Who deleted the record
+  
+  // === Audit Trail ===
+  createdBy              String?   @map("created_by") @db.VarChar(50) // Who created the record
+  updatedBy              String?   @map("updated_by") @db.VarChar(50) // Who last updated the record
+  version                Int       @default(1) // Optimistic locking version
 
   // === Processing Timestamps & Error Tracking ===
   processingStartedAt     DateTime? @map("processing_started_at") // When processing started
@@ -712,6 +798,11 @@ model CvJobMatch {
   createdAt              DateTime  @default(now()) @map("created_at") // Created at
   updatedAt              DateTime  @updatedAt @map("updated_at") // Updated at
 
+  // === Data Quality & Monitoring ===
+  lastHealthCheck         DateTime? @map("last_health_check") // Last health check
+  errorCount              Int       @default(0) @map("error_count") // Error count
+  warningCount            Int       @default(0) @map("warning_count") // Warning count
+
   // === Indexes & Constraints ===
   @@unique([cvDataId, jobDataId])
   @@index([userId])
@@ -719,6 +810,12 @@ model CvJobMatch {
   @@index([jobDataId])
   @@index([overallMatchScore])
   @@index([analysisDate])
+  @@index([isActive])
+  @@index([isArchived])
+  @@index([isDeleted])
+  @@index([userId, isActive, createdAt])
+  @@index([processingStatus, createdAt])
+  @@index([isActive, isArchived, createdAt])
   @@map("cv_job_matches")
 }
 
@@ -735,6 +832,11 @@ model FeatureUsage {
   successRate             Decimal?  @map("success_rate") @db.Decimal(5, 2)
   satisfactionScore       Decimal?  @map("satisfaction_score") @db.Decimal(3, 2)
   
+  // === Audit Trail ===
+  createdBy               String?   @map("created_by") @db.VarChar(50) // Who created the record
+  updatedBy               String?   @map("updated_by") @db.VarChar(50) // Who last updated the record
+  version                 Int       @default(1) // Optimistic locking version
+  
   // === Timestamps ===
   createdAt               DateTime  @default(now()) @map("created_at")
   updatedAt               DateTime  @updatedAt @map("updated_at")
@@ -746,6 +848,19 @@ model FeatureUsage {
   @@index([userId])
   @@index([featureName])
   @@map("feature_usage")
+}
+
+// === Schema Version Tracking ===
+model SchemaVersion {
+  id                String   @id @default(cuid())
+  version           String   @unique @db.VarChar(20) // Schema version (e.g., "1.0.0")
+  migrationId       String?  @map("migration_id") @db.VarChar(50) // Migration ID
+  appliedAt         DateTime @default(now()) @map("applied_at") // When applied
+  appliedBy         String?  @map("applied_by") @db.VarChar(50) // Who applied it
+  description       String?  @db.Text // Description of changes
+  isActive          Boolean  @default(true) @map("is_active") // Is this version active
+  
+  @@map("schema_versions")
 }
 
 
