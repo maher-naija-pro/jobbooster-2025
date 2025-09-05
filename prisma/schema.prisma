@@ -221,20 +221,66 @@ model CvData {
 }
 
 model GeneratedContent {
+  // === Identification & Ownership ===
   id        String                @id @default(cuid())
   userId    String                @map("user_id")
   cvDataId  String?               @map("cv_data_id")
+  jobDataId String?               @map("job_data_id")
+  
+  // === Content Information ===
   type      GeneratedContentType
-  title     String?
-  content   String
-  metadata  Json?
-  version   Int                   @default(1)
-  isActive  Boolean               @default(true) @map("is_active")
-  createdAt DateTime              @default(now()) @map("created_at")
-  updatedAt DateTime              @updatedAt @map("updated_at")
-  cvData    CvData?               @relation(fields: [cvDataId], references: [id])
-  profile   Profile               @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  title     String?               @db.VarChar(255)
+  content   String                @db.Text
 
+  // === Content Metadata & Analysis ===
+  metadata        Json?           // Structured metadata for job-specific data
+  confidenceScore Decimal?        @map("confidence_score") @db.Decimal(3, 2) // AI confidence score
+  qualityScore    Decimal?        @map("quality_score") @db.Decimal(3, 2) // Content quality score
+  wordCount       Int?            @map("word_count") // Word count of content
+  readingTime     Int?            @map("reading_time") // Estimated reading time in minutes
+  
+  // === Versioning & Status ===
+  version         Int             @default(1)
+  isActive        Boolean         @default(true) @map("is_active")
+  isArchived      Boolean         @default(false) @map("is_archived")
+  isPublic        Boolean         @default(false) @map("is_public")
+  isLatest        Boolean         @default(true) @map("is_latest")
+  
+  // === Lifecycle Management ===
+  archiveDate     DateTime?       @map("archive_date")
+  retentionDate   DateTime?       @map("retention_date")
+  deletedAt       DateTime?       @map("deleted_at")
+  
+  // === Usage & Analytics ===
+  viewCount         Int        @default(0) @map("view_count")
+  lastViewedAt      DateTime?  @map("last_viewed_at")
+  copyCount         Int        @default(0) @map("copy_count") // How many times content was copied
+  lastCopiedAt      DateTime?  @map("last_copied_at")         // Last time content was copied
+  
+  // === Timestamps ===
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+  
+  // === Relations ===
+  cvData          CvData?         @relation(fields: [cvDataId], references: [id], onDelete: Cascade)
+  jobData         JobData?        @relation(fields: [jobDataId], references: [id], onDelete: Cascade)
+  profile         Profile         @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  
+  // === Indexes & Constraints ===
+  @@index([userId])
+  @@index([cvDataId])
+  @@index([jobDataId])
+  @@index([type])
+  @@index([isActive])
+  @@index([isArchived])
+  @@index([createdAt])
+  @@index([jobTitle])
+  @@index([companyName])
+  @@index([jobType])
+  @@index([experienceLevel])
+  @@index([version, isLatest])
+  @@index([confidenceScore])
+  @@index([qualityScore])
   @@map("generated_content")
 }
 
@@ -396,7 +442,7 @@ model JobData {
 
   // === Relations ===
   cvJobMatches            CvJobMatch[] // Related CV-job matches
-  generatedContent        GeneratedContent[] // Generated data/content for this job
+  generatedContent        GeneratedContent[] // Generated content for this job
   profile                 Profile      @relation(fields: [userId], references: [userId], onDelete: Cascade) // User profile relation
 
   // === Indexes & Mapping ===
