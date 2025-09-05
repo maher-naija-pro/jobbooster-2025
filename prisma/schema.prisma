@@ -68,10 +68,9 @@ model CvData {
   fileUrl                 String   @map("file_url") // File storage URL
   fileSize                Int      @map("file_size") // File size in bytes
   mimeType                String   @map("mime_type") // File MIME type
-  originalFilename        String?  @map("original_filename") // Original filename from user
+ 
 
   // === Status & Processing ===
-  status                  String   @default("uploaded") // Current status (uploaded, processed, etc.)
   processingStatus        String   @default("uploaded") @map("processing_status") // Processing pipeline status
   isActive                Boolean  @default(true) @map("is_active") // Is this record active
   isArchived              Boolean  @default(false) @map("is_archived") // Is this record archived
@@ -86,15 +85,12 @@ model CvData {
   processingStartedAt     DateTime? @map("processing_started_at") // When processing started
   processingCompletedAt   DateTime? @map("processing_completed_at") // When processing finished
   lastAnalyzedAt          DateTime? @map("last_analyzed_at") // Last analysis timestamp
-  errorMessage            String?  @map("error_message") // General error message
   processingError         String?  @map("processing_error") // Processing error details
 
   // === Analysis & Versioning ===
   analysisCount           Int      @default(0) @map("analysis_count") // Number of analyses performed
   analysisId              String?  @map("analysis_id") // Analysis job ID
   analysisVersion         String?  @map("analysis_version") // Analysis version
-  modelUsed               String?  @map("model_used") // Model used for analysis
-  parameters              Json?    // Model parameters
   version                 Int      @default(1) // Version number
 
   // === Privacy & Compliance ===
@@ -103,21 +99,13 @@ model CvData {
 
   // === View & Priority ===
   viewCount               Int      @default(0) @map("view_count") // Number of times viewed
-  priorityLevel           Int      @default(0) @map("priority_level") // Priority for processing
 
-  // === Parent/Child Relationships ===
-  parentId                String?  @map("parent_id") // Parent CVData ID (for versioning)
-
+            
   // === Extracted Raw Data ===
   extractedText           String?  @map("extracted_text") // Raw extracted text from file
   metadata                Json?    // Additional metadata
 
-  // === Extracted Structured Data ===
-  extractedCertifications Json?    @map("extracted_certifications") // Certifications extracted
-  extractedEducation      Json?    @map("extracted_education") // Education extracted
-  extractedExperience     Int?     @map("extracted_experience") // Years of experience extracted
-  extractedLanguages      Json?    @map("extracted_languages") // Languages extracted
-  extractedSkills         Json?    @map("extracted_skills") // Skills extracted
+
 
   // === Personal Information ===
   personalInfo            Json?    @map("personal_info") // Name, contact info, location, etc.
@@ -130,6 +118,7 @@ model CvData {
   nationality             String?  // Nationality
   linkedinUrl             String?  @map("linkedin_url") // LinkedIn profile URL
   websiteUrl              String?  @map("website_url") // Personal website URL
+  githubUrl               String?  @map("github_url") // GitHub profile URL
 
   // === Professional Summary & Objectives ===
   professionalSummary     String?  @map("professional_summary") // Professional summary/summary
@@ -142,32 +131,8 @@ model CvData {
   education               Json?    // Educational background details
   workExperience          Json?    @map("work_experience") // Work experience details
   projects                Json?    // Notable projects and achievements
+         String?  @map("salary_range") // Salary range
 
-  // === Job/Offer Related Fields (for matching) ===
-  company                 String?  // Company name (if present)
-  department              String?  // Department
-  employmentType          String?  @map("employment_type") // Employment type
-  experienceLevel         String?  @map("experience_level") // Experience level
-  industry                String?  // Industry sector
-  jobType                 String?  @map("job_type") // Job type (full-time, etc.)
-  location                String?  // Location/address
-  preferredQualifications Json?    @map("preferred_qualifications") // Preferred qualifications
-  remoteType              String?  @map("remote_type") // Remote/hybrid/onsite
-  requiredQualifications  Json?    @map("required_qualifications") // Required qualifications
-  salaryRange             String?  @map("salary_range") // Salary range
-
-  // === Analysis Quality & Confidence ===
-  analysisConfidence      Decimal? @map("analysis_confidence") @db.Decimal(3, 2) // Overall confidence in analysis
-  extractionQuality       Json?    @map("extraction_quality") // Quality metrics for each extraction
-  completenessScore       Decimal? @map("completeness_score") @db.Decimal(3, 2) // How complete the CV information is
-  consistencyScore        Decimal? @map("consistency_score") @db.Decimal(3, 2) // Internal consistency of information
-
-  // === Categorization & Tagging ===
-  categories              Json?    // Categories assigned to this CV
-  tags                    Json?    // Tags for this CV
-
-  // === Miscellaneous ===
-  processingTime          Int?     @map("processing_time") // Processing time in ms
 
   // === Relations ===
   profile                 Profile  @relation(fields: [userId], references: [userId], onDelete: Cascade) // Link to Profile
