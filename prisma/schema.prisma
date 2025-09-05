@@ -396,6 +396,7 @@ model JobData {
 
   // === Relations ===
   cvJobMatches            CvJobMatch[] // Related CV-job matches
+  generatedContent        GeneratedContent[] // Generated data/content for this job
   profile                 Profile      @relation(fields: [userId], references: [userId], onDelete: Cascade) // User profile relation
 
   // === Indexes & Mapping ===
