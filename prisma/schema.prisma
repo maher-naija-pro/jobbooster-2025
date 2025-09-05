@@ -76,6 +76,49 @@ enum GeneratedContentType {
   CAREER_ADVICE
 }
 
+enum ApplicationStatus {
+  APPLIED
+  VIEWED
+  INTERVIEWED
+  REJECTED
+  OFFERED
+  ACCEPTED
+  WITHDRAWN
+}
+
+enum CareerLevel {
+  ENTRY_LEVEL
+  JUNIOR
+  MID_LEVEL
+  SENIOR
+  LEAD
+  EXECUTIVE
+  C_LEVEL
+}
+
+enum CareerStage {
+  EARLY_CAREER
+  MID_CAREER
+  LATE_CAREER
+  TRANSITION
+}
+
+enum CompanyGrowthStage {
+  STARTUP
+  SCALE_UP
+  MATURE
+  DECLINING
+}
+
+enum LearningGoalType {
+  SKILL_DEVELOPMENT
+  CERTIFICATION
+  DEGREE
+  COURSE
+  WORKSHOP
+  CONFERENCE
+}
+
 model Profile {
   id               String             @id @default(cuid())
   userId           String             @unique @map("user_id")
@@ -103,7 +146,32 @@ model Profile {
   consentDate             DateTime? @map("consent_date") // Date consent was given
   consentVersion          String?  @map("consent_version") @db.VarChar(20) // Consent version
 
-
+  // === User Engagement & Analytics ===
+  lastLoginAt              DateTime? @map("last_login_at") // Last login timestamp
+  loginCount               Int       @default(0) @map("login_count") // Total login count
+  totalSessionTime         Int       @default(0) @map("total_session_time") // Total session time in minutes
+  averageSessionDuration   Int?      @map("average_session_duration") // Average session duration
+  featureUsageStats        Json?     @map("feature_usage_stats") // Feature usage statistics
+  lastActiveAt             DateTime? @map("last_active_at") // Last activity timestamp
+  streakDays               Int       @default(0) @map("streak_days") // Consecutive active days
+  longestStreak            Int       @default(0) @map("longest_streak") // Longest active streak
+  
+  // === User Preferences & Customization ===
+  preferredJobTypes        Json?     @map("preferred_job_types") // Array of preferred job types
+  preferredLocations       Json?     @map("preferred_locations") // Array of preferred locations
+  salaryExpectations       Json?     @map("salary_expectations") // Salary range preferences
+  careerGoals              String?   @map("career_goals") @db.Text // Career objectives
+  skillInterests           Json?     @map("skill_interests") // Skills user wants to develop
+  industryPreferences      Json?     @map("industry_preferences") // Preferred industries
+  
+  // === Subscription & Billing ===
+  subscriptionStatus       String?   @map("subscription_status") @db.VarChar(50) // active, cancelled, expired
+  subscriptionStartDate    DateTime? @map("subscription_start_date") // When subscription started
+  subscriptionEndDate      DateTime? @map("subscription_end_date") // When subscription ends
+  billingCycle             String?   @map("billing_cycle") @db.VarChar(20) // monthly, yearly
+  paymentMethod            String?   @map("payment_method") @db.VarChar(50) // card, paypal, etc.
+  trialEndsAt              DateTime? @map("trial_ends_at") // Trial period end
+  isTrialUser              Boolean   @default(false) @map("is_trial_user") // Is currently on trial
 
   // === Relations ===
   cvData           CvData[]
@@ -112,8 +180,15 @@ model Profile {
   jobData          JobData[]
   userActivities   UserActivity[]
   userSessions     UserSession[]
+  featureUsage     FeatureUsage[]
 
 
+
+  @@index([lastLoginAt])
+
+  @@index([subscriptionStatus])
+  @@index([isTrialUser])
+  @@index([lastActiveAt])
   @@map("profiles")
 }
 
@@ -135,7 +210,7 @@ model UserSession {
 model UserActivity {
   id           String   @id @default(cuid())
   userId       String   @map("user_id")
-  action       String
+  action       String?
   resourceType String?  @map("resource_type")
   resourceId   String?  @map("resource_id")
   metadata     Json?
@@ -153,18 +228,18 @@ model CvData {
   userId                  String   @map("user_id") // Owner user ID
 
   // === File Information ===
-  fileName                String   @map("file_name") @db.VarChar(255) // Uploaded file name
-  fileUrl                 String   @map("file_url") @db.VarChar(500) // File storage URL
-  fileSize                Int      @map("file_size") // File size in bytes
-  mimeType                String   @map("mime_type") @db.VarChar(100) // File MIME type
+  fileName                String?  @map("file_name") @db.VarChar(255) // Uploaded file name
+  fileUrl                 String?  @map("file_url") @db.VarChar(500) // File storage URL
+  fileSize                Int?     @map("file_size") // File size in bytes
+  mimeType                String?  @map("mime_type") @db.VarChar(100) // File MIME type
  
 
   // === Status & Processing ===
   processingStatus        ProcessingStatus @default(UPLOADED) @map("processing_status") // Processing pipeline status
-  isActive                Boolean  @default(true) @map("is_active") // Is this record active
-  isArchived              Boolean  @default(false) @map("is_archived") // Is this record archived
-  isPublic                Boolean  @default(false) @map("is_public") // Is this record public
-  isLatest                Boolean  @default(true) @map("is_latest") // Is this the latest version
+  isActive                Boolean?  @default(true) @map("is_active") // Is this record active
+  isArchived              Boolean?  @default(false) @map("is_archived") // Is this record archived
+  isPublic                Boolean?  @default(false) @map("is_public") // Is this record public
+  isLatest                Boolean?  @default(true) @map("is_latest") // Is this the latest version
   archiveDate             DateTime? @map("archive_date") // Date archived
   retentionDate           DateTime? @map("retention_date") // Data retention date
   deletedAt               DateTime? @map("deleted_at") // Soft delete timestamp
@@ -183,6 +258,7 @@ model CvData {
   // === Analysis & Versioning ===
   analysisCount           Int      @default(0) @map("analysis_count") // Number of analyses performed
   version                 Int      @default(1) // Version number
+
   // === Privacy & Compliance ===
   gdprConsent             Boolean  @default(false) @map("gdpr_consent") // GDPR consent flag
   dataClassification      String?  @map("data_classification") @db.VarChar(50) // Data classification level
@@ -194,12 +270,22 @@ model CvData {
   viewCount               Int      @default(0) @map("view_count") // Number of times viewed
   lastViewedAt            DateTime? @map("last_viewed_at") // Last view timestamp
 
-            
+  // === Enhanced Analytics ===
+  averageMatchScore        Decimal?  @map("average_match_score") @db.Decimal(5, 2) // Average job match score
+  bestMatchScore           Decimal?  @map("best_match_score") @db.Decimal(5, 2) // Best job match score
+  totalJobMatches          Int       @default(0) @map("total_job_matches") // Total job matches generated
+  
+  // === Content Quality Metrics ===
+  completenessScore        Decimal?  @map("completeness_score") @db.Decimal(3, 2) // CV completeness (0-1)
+  readabilityScore         Decimal?  @map("readability_score") @db.Decimal(3, 2) // Content readability
+  atsScore                 Decimal?  @map("ats_score") @db.Decimal(3, 2) // ATS compatibility score
+  keywordDensity           Json?     @map("keyword_density") // Keyword density analysis
+  improvementSuggestions   Json?     @map("improvement_suggestions") // AI-generated suggestions
+  templateTags             Json?     @map("template_tags") // Template tags for search
+   
   // === Extracted Raw Data ===
   extractedText           String?  @map("extracted_text") // Raw extracted text from file
   metadata                Json?    // Additional metadata
-
-
 
   // === Personal Information ===
   personalInfo            Json?    @map("personal_info") // Name, contact info, location, etc.
@@ -227,7 +313,6 @@ model CvData {
   projects                Json?    // Notable projects and achievements
   salaryRange             String?  @map("salary_range") // Salary range
 
-
   // === Relations ===
   profile                 Profile  @relation(fields: [userId], references: [userId], onDelete: Cascade) // Link to Profile
   cvJobMatches            CvJobMatch[] // Job matches for this CV
@@ -242,6 +327,8 @@ model CvData {
   @@index([version, isLatest])
   @@index([email])
   @@index([fullName])
+  @@index([averageMatchScore])
+  @@index([bestMatchScore])
   @@map("cv_data")
 }
 
@@ -255,7 +342,7 @@ model GeneratedContent {
   // === Content Information ===
   type      GeneratedContentType
   title     String?               @db.VarChar(255)
-  content   String                @db.Text
+  content   String?               @db.Text
 
   // === Content Metadata & Analysis ===
   metadata        Json?           // Structured metadata for job-specific data
@@ -281,6 +368,19 @@ model GeneratedContent {
   lastViewedAt      DateTime?  @map("last_viewed_at")
   copyCount         Int        @default(0) @map("copy_count") // How many times content was copied
   lastCopiedAt      DateTime?  @map("last_copied_at")         // Last time content was copied
+  
+
+  // === Content Quality & Effectiveness ===
+  effectivenessScore      Decimal?  @map("effectiveness_score") @db.Decimal(3, 2) // Content effectiveness
+  userRating              Decimal?  @map("user_rating") @db.Decimal(3, 2) // User rating (1-5)
+  feedback                String?   @db.Text // User feedback
+  improvementSuggestions  Json?     @map("improvement_suggestions") // AI suggestions for improvement
+  
+
+  // === Content Optimization ===
+  readabilityScore        Decimal?  @map("readability_score") @db.Decimal(3, 2) // Readability score
+  keywordOptimization     Json?     @map("keyword_optimization") // Keyword optimization data
+  toneAnalysis            Json?     @map("tone_analysis") // Tone and sentiment analysis
   
   // === Processing Timestamps & Error Tracking ===
   createdAt       DateTime        @default(now()) @map("created_at")
@@ -316,6 +416,8 @@ model GeneratedContent {
   @@index([isLatest])
   @@index([confidenceScore])
   @@index([qualityScore])
+  @@index([effectivenessScore])
+  @@index([userRating])
   @@map("generated_content")
 }
 
@@ -387,8 +489,8 @@ model UserNotification {
   id        String           @id @default(cuid())
   userId    String           @map("user_id")
   type      NotificationType
-  title     String
-  message   String
+  title     String?
+  message   String?
   isRead    Boolean          @default(false) @map("is_read")
   metadata  Json?
   createdAt DateTime         @default(now()) @map("created_at")
@@ -399,9 +501,9 @@ model UserNotification {
 
 model ContactMessage {
   id        String   @id @default(cuid())
-  name      String
-  email     String
-  message   String
+  name      String?
+  email     String?
+  message   String?
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -423,7 +525,7 @@ model JobData {
   userId                  String       @map("user_id") // Owner user ID
 
   // === Job Content & Description ===
-  content                 String       @db.Text // Raw job posting content
+  content                 String?      @db.Text // Raw job posting content
   title                   String?      @db.VarChar(255) // Job title
   companyName             String?      @map("company_name") @db.VarChar(255) // Company name (normalized)
   companyDescription      String?      @map("company_description") @db.Text // Company description
@@ -488,7 +590,28 @@ model JobData {
   viewCount               Int          @default(0) @map("view_count") // Number of times viewed
   lastViewedAt            DateTime?    @map("last_viewed_at") // Last view timestamp
 
+  // === Market Intelligence ===
+  marketDemand             Decimal?  @map("market_demand") @db.Decimal(3, 2) // Job market demand score
+  competitionLevel         Decimal?  @map("competition_level") @db.Decimal(3, 2) // Competition level
+  averageSalary            Decimal?  @map("average_salary") @db.Decimal(10, 2) // Market average salary
+  salaryPercentile         Int?      @map("salary_percentile") // Salary percentile (25th, 50th, 75th, 90th)
+  growthTrend              String?   @map("growth_trend") @db.VarChar(20) // growing, stable, declining
+  skillTrends              Json?     @map("skill_trends") // Trending skills for this role
+  locationDemand           Json?     @map("location_demand") // Demand by location
+  
+  // === Job Quality Metrics ===
+  jobQualityScore          Decimal?  @map("job_quality_score") @db.Decimal(3, 2) // Overall job quality
+  descriptionClarity       Decimal?  @map("description_clarity") @db.Decimal(3, 2) // Description clarity
+  requirementsClarity      Decimal?  @map("requirements_clarity") @db.Decimal(3, 2) // Requirements clarity
+  benefitsScore            Decimal?  @map("benefits_score") @db.Decimal(3, 2) // Benefits attractiveness
+  
 
+  // === Company Intelligence ===
+  companyRating            Decimal?  @map("company_rating") @db.Decimal(3, 2) // Company rating
+  companySizeCategory      String?   @map("company_size_category") @db.VarChar(50) // Size category
+  companyGrowthStage       CompanyGrowthStage? @map("company_growth_stage") // startup, scale-up, mature
+  companyCulture           Json?     @map("company_culture") // Company culture indicators
+  diversityScore           Decimal?  @map("diversity_score") @db.Decimal(3, 2) // Diversity score
 
   // === Relations ===
   cvJobMatches            CvJobMatch[] // Related CV-job matches
@@ -509,6 +632,11 @@ model JobData {
   @@index([companyName])
   @@index([title])
   @@index([applicationDeadline])
+  @@index([marketDemand])
+  @@index([competitionLevel])
+  @@index([jobQualityScore])
+  @@index([companyRating])
+  @@index([companyGrowthStage])
   @@map("job_data")
 }
 
@@ -525,11 +653,11 @@ model CvJobMatch {
   profile                Profile   @relation(fields: [userId], references: [userId], onDelete: Cascade) // User profile
 
   // === Match Scores ===
-  overallMatchScore      Decimal   @map("overall_match_score") @db.Decimal(5, 2) // Overall match score (0-100)
-  skillsMatchScore       Decimal   @map("skills_match_score") @db.Decimal(5, 2) // Skills match score
-  experienceMatchScore   Decimal   @map("experience_match_score") @db.Decimal(5, 2) // Experience match score
-  educationMatchScore    Decimal   @map("education_match_score") @db.Decimal(5, 2) // Education match score
-  locationMatchScore     Decimal   @map("location_match_score") @db.Decimal(5, 2) // Location match score
+  overallMatchScore      Decimal?  @map("overall_match_score") @db.Decimal(5, 2) // Overall match score (0-100)
+  skillsMatchScore       Decimal?  @map("skills_match_score") @db.Decimal(5, 2) // Skills match score
+  experienceMatchScore   Decimal?  @map("experience_match_score") @db.Decimal(5, 2) // Experience match score
+  educationMatchScore    Decimal?  @map("education_match_score") @db.Decimal(5, 2) // Education match score
+  locationMatchScore     Decimal?  @map("location_match_score") @db.Decimal(5, 2) // Location match score
   salaryMatchScore       Decimal?  @map("salary_match_score") @db.Decimal(5, 2) // Salary match score
 
   // === Analysis Quality and Confidence ===
@@ -593,6 +721,34 @@ model CvJobMatch {
   @@index([analysisDate])
   @@map("cv_job_matches")
 }
+
+
+
+model FeatureUsage {
+  id                      String    @id @default(cuid())
+  userId                  String    @map("user_id")
+  featureName             String    @map("feature_name") @db.VarChar(100)
+  usageCount              Int       @default(0) @map("usage_count")
+  lastUsedAt              DateTime? @map("last_used_at")
+  totalTimeSpent          Int       @default(0) @map("total_time_spent") // in minutes
+  averageSessionTime      Int?      @map("average_session_time") // in minutes
+  successRate             Decimal?  @map("success_rate") @db.Decimal(5, 2)
+  satisfactionScore       Decimal?  @map("satisfaction_score") @db.Decimal(3, 2)
+  
+  // === Timestamps ===
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @updatedAt @map("updated_at")
+  
+  // === Relations ===
+  profile                 Profile   @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  
+  @@unique([userId, featureName])
+  @@index([userId])
+  @@index([featureName])
+  @@map("feature_usage")
+}
+
+
 
 
 
