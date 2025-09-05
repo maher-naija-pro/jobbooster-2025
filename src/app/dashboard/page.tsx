@@ -13,7 +13,9 @@ import {
     Calendar,
     TrendingUp,
     Activity,
-    Clock
+    Clock,
+    Search,
+    Trash2
 } from 'lucide-react'
 
 export default async function Dashboard() {
@@ -178,12 +180,16 @@ export default async function Dashboard() {
                                     Generate Cover Letter
                                 </Button>
                                 <Button className="w-full justify-start" variant="outline">
-                                    <User className="mr-2 h-4 w-4" />
-                                    Update Profile
+                                    <Mail className="mr-2 h-4 w-4" />
+                                    Generate Email
                                 </Button>
                                 <Button className="w-full justify-start" variant="outline">
-                                    <Calendar className="mr-2 h-4 w-4" />
-                                    View Analytics
+                                    <Search className="mr-2 h-4 w-4" />
+                                    Analyze CV
+                                </Button>
+                                <Button className="w-full justify-start" variant="outline">
+                                    <User className="mr-2 h-4 w-4" />
+                                    Update Profile
                                 </Button>
                             </CardContent>
                         </Card>
