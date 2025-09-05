@@ -12,10 +12,11 @@ import {
     User,
     Calendar,
     TrendingUp,
-    Activity,
-    Clock,
+    Bookmark,
     Search,
-    Trash2
+    Trash2,
+    Eye,
+    Briefcase
 } from 'lucide-react'
 
 export default async function Dashboard() {
@@ -98,81 +99,142 @@ export default async function Dashboard() {
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Active Sessions</CardTitle>
-                            <Activity className="h-4 w-4 text-muted-foreground" />
+                            <CardTitle className="text-sm font-medium">Saved Offers</CardTitle>
+                            <Bookmark className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">
-                                {profile?.sessionAnalytics?.activeSessions || profile?.userSessions?.length || 0}
+                                0
                             </div>
                             <p className="text-xs text-muted-foreground">
-                                Currently active
+                                Job offers saved
                             </p>
                         </CardContent>
                     </Card>
 
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Last Activity</CardTitle>
-                            <Clock className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">
-                                {profile?.userActivities?.[0]?.createdAt
-                                    ? new Date(profile.userActivities[0].createdAt).toLocaleDateString()
-                                    : 'Today'
-                                }
-                            </div>
-                            <p className="text-xs text-muted-foreground">
-                                {profile?.userActivities?.[0]?.action || 'No recent activity'}
-                            </p>
-                        </CardContent>
-                    </Card>
                 </div>
 
                 {/* Main Content */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Recent Activity */}
-                    <div className="lg:col-span-2">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* CV Display Form */}
+                    <div>
                         <Card>
                             <CardHeader>
-                                <CardTitle>Recent Activity</CardTitle>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Eye className="h-5 w-5" />
+                                    CV Display
+                                </CardTitle>
                                 <CardDescription>
-                                    Your recent actions and system events
+                                    View and manage your uploaded CVs
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                {profile?.userActivities?.length > 0 ? (
-                                    <div className="space-y-4">
-                                        {profile.userActivities.slice(0, 5).map((activity: any) => (
-                                            <div key={activity.id} className="flex items-center space-x-4">
-                                                <div className="h-2 w-2 bg-primary rounded-full" />
-                                                <div className="flex-1 space-y-1">
-                                                    <p className="text-sm font-medium">{activity.action.replace('_', ' ')}</p>
-                                                    <p className="text-xs text-muted-foreground">
-                                                        {new Date(activity.createdAt).toLocaleString()}
-                                                    </p>
+                                <div className="space-y-4">
+                                    {profile?.cvData?.length > 0 ? (
+                                        <div className="space-y-3">
+                                            {profile.cvData.slice(0, 3).map((cv: any) => (
+                                                <div key={cv.id} className="flex items-center justify-between p-3 border rounded-lg">
+                                                    <div className="flex items-center space-x-3">
+                                                        <FileText className="h-4 w-4 text-muted-foreground" />
+                                                        <div>
+                                                            <p className="text-sm font-medium">{cv.fileName}</p>
+                                                            <p className="text-xs text-muted-foreground">
+                                                                {new Date(cv.createdAt).toLocaleDateString()}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <Button size="sm" variant="outline">
+                                                        View
+                                                    </Button>
                                                 </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p className="text-muted-foreground">No recent activity</p>
-                                )}
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="text-center py-8">
+                                            <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                                            <p className="text-muted-foreground mb-4">No CVs uploaded yet</p>
+                                            <Button>
+                                                Upload CV
+                                            </Button>
+                                        </div>
+                                    )}
+                                </div>
                             </CardContent>
                         </Card>
                     </div>
 
-                    {/* Quick Actions */}
+                    {/* Offers Display Form */}
                     <div>
                         <Card>
                             <CardHeader>
-                                <CardTitle>Quick Actions</CardTitle>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Briefcase className="h-5 w-5" />
+                                    Job Offers
+                                </CardTitle>
                                 <CardDescription>
-                                    Common tasks and shortcuts
+                                    Browse and manage job opportunities
                                 </CardDescription>
                             </CardHeader>
-                            <CardContent className="space-y-4">
+                            <CardContent>
+                                <div className="space-y-4">
+                                    <div className="space-y-3">
+                                        <div className="flex items-center justify-between p-3 border rounded-lg">
+                                            <div className="flex items-center space-x-3">
+                                                <Briefcase className="h-4 w-4 text-muted-foreground" />
+                                                <div>
+                                                    <p className="text-sm font-medium">Frontend Developer</p>
+                                                    <p className="text-xs text-muted-foreground">Tech Corp • Remote</p>
+                                                </div>
+                                            </div>
+                                            <Button size="sm" variant="outline">
+                                                View
+                                            </Button>
+                                        </div>
+                                        <div className="flex items-center justify-between p-3 border rounded-lg">
+                                            <div className="flex items-center space-x-3">
+                                                <Briefcase className="h-4 w-4 text-muted-foreground" />
+                                                <div>
+                                                    <p className="text-sm font-medium">Full Stack Engineer</p>
+                                                    <p className="text-xs text-muted-foreground">StartupXYZ • Hybrid</p>
+                                                </div>
+                                            </div>
+                                            <Button size="sm" variant="outline">
+                                                View
+                                            </Button>
+                                        </div>
+                                        <div className="flex items-center justify-between p-3 border rounded-lg">
+                                            <div className="flex items-center space-x-3">
+                                                <Briefcase className="h-4 w-4 text-muted-foreground" />
+                                                <div>
+                                                    <p className="text-sm font-medium">React Developer</p>
+                                                    <p className="text-xs text-muted-foreground">BigTech Inc • On-site</p>
+                                                </div>
+                                            </div>
+                                            <Button size="sm" variant="outline">
+                                                View
+                                            </Button>
+                                        </div>
+                                    </div>
+                                    <Button className="w-full" variant="outline">
+                                        Browse More Offers
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
+
+                {/* Quick Actions */}
+                <div className="mt-8">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Quick Actions</CardTitle>
+                            <CardDescription>
+                                Common tasks and shortcuts
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 <Button className="w-full justify-start" variant="outline">
                                     <FileText className="mr-2 h-4 w-4" />
                                     Upload New CV
@@ -195,42 +257,44 @@ export default async function Dashboard() {
                                 </Button>
                                 <Button className="w-full justify-start" variant="outline" asChild>
                                     <a href="/user/sessions">
-                                        <Activity className="mr-2 h-4 w-4" />
-                                        Manage Sessions
+                                        <Bookmark className="mr-2 h-4 w-4" />
+                                        View Saved Offers
                                     </a>
                                 </Button>
-                            </CardContent>
-                        </Card>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
 
-                        {/* Account Status */}
-                        <Card className="mt-6">
-                            <CardHeader>
-                                <CardTitle>Account Status</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
+                {/* Account Status */}
+                <div className="mt-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Account Status</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm">Email Verified</span>
+                                <Badge variant={user.email_confirmed_at ? 'default' : 'destructive'}>
+                                    {user.email_confirmed_at ? 'Verified' : 'Pending'}
+                                </Badge>
+                            </div>
+                            {isPricingEnabled() && (
                                 <div className="flex items-center justify-between">
-                                    <span className="text-sm">Email Verified</span>
-                                    <Badge variant={user.email_confirmed_at ? 'default' : 'destructive'}>
-                                        {user.email_confirmed_at ? 'Verified' : 'Pending'}
+                                    <span className="text-sm">Plan</span>
+                                    <Badge variant={subscription.plan === 'free' ? 'secondary' : 'default'}>
+                                        {subscription.plan}
                                     </Badge>
                                 </div>
-                                {isPricingEnabled() && (
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-sm">Plan</span>
-                                        <Badge variant={subscription.plan === 'free' ? 'secondary' : 'default'}>
-                                            {subscription.plan}
-                                        </Badge>
-                                    </div>
-                                )}
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm">Language</span>
-                                    <span className="text-sm text-muted-foreground">
-                                        {preferences.language || 'English'}
-                                    </span>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </div>
+                            )}
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm">Language</span>
+                                <span className="text-sm text-muted-foreground">
+                                    {preferences.language || 'English'}
+                                </span>
+                            </div>
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
         </div>
