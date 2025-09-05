@@ -346,6 +346,7 @@ model JobData {
 
 /// CV-Job Match Model
 /// Stores the results of matching a CV to a job posting, including scores, status, and metadata.
+/// Enhanced fields added per analysis.md recommendations.
 model CvJobMatch {
   // === Identification & Relations ===
   id                     String    @id @default(cuid()) // Unique match ID
@@ -358,16 +359,27 @@ model CvJobMatch {
   profile                Profile   @relation(fields: [userId], references: [userId], onDelete: Cascade) // User profile
 
   // === Match Scores ===
-  overallMatchScore      Decimal   @map("overall_match_score") @db.Decimal(5, 2) // Overall match score
+  overallMatchScore      Decimal   @map("overall_match_score") @db.Decimal(5, 2) // Overall match score (0-100)
   skillsMatchScore       Decimal   @map("skills_match_score") @db.Decimal(5, 2) // Skills match score
   experienceMatchScore   Decimal   @map("experience_match_score") @db.Decimal(5, 2) // Experience match score
   educationMatchScore    Decimal   @map("education_match_score") @db.Decimal(5, 2) // Education match score
   locationMatchScore     Decimal   @map("location_match_score") @db.Decimal(5, 2) // Location match score
   salaryMatchScore       Decimal?  @map("salary_match_score") @db.Decimal(5, 2) // Salary match score
 
+  // === Enhanced Job Match Analysis Fields ===
+ 
+  skillMatches           Json?     @map("skill_matches") // Skill matching details (see analysis.md)
+  jobStrengths           Json?     @map("job_strengths") // Strengths relevant to the job
+  jobRecommendations     Json?     @map("job_recommendations") // Job-specific recommendations
+
+  // === Analysis Quality and Confidence ===
+  analysisConfidence     Decimal?  @map("analysis_confidence") @db.Decimal(3, 2) // Overall confidence in analysis
+  completenessScore      Decimal?  @map("completeness_score") @db.Decimal(3, 2) // How complete the CV information is
+  consistencyScore       Decimal?  @map("consistency_score") @db.Decimal(3, 2) // Internal consistency of information
+
   // === Skills & Analysis Details ===
   matchedSkills          Json?     @map("matched_skills") // Skills that matched
-  missingSkills          Json?     @map("missing_skills") // Skills missing
+  missingSkills          Json?     @map("missing_skills") // Skills missing from CV
   extraSkills            Json?     @map("extra_skills") // Extra skills
   matchReasons           Json?     @map("match_reasons") // Reasons for match
   improvementSuggestions Json?     @map("improvement_suggestions") // Suggestions for improvement
