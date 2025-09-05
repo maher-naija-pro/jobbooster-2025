@@ -22,6 +22,12 @@ const routeList = {
     }
   }),
 
+  Contact: {
+    menu: "false",
+    href: "/company/contact",
+    items: []
+  },
+
   Legal: {
     menu: "true",
     href: "#",
@@ -35,12 +41,6 @@ const routeList = {
         href: "/legal/terms-of-service"
       }
     ]
-  },
-
-  Contact: {
-    menu: "false",
-    href: "/company/contact",
-    items: []
   }
 }
 

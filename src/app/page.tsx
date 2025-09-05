@@ -6,7 +6,7 @@ import { LanguageSelector } from '../components/language-selector';
 import { JobOfferInput } from '../components/job-offer-input';
 import { ActionButtons } from '../components/action-buttons';
 import { ContentGenerator } from '../components/content-generator';
-
+import { useUserLanguage } from '../hooks/use-user-language';
 
 import { ErrorBoundary } from '../components/error-boundary';
 import { Language } from '../lib/types';
@@ -17,6 +17,9 @@ export default function Home() {
   const { state, dispatch } = useApp();
   const [streamingContent, setStreamingContent] = useState('');
   const [debugApiResponse, setDebugApiResponse] = useState<any>(null);
+
+  // Load user's language preference
+  useUserLanguage();
 
   // Store the current abort controller for cancellation
   const [currentAbortController, setCurrentAbortController] = useState<AbortController | null>(null);

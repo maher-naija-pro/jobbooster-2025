@@ -10,13 +10,15 @@ import { Switch } from '@/components/ui/switch'
 import { updatePreferences } from '@/app/user/profile/actions'
 import { toast } from 'sonner'
 import { Icons } from '@/components/icons'
+import { SUPPORTED_LANGUAGES } from '@/lib/types'
 
 interface PreferencesFormProps {
   profile: {
     preferences?: {
+      language?: string
+      timezone?: string
       notifications?: {
         email?: boolean
-        push?: boolean
         marketing?: boolean
       }
       privacy?: {
@@ -44,11 +46,55 @@ function SubmitButton() {
   )
 }
 
-function FormInputs({ notifications, privacy }: any) {
+function FormInputs({ language, timezone, notifications, privacy }: any) {
   const { pending } = useFormStatus()
 
   return (
     <>
+      <div className="space-y-4">
+        <h3 className="text-lg font-medium">General</h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="language">Preferred Language</Label>
+            <Select name="language" defaultValue={language || 'en'}>
+              <SelectTrigger disabled={pending}>
+                <SelectValue placeholder="Select language" />
+              </SelectTrigger>
+              <SelectContent>
+                {SUPPORTED_LANGUAGES.map((lang) => (
+                  <SelectItem key={lang.code} value={lang.code}>
+                    {lang.flag} {lang.nativeName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="timezone">Timezone</Label>
+            <Select name="timezone" defaultValue={timezone || 'UTC'}>
+              <SelectTrigger disabled={pending}>
+                <SelectValue placeholder="Select timezone" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="UTC">UTC</SelectItem>
+                <SelectItem value="America/New_York">Eastern Time (ET)</SelectItem>
+                <SelectItem value="America/Chicago">Central Time (CT)</SelectItem>
+                <SelectItem value="America/Denver">Mountain Time (MT)</SelectItem>
+                <SelectItem value="America/Los_Angeles">Pacific Time (PT)</SelectItem>
+                <SelectItem value="Europe/London">London (GMT)</SelectItem>
+                <SelectItem value="Europe/Paris">Paris (CET)</SelectItem>
+                <SelectItem value="Europe/Berlin">Berlin (CET)</SelectItem>
+                <SelectItem value="Asia/Tokyo">Tokyo (JST)</SelectItem>
+                <SelectItem value="Asia/Shanghai">Shanghai (CST)</SelectItem>
+                <SelectItem value="Australia/Sydney">Sydney (AEST)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
+
       <div className="space-y-4">
         <h3 className="text-lg font-medium">Notifications</h3>
 
@@ -68,20 +114,6 @@ function FormInputs({ notifications, privacy }: any) {
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="pushNotifications">Push Notifications</Label>
-              <p className="text-sm text-muted-foreground">
-                Receive push notifications in your browser
-              </p>
-            </div>
-            <Switch
-              id="pushNotifications"
-              name="pushNotifications"
-              defaultChecked={notifications.push || false}
-              disabled={pending}
-            />
-          </div>
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
@@ -139,19 +171,35 @@ export function PreferencesForm({ profile }: PreferencesFormProps) {
   const [error, setError] = useState('')
 
   const preferences = profile?.preferences || {}
+  const language = preferences.language || 'en'
+  const timezone = preferences.timezone || 'UTC'
   const notifications = preferences.notifications || {}
   const privacy = preferences.privacy || {}
 
+  const handleSubmit = async (formData: FormData) => {
+    const result = await updatePreferences(formData)
+    if (!result.success) {
+      setError(result.error || 'Failed to update preferences')
+    } else {
+      setError('')
+      toast.success(result.message || 'Preferences updated successfully')
+    }
+  }
+
   return (
-    <form action={updatePreferences} className="space-y-6">
+    <form action={handleSubmit} className="space-y-6">
       {error && (
         <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">
           {error}
         </div>
       )}
 
-
-      <FormInputs notifications={notifications} privacy={privacy} />
+      <FormInputs
+        language={language}
+        timezone={timezone}
+        notifications={notifications}
+        privacy={privacy}
+      />
 
       <div className="flex justify-end">
         <SubmitButton />

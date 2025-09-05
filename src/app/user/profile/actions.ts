@@ -134,7 +134,6 @@ export async function updatePreferences(formData: FormData) {
     timezone: formData.get('timezone') as string,
     notifications: {
       email: formData.get('emailNotifications') === 'on',
-      push: formData.get('pushNotifications') === 'on',
       marketing: formData.get('marketingNotifications') === 'on',
     },
     privacy: {
