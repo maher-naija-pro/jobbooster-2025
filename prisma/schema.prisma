@@ -313,7 +313,7 @@ model GeneratedContent {
   @@index([isActive])
   @@index([isArchived])
   @@index([createdAt])
-  @@index([version, isLatest])
+  @@index([isLatest])
   @@index([confidenceScore])
   @@index([qualityScore])
   @@map("generated_content")

@@ -215,10 +215,8 @@ export async function POST(request: NextRequest) {
                     fileUrl: urlData.publicUrl,
                     fileSize: file.size,
                     mimeType: file.type,
-                    status: 'uploaded',
                     extractedText: extractedText,
-                    originalFilename: file.name,
-                    processingStatus: 'uploaded',
+                    processingStatus: 'UPLOADED' as const,
                     processingStartedAt: new Date(),
                     processingCompletedAt: new Date(),
                     viewCount: 0,
@@ -243,8 +241,8 @@ export async function POST(request: NextRequest) {
                             uploadSource: isAuthenticated ? 'authenticated' : 'anonymous'
                         }
                     }
-                }
-            });
+                } as any
+            }) as any;
 
             logger.cvUpload('File upload saved to database successfully', {
                 fileId: fileRecord.id,
@@ -260,13 +258,11 @@ export async function POST(request: NextRequest) {
                 processedContent: fileRecord.extractedText || '',
                 status: 'completed',
                 fileUrl: fileRecord.fileUrl,
-                processingStatus: fileRecord.processingStatus as 'uploaded' | 'extracting' | 'analyzing' | 'completed' | 'failed',
+                processingStatus: fileRecord.processingStatus.toLowerCase() as 'uploaded' | 'extracting' | 'analyzing' | 'completed' | 'failed',
                 processingStartedAt: fileRecord.processingStartedAt || undefined,
                 processingCompletedAt: fileRecord.processingCompletedAt || undefined,
                 processingError: fileRecord.processingError || undefined,
-                analysisId: fileRecord.analysisId || undefined,
-                analysisVersion: fileRecord.analysisVersion || undefined,
-                originalFilename: fileRecord.originalFilename || undefined,
+                originalFilename: fileRecord.fileName,
                 viewCount: fileRecord.viewCount,
                 lastAnalyzedAt: fileRecord.lastAnalyzedAt || undefined,
                 analysisCount: fileRecord.analysisCount,
