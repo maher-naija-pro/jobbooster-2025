@@ -59,86 +59,122 @@ model UserActivity {
 }
 
 model CvData {
-  id                      String             @id @default(cuid())
-  userId                  String             @map("user_id")
-  fileName                String             @map("file_name")
-  fileUrl                 String             @map("file_url")
-  fileSize                Int                @map("file_size")
-  mimeType                String             @map("mime_type")
-  status                  String             @default("uploaded")
-  extractedText           String?            @map("extracted_text")
-  metadata                Json?
-  createdAt               DateTime           @default(now()) @map("created_at")
-  updatedAt               DateTime           @updatedAt @map("updated_at")
-  analysisCount           Int                @default(0) @map("analysis_count")
-  analysisId              String?            @map("analysis_id")
-  analysisVersion         String?            @map("analysis_version")
-  archiveDate             DateTime?          @map("archive_date")
-  dataClassification      String?            @map("data_classification")
-  gdprConsent             Boolean            @default(false) @map("gdpr_consent")
-  isArchived              Boolean            @default(false) @map("is_archived")
-  isPublic                Boolean            @default(false) @map("is_public")
-  lastAnalyzedAt          DateTime?          @map("last_analyzed_at")
-  originalFilename        String?            @map("original_filename")
-  processingCompletedAt   DateTime?          @map("processing_completed_at")
-  processingError         String?            @map("processing_error")
-  processingStartedAt     DateTime?          @map("processing_started_at")
-  processingStatus        String             @default("uploaded") @map("processing_status")
-  retentionDate           DateTime?          @map("retention_date")
-  viewCount               Int                @default(0) @map("view_count")
-  errorMessage            String?            @map("error_message")
-  extractedCertifications Json?              @map("extracted_certifications")
-  extractedEducation      Json?              @map("extracted_education")
-  extractedExperience     Int?               @map("extracted_experience")
-  extractedLanguages      Json?              @map("extracted_languages")
-  extractedSkills         Json?              @map("extracted_skills")
-  isActive                Boolean            @default(true) @map("is_active")
-  modelUsed               String?            @map("model_used")
-  parameters              Json?
-  processingTime          Int?               @map("processing_time")
-  company                 String?
-  department              String?
-  employmentType          String?            @map("employment_type")
-  experienceLevel         String?            @map("experience_level")
-  industry                String?
-  jobType                 String?            @map("job_type")
-  location                String?
-  preferredQualifications Json?              @map("preferred_qualifications")
-  remoteType              String?            @map("remote_type")
-  requiredQualifications  Json?              @map("required_qualifications")
-  salaryRange             String?            @map("salary_range")
-  analysisConfidence      Decimal?           @map("analysis_confidence") @db.Decimal(3, 2)
-  categories              Json?
-  certifications          Json?
-  completenessScore       Decimal?           @map("completeness_score") @db.Decimal(3, 2)
-  consistencyScore        Decimal?           @map("consistency_score") @db.Decimal(3, 2)
-  dateOfBirth             DateTime?          @map("date_of_birth")
-  education               Json?
-  email                   String?
-  extractionQuality       Json?              @map("extraction_quality")
-  firstName               String?            @map("first_name")
-  fullName                String?            @map("full_name")
-  isLatest                Boolean            @default(true) @map("is_latest")
-  languages               Json?
-  lastName                String?            @map("last_name")
-  linkedinUrl             String?            @map("linkedin_url")
-  nationality             String?
-  parentId                String?            @map("parent_id")
-  personalInfo            Json?              @map("personal_info")
-  phone                   String?
-  priorityLevel           Int                @default(0) @map("priority_level")
-  professionalSummary     String?            @map("professional_summary")
-  projects                Json?
-  softSkills              Json?              @map("soft_skills")
-  tags                    Json?
-  technicalSkills         Json?              @map("technical_skills")
-  version                 Int                @default(1)
-  websiteUrl              String?            @map("website_url")
-  workExperience          Json?              @map("work_experience")
-  profile                 Profile            @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  cvJobMatches            CvJobMatch[]
-  generatedContent        GeneratedContent[]
+  // === Identification & Ownership ===
+  id                      String   @id @default(cuid()) // Unique CV record ID
+  userId                  String   @map("user_id") // Owner user ID
 
+  // === File Information ===
+  fileName                String   @map("file_name") // Uploaded file name
+  fileUrl                 String   @map("file_url") // File storage URL
+  fileSize                Int      @map("file_size") // File size in bytes
+  mimeType                String   @map("mime_type") // File MIME type
+  originalFilename        String?  @map("original_filename") // Original filename from user
+
+  // === Status & Processing ===
+  status                  String   @default("uploaded") // Current status (uploaded, processed, etc.)
+  processingStatus        String   @default("uploaded") @map("processing_status") // Processing pipeline status
+  isActive                Boolean  @default(true) @map("is_active") // Is this record active
+  isArchived              Boolean  @default(false) @map("is_archived") // Is this record archived
+  isPublic                Boolean  @default(false) @map("is_public") // Is this record public
+  isLatest                Boolean  @default(true) @map("is_latest") // Is this the latest version
+  archiveDate             DateTime? @map("archive_date") // Date archived
+  retentionDate           DateTime? @map("retention_date") // Data retention date
+
+  // === Processing Timestamps & Error Tracking ===
+  createdAt               DateTime @default(now()) @map("created_at") // Record creation timestamp
+  updatedAt               DateTime @updatedAt @map("updated_at") // Last update timestamp
+  processingStartedAt     DateTime? @map("processing_started_at") // When processing started
+  processingCompletedAt   DateTime? @map("processing_completed_at") // When processing finished
+  lastAnalyzedAt          DateTime? @map("last_analyzed_at") // Last analysis timestamp
+  errorMessage            String?  @map("error_message") // General error message
+  processingError         String?  @map("processing_error") // Processing error details
+
+  // === Analysis & Versioning ===
+  analysisCount           Int      @default(0) @map("analysis_count") // Number of analyses performed
+  analysisId              String?  @map("analysis_id") // Analysis job ID
+  analysisVersion         String?  @map("analysis_version") // Analysis version
+  modelUsed               String?  @map("model_used") // Model used for analysis
+  parameters              Json?    // Model parameters
+  version                 Int      @default(1) // Version number
+
+  // === Privacy & Compliance ===
+  gdprConsent             Boolean  @default(false) @map("gdpr_consent") // GDPR consent flag
+  dataClassification      String?  @map("data_classification") // Data classification label
+
+  // === View & Priority ===
+  viewCount               Int      @default(0) @map("view_count") // Number of times viewed
+  priorityLevel           Int      @default(0) @map("priority_level") // Priority for processing
+
+  // === Parent/Child Relationships ===
+  parentId                String?  @map("parent_id") // Parent CVData ID (for versioning)
+
+  // === Extracted Raw Data ===
+  extractedText           String?  @map("extracted_text") // Raw extracted text from file
+  metadata                Json?    // Additional metadata
+
+  // === Extracted Structured Data ===
+  extractedCertifications Json?    @map("extracted_certifications") // Certifications extracted
+  extractedEducation      Json?    @map("extracted_education") // Education extracted
+  extractedExperience     Int?     @map("extracted_experience") // Years of experience extracted
+  extractedLanguages      Json?    @map("extracted_languages") // Languages extracted
+  extractedSkills         Json?    @map("extracted_skills") // Skills extracted
+
+  // === Personal Information ===
+  personalInfo            Json?    @map("personal_info") // Name, contact info, location, etc.
+  firstName               String?  @map("first_name") // First name
+  lastName                String?  @map("last_name") // Last name
+  fullName                String?  @map("full_name") // Full name
+  dateOfBirth             DateTime? @map("date_of_birth") // Date of birth
+  email                   String?  // Email address
+  phone                   String?  // Phone number
+  nationality             String?  // Nationality
+  linkedinUrl             String?  @map("linkedin_url") // LinkedIn profile URL
+  websiteUrl              String?  @map("website_url") // Personal website URL
+
+  // === Professional Summary & Objectives ===
+  professionalSummary     String?  @map("professional_summary") // Professional summary/summary
+
+  // === Skills, Experience, and Education ===
+  technicalSkills         Json?    @map("technical_skills") // Array of technical skills
+  softSkills              Json?    @map("soft_skills") // Array of soft skills
+  languages               Json?    // Languages spoken
+  certifications          Json?    // Certifications and licenses
+  education               Json?    // Educational background details
+  workExperience          Json?    @map("work_experience") // Work experience details
+  projects                Json?    // Notable projects and achievements
+
+  // === Job/Offer Related Fields (for matching) ===
+  company                 String?  // Company name (if present)
+  department              String?  // Department
+  employmentType          String?  @map("employment_type") // Employment type
+  experienceLevel         String?  @map("experience_level") // Experience level
+  industry                String?  // Industry sector
+  jobType                 String?  @map("job_type") // Job type (full-time, etc.)
+  location                String?  // Location/address
+  preferredQualifications Json?    @map("preferred_qualifications") // Preferred qualifications
+  remoteType              String?  @map("remote_type") // Remote/hybrid/onsite
+  requiredQualifications  Json?    @map("required_qualifications") // Required qualifications
+  salaryRange             String?  @map("salary_range") // Salary range
+
+  // === Analysis Quality & Confidence ===
+  analysisConfidence      Decimal? @map("analysis_confidence") @db.Decimal(3, 2) // Overall confidence in analysis
+  extractionQuality       Json?    @map("extraction_quality") // Quality metrics for each extraction
+  completenessScore       Decimal? @map("completeness_score") @db.Decimal(3, 2) // How complete the CV information is
+  consistencyScore        Decimal? @map("consistency_score") @db.Decimal(3, 2) // Internal consistency of information
+
+  // === Categorization & Tagging ===
+  categories              Json?    // Categories assigned to this CV
+  tags                    Json?    // Tags for this CV
+
+  // === Miscellaneous ===
+  processingTime          Int?     @map("processing_time") // Processing time in ms
+
+  // === Relations ===
+  profile                 Profile  @relation(fields: [userId], references: [userId], onDelete: Cascade) // Link to Profile
+  cvJobMatches            CvJobMatch[] // Job matches for this CV
+  generatedContent        GeneratedContent[] // Generated content for this CV
+
+  // === Indexes & Table Mapping ===
   @@index([userId])
   @@index([status])
   @@index([processingStatus])
@@ -266,86 +302,69 @@ model Newsletter {
 }
 
 model JobData {
-  id                      String       @id @default(cuid())
-  userId                  String       @map("user_id")
-  content                 String
-  title                   String?
-  company                 String?
-  status                  String       @default("uploaded")
-  processingStatus        String       @default("uploaded") @map("processing_status")
-  processingStartedAt     DateTime?    @map("processing_started_at")
-  processingCompletedAt   DateTime?    @map("processing_completed_at")
-  processingError         String?      @map("processing_error")
-  processingTime          Int?         @map("processing_time")
-  modelUsed               String?      @map("model_used")
-  parameters              Json?
-  errorMessage            String?      @map("error_message")
-  analysisId              String?      @map("analysis_id")
-  analysisVersion         String?      @map("analysis_version")
-  extractedSkills         Json?        @map("extracted_skills")
-  requiredQualifications  Json?        @map("required_qualifications")
-  preferredQualifications Json?        @map("preferred_qualifications")
-  jobType                 String?      @map("job_type")
-  location                String?
-  remoteType              String?      @map("remote_type")
-  salaryRange             String?      @map("salary_range")
-  experienceLevel         String?      @map("experience_level")
-  industry                String?
-  department              String?
-  employmentType          String?      @map("employment_type")
-  viewCount               Int          @default(0) @map("view_count")
-  lastAnalyzedAt          DateTime?    @map("last_analyzed_at")
-  analysisCount           Int          @default(0) @map("analysis_count")
-  isPublic                Boolean      @default(false) @map("is_public")
-  retentionDate           DateTime?    @map("retention_date")
-  gdprConsent             Boolean      @default(false) @map("gdpr_consent")
-  isActive                Boolean      @default(true) @map("is_active")
-  dataClassification      String?      @map("data_classification")
-  isArchived              Boolean      @default(false) @map("is_archived")
-  archiveDate             DateTime?    @map("archive_date")
-  createdAt               DateTime     @default(now()) @map("created_at")
-  updatedAt               DateTime     @updatedAt @map("updated_at")
-  extractedCertifications Json?        @map("extracted_certifications")
-  extractedEducation      Json?        @map("extracted_education")
-  extractedExperience     Int?         @map("extracted_experience")
-  extractedLanguages      Json?        @map("extracted_languages")
-  metadata                Json?
-  originalFilename        String?      @map("original_filename")
-  applicationDeadline     DateTime?    @map("application_deadline")
-  applicationUrl          String?      @map("application_url")
-  benefits                Json?
-  categories              Json?
-  companyDescription      String?      @map("company_description")
-  companyLogoUrl          String?      @map("company_logo_url")
-  companyName             String?      @map("company_name")
-  companySize             String?      @map("company_size")
-  description             String?
-  educationMatchScore     Decimal?     @map("education_match_score") @db.Decimal(5, 2)
-  educationRequirements   Json?        @map("education_requirements")
-  experienceMatchScore    Decimal?     @map("experience_match_score") @db.Decimal(5, 2)
-  experienceRequirements  Json?        @map("experience_requirements")
-  hardRequirements        Json?        @map("hard_requirements")
-  isLatest                Boolean      @default(true) @map("is_latest")
-  jobId                   String?      @map("job_id")
-  jobPostingUrl           String?      @map("job_posting_url")
-  keywords                Json?
-  locationMatchScore      Decimal?     @map("location_match_score") @db.Decimal(5, 2)
-  matchScore              Decimal?     @map("match_score") @db.Decimal(5, 2)
-  parentId                String?      @map("parent_id")
-  postedDate              DateTime?    @map("posted_date")
-  priorityLevel           Int          @default(0) @map("priority_level")
-  recruiterInfo           Json?        @map("recruiter_info")
-  requirements            Json?
-  skillsMatchScore        Decimal?     @map("skills_match_score") @db.Decimal(5, 2)
-  softRequirements        Json?        @map("soft_requirements")
-  source                  String?
-  startDate               DateTime?    @map("start_date")
-  tags                    Json?
-  technicalRequirements   Json?        @map("technical_requirements")
-  version                 Int          @default(1)
-  cvJobMatches            CvJobMatch[]
-  profile                 Profile      @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  // === Identification & Ownership ===
+  id                      String       @id @default(cuid()) // Unique job data ID
+  userId                  String       @map("user_id") // Owner user ID
 
+  // === Job Content & Description ===
+  content                 String       // Raw job posting content
+  title                   String?      // Job title
+  companyName             String?      @map("company_name") // Company name (normalized)
+  companyDescription      String?      @map("company_description") // Company description
+  companyLogoUrl          String?      @map("company_logo_url") // Company logo URL
+  companySize             String?      @map("company_size") // Company size (startup/small/medium/large/enterprise)
+  industry                String?      // Industry sector
+  department              String?      // Department
+  jobType                 String?      @map("job_type") // Type of job (full-time, contract, etc.)
+  remoteType              String?      @map("remote_type") // Remote/hybrid/onsite
+  location                String?      // Job location
+  salaryRange             String?      @map("salary_range") // Salary range
+  experienceLevel         String?      @map("experience_level") // Required experience level
+  applicationDeadline     DateTime?    @map("application_deadline") // Application deadline
+  benefits                Json?        // Job benefits
+  recruiterInfo           Json?        @map("recruiter_info") // Recruiter contact/info
+
+  // === Requirements & Qualifications ===
+
+  educationRequirements   Json?        @map("education_requirements") // Education requirements
+  experienceRequirements  Json?        @map("experience_requirements") // Experience requirements
+  hardRequirements        Json?        @map("hard_requirements") // Hard requirements (skills, certs, etc.)
+  softRequirements        Json?        @map("soft_requirements") // Soft requirements (communication, etc.)
+  softSkillRequirements   Json?        @map("soft_skill_requirements") // Soft skill requirements (e.g., teamwork, adaptability)
+  technicalRequirements   Json?        @map("technical_requirements") // Technical skills required
+
+
+
+  // === Analysis & Scoring ===
+  analysisId              String?      @map("analysis_id") // Analysis run ID
+  analysisVersion         String?      @map("analysis_version") // Analysis version
+  analysisCount           Int          @default(0) @map("analysis_count") // Number of analyses performed
+  lastAnalyzedAt          DateTime?    @map("last_analyzed_at") // Last analysis timestamp
+ 
+  
+  // === Status & Lifecycle ===
+
+  processingStatus        String       @default("uploaded") @map("processing_status") // Processing status
+  processingStartedAt     DateTime?    @map("processing_started_at") // Processing start time
+  processingCompletedAt   DateTime?    @map("processing_completed_at") // Processing completion time
+  processingError         String?      @map("processing_error") // Processing error message
+  processingTime          Int?         @map("processing_time") // Processing time in ms
+  isActive                Boolean      @default(true) @map("is_active") // Is job data active
+  isArchived              Boolean      @default(false) @map("is_archived") // Is job data archived
+  archiveDate             DateTime?    @map("archive_date") // Date archived
+  isPublic                Boolean      @default(false) @map("is_public") // Is job data public
+  retentionDate           DateTime?    @map("retention_date") // Data retention date
+  gdprConsent             Boolean      @default(false) @map("gdpr_consent") // GDPR consent
+  isLatest                Boolean      @default(true) @map("is_latest") // Is this the latest version
+  version                 Int          @default(1) // Version number
+
+
+
+  // === Relations ===
+  cvJobMatches            CvJobMatch[] // Related CV-job matches
+  profile                 Profile      @relation(fields: [userId], references: [userId], onDelete: Cascade) // User profile relation
+
+  // === Indexes & Mapping ===
   @@index([userId])
   @@index([status])
   @@index([processingStatus])
