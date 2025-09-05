@@ -7,6 +7,75 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// === Enums ===
+enum ProcessingStatus {
+  UPLOADED
+  PROCESSING
+  COMPLETED
+  FAILED
+  ARCHIVED
+}
+
+enum MatchStatus {
+  PENDING
+  ANALYZING
+  COMPLETED
+  FAILED
+  ARCHIVED
+}
+
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  TEMPORARY
+  INTERNSHIP
+  FREELANCE
+  VOLUNTEER
+}
+
+enum RemoteType {
+  ONSITE
+  REMOTE
+  HYBRID
+  FLEXIBLE
+}
+
+enum ExperienceLevel {
+  ENTRY_LEVEL
+  JUNIOR
+  MID_LEVEL
+  SENIOR
+  LEAD
+  EXECUTIVE
+}
+
+enum CompanySize {
+  STARTUP
+  SMALL
+  MEDIUM
+  LARGE
+  ENTERPRISE
+}
+
+enum NotificationType {
+  SYSTEM
+  JOB_MATCH
+  ANALYSIS_COMPLETE
+  REMINDER
+  PROMOTIONAL
+  SECURITY
+}
+
+enum GeneratedContentType {
+  COVER_LETTER
+  CV_OPTIMIZATION
+  INTERVIEW_PREP
+  SKILL_ANALYSIS
+  JOB_RECOMMENDATIONS
+  CAREER_ADVICE
+}
+
 model Profile {
   id               String             @id @default(cuid())
   userId           String             @unique @map("user_id")
@@ -65,20 +134,21 @@ model CvData {
   userId                  String   @map("user_id") // Owner user ID
 
   // === File Information ===
-  fileName                String   @map("file_name") // Uploaded file name
-  fileUrl                 String   @map("file_url") // File storage URL
+  fileName                String   @map("file_name") @db.VarChar(255) // Uploaded file name
+  fileUrl                 String   @map("file_url") @db.VarChar(500) // File storage URL
   fileSize                Int      @map("file_size") // File size in bytes
-  mimeType                String   @map("mime_type") // File MIME type
+  mimeType                String   @map("mime_type") @db.VarChar(100) // File MIME type
  
 
   // === Status & Processing ===
-  processingStatus        String   @default("uploaded") @map("processing_status") // Processing pipeline status
+  processingStatus        ProcessingStatus @default(UPLOADED) @map("processing_status") // Processing pipeline status
   isActive                Boolean  @default(true) @map("is_active") // Is this record active
   isArchived              Boolean  @default(false) @map("is_archived") // Is this record archived
   isPublic                Boolean  @default(false) @map("is_public") // Is this record public
   isLatest                Boolean  @default(true) @map("is_latest") // Is this the latest version
   archiveDate             DateTime? @map("archive_date") // Date archived
   retentionDate           DateTime? @map("retention_date") // Data retention date
+  deletedAt               DateTime? @map("deleted_at") // Soft delete timestamp
 
   // === Processing Timestamps & Error Tracking ===
   createdAt               DateTime @default(now()) @map("created_at") // Record creation timestamp
@@ -90,14 +160,10 @@ model CvData {
 
   // === Analysis & Versioning ===
   analysisCount           Int      @default(0) @map("analysis_count") // Number of analyses performed
-  analysisId              String?  @map("analysis_id") // Analysis job ID
-  analysisVersion         String?  @map("analysis_version") // Analysis version
-  version                 Int      @default(1) // Version number
-
+  lastAnalyzedAt          DateTime?    @map("last_analyzed_at") // Last analysis timestamp 
   // === Privacy & Compliance ===
   gdprConsent             Boolean  @default(false) @map("gdpr_consent") // GDPR consent flag
-  dataClassification      String?  @map("data_classification") // Data classification label
-
+ 
   // === View & Priority ===
   viewCount               Int      @default(0) @map("view_count") // Number of times viewed
 
@@ -134,13 +200,6 @@ model CvData {
   projects                Json?    // Notable projects and achievements
   salaryRange             String?  @map("salary_range") // Salary range
 
-  // === Normalized Relations ===
-  cvSkills                CvSkill[]
-  cvLanguages             CvLanguage[]
-  cvEducation             CvEducation[]
-  cvWorkExperience        CvWorkExperience[]
-  cvProjects              CvProject[]
-
 
   // === Relations ===
   profile                 Profile  @relation(fields: [userId], references: [userId], onDelete: Cascade) // Link to Profile
@@ -162,19 +221,19 @@ model CvData {
 }
 
 model GeneratedContent {
-  id        String   @id @default(cuid())
-  userId    String   @map("user_id")
-  cvDataId  String?  @map("cv_data_id")
-  type      String
+  id        String                @id @default(cuid())
+  userId    String                @map("user_id")
+  cvDataId  String?               @map("cv_data_id")
+  type      GeneratedContentType
   title     String?
   content   String
   metadata  Json?
-  version   Int      @default(1)
-  isActive  Boolean  @default(true) @map("is_active")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  cvData    CvData?  @relation(fields: [cvDataId], references: [id])
-  profile   Profile  @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  version   Int                   @default(1)
+  isActive  Boolean               @default(true) @map("is_active")
+  createdAt DateTime              @default(now()) @map("created_at")
+  updatedAt DateTime              @updatedAt @map("updated_at")
+  cvData    CvData?               @relation(fields: [cvDataId], references: [id])
+  profile   Profile               @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@map("generated_content")
 }
@@ -244,15 +303,15 @@ model UserAuthMethod {
 }
 
 model UserNotification {
-  id        String    @id @default(cuid())
-  userId    String    @map("user_id")
-  type      String
+  id        String           @id @default(cuid())
+  userId    String           @map("user_id")
+  type      NotificationType
   title     String
   message   String
-  isRead    Boolean   @default(false) @map("is_read")
+  isRead    Boolean          @default(false) @map("is_read")
   metadata  Json?
-  createdAt DateTime  @default(now()) @map("created_at")
-  readAt    DateTime? @map("read_at")
+  createdAt DateTime         @default(now()) @map("created_at")
+  readAt    DateTime?        @map("read_at")
 
   @@map("user_notifications")
 }
@@ -283,19 +342,19 @@ model JobData {
   userId                  String       @map("user_id") // Owner user ID
 
   // === Job Content & Description ===
-  content                 String       // Raw job posting content
+  content                 String       @db.Text // Raw job posting content
   title                   String?      @db.VarChar(255) // Job title
   companyName             String?      @map("company_name") @db.VarChar(255) // Company name (normalized)
-  companyDescription      String?      @map("company_description") // Company description
+  companyDescription      String?      @map("company_description") @db.Text // Company description
   companyLogoUrl          String?      @map("company_logo_url") @db.VarChar(500) // Company logo URL
-  companySize             String?      @map("company_size") @db.VarChar(50) // Company size (startup/small/medium/large/enterprise)
+  companySize             CompanySize? @map("company_size") // Company size
   industry                String?      @db.VarChar(100) // Industry sector
   department              String?      @db.VarChar(100) // Department
-  jobType                 String?      @map("job_type") @db.VarChar(50) // Type of job (full-time, contract, etc.)
-  remoteType              String?      @map("remote_type") @db.VarChar(50) // Remote/hybrid/onsite
+  jobType                 JobType?     @map("job_type") // Type of job
+  remoteType              RemoteType?  @map("remote_type") // Remote/hybrid/onsite
   location                String?      @db.VarChar(255) // Job location
   salaryRange             String?      @map("salary_range") @db.VarChar(100) // Salary range
-  experienceLevel         String?      @map("experience_level") @db.VarChar(50) // Required experience level
+  experienceLevel         ExperienceLevel? @map("experience_level") // Required experience level
   applicationDeadline     DateTime?    @map("application_deadline") // Application deadline
   benefits                Json?        // Job benefits
   recruiterInfo           Json?        @map("recruiter_info") // Recruiter contact/info
@@ -311,16 +370,14 @@ model JobData {
 
 
 
-  // === Analysis & Scoring ===
-  analysisId              String?      @map("analysis_id") // Analysis run ID
-  analysisVersion         String?      @map("analysis_version") // Analysis version
+  // === Analysis & Scoring === 
   analysisCount           Int          @default(0) @map("analysis_count") // Number of analyses performed
   lastAnalyzedAt          DateTime?    @map("last_analyzed_at") // Last analysis timestamp
  
   
   // === Status & Lifecycle ===
 
-  processingStatus        String       @default("uploaded") @map("processing_status") // Processing status
+  processingStatus        ProcessingStatus @default(UPLOADED) @map("processing_status") // Processing status
   processingStartedAt     DateTime?    @map("processing_started_at") // Processing start time
   processingCompletedAt   DateTime?    @map("processing_completed_at") // Processing completion time
   processingError         String?      @map("processing_error") // Processing error message
@@ -333,6 +390,7 @@ model JobData {
   gdprConsent             Boolean      @default(false) @map("gdpr_consent") // GDPR consent
   isLatest                Boolean      @default(true) @map("is_latest") // Is this the latest version
   version                 Int          @default(1) // Version number
+  deletedAt               DateTime?    @map("deleted_at") // Soft delete timestamp
 
 
 
@@ -357,9 +415,7 @@ model JobData {
   @@map("job_data")
 }
 
-/// CV-Job Match Model
-/// Stores the results of matching a CV to a job posting, including scores, status, and metadata.
-/// Enhanced fields added per analysis.md recommendations.
+
 model CvJobMatch {
   // === Identification & Relations ===
   id                     String    @id @default(cuid()) // Unique match ID
@@ -398,7 +454,7 @@ model CvJobMatch {
   improvementSuggestions Json?     @map("improvement_suggestions") // Suggestions for improvement
 
   // === Status & Application ===
-  status                 String    @default("pending") // Match status
+  status                 MatchStatus @default(PENDING) // Match status
   isApplied              Boolean   @default(false) @map("is_applied") // User applied
   applicationDate        DateTime? @map("application_date") // Date applied
 
@@ -418,71 +474,10 @@ model CvJobMatch {
   @@index([jobDataId])
   @@index([overallMatchScore])
   @@index([status])
-  @@index([isBookmarked])
   @@index([isApplied])
   @@index([analysisDate])
   @@map("cv_job_matches")
 }
-
-model JobCategory {
-  id          String        @id @default(cuid())
-  name        String        @unique
-  description String?
-  parentId    String?       @map("parent_id")
-  isActive    Boolean       @default(true) @map("is_active")
-  sortOrder   Int           @default(0) @map("sort_order")
-  createdAt   DateTime      @default(now()) @map("created_at")
-  updatedAt   DateTime      @updatedAt @map("updated_at")
-  parent      JobCategory?  @relation("JobCategoryHierarchy", fields: [parentId], references: [id])
-  children    JobCategory[] @relation("JobCategoryHierarchy")
-
-  @@index([parentId])
-  @@index([isActive])
-  @@index([sortOrder])
-  @@map("job_categories")
-}
-
-model Skill {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  category    String?
-  description String?
-  synonyms    Json?
-  isActive    Boolean  @default(true) @map("is_active")
-  popularity  Int      @default(0)
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-  
-  profileSkills ProfileSkill[]
-  cvSkills      CvSkill[]
-
-  @@index([category])
-  @@index([isActive])
-  @@index([popularity])
-  @@map("skills")
-}
-
-model AnalysisTemplate {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  type        String
-  template    Json
-  isActive    Boolean  @default(true) @map("is_active")
-  isDefault   Boolean  @default(false) @map("is_default")
-  version     String   @default("1.0.0")
-  createdBy   String?  @map("created_by")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-
-  @@index([type])
-  @@index([isActive])
-  @@index([isDefault])
-  @@index([createdBy])
-  @@map("analysis_templates")
-}
-
-
 
 
 
