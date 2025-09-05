@@ -11,9 +11,9 @@ model Profile {
   id               String             @id @default(cuid())
   userId           String             @unique @map("user_id")
   email            String             @unique
-  fullName         String?            @map("full_name")
-  username         String?            @unique
-  avatarUrl        String?            @map("avatar_url")
+  fullName         String?            @map("full_name") @db.VarChar(255)
+  username         String?            @unique @db.VarChar(50)
+  avatarUrl        String?            @map("avatar_url") @db.VarChar(500)
   preferences      Json               @default("{}")
   subscription     Json               @default("{\"plan\": \"free\"}")
   createdAt        DateTime           @default(now()) @map("created_at")
@@ -24,6 +24,7 @@ model Profile {
   jobData          JobData[]
   userActivities   UserActivity[]
   userSessions     UserSession[]
+
 
   @@map("profiles")
 }
@@ -109,29 +110,36 @@ model CvData {
 
   // === Personal Information ===
   personalInfo            Json?    @map("personal_info") // Name, contact info, location, etc.
-  firstName               String?  @map("first_name") // First name
-  lastName                String?  @map("last_name") // Last name
-  fullName                String?  @map("full_name") // Full name
+  firstName               String?  @map("first_name") @db.VarChar(100) // First name
+  lastName                String?  @map("last_name") @db.VarChar(100) // Last name
+  fullName                String?  @map("full_name") @db.VarChar(255) // Full name
   dateOfBirth             DateTime? @map("date_of_birth") // Date of birth
-  email                   String?  // Email address
-  phone                   String?  // Phone number
-  nationality             String?  // Nationality
-  linkedinUrl             String?  @map("linkedin_url") // LinkedIn profile URL
-  websiteUrl              String?  @map("website_url") // Personal website URL
-  githubUrl               String?  @map("github_url") // GitHub profile URL
+  email                   String?  @db.VarChar(255) // Email address
+  phone                   String?  @db.VarChar(20) // Phone number
+  nationality             String?  @db.VarChar(100) // Nationality
+  linkedinUrl             String?  @map("linkedin_url") @db.VarChar(500) // LinkedIn profile URL
+  websiteUrl              String?  @map("website_url") @db.VarChar(500) // Personal website URL
+  githubUrl               String?  @map("github_url") @db.VarChar(500) // GitHub profile URL
 
   // === Professional Summary & Objectives ===
   professionalSummary     String?  @map("professional_summary") // Professional summary/summary
 
   // === Skills, Experience, and Education ===
-  technicalSkills         Json?    @map("technical_skills") // Array of technical skills
-  softSkills              Json?    @map("soft_skills") // Array of soft skills
-  languages               Json?    // Languages spoken
+  technicalSkills         Json?    @map("technical_skills") // Array of technical skills (legacy)
+  softSkills              Json?    @map("soft_skills") // Array of soft skills (legacy)
+  languages               Json?    // Languages spoken (legacy)
   certifications          Json?    // Certifications and licenses
   education               Json?    // Educational background details
   workExperience          Json?    @map("work_experience") // Work experience details
   projects                Json?    // Notable projects and achievements
-         String?  @map("salary_range") // Salary range
+  salaryRange             String?  @map("salary_range") // Salary range
+
+  // === Normalized Relations ===
+  cvSkills                CvSkill[]
+  cvLanguages             CvLanguage[]
+  cvEducation             CvEducation[]
+  cvWorkExperience        CvWorkExperience[]
+  cvProjects              CvProject[]
 
 
   // === Relations ===
@@ -141,12 +149,15 @@ model CvData {
 
   // === Indexes & Table Mapping ===
   @@index([userId])
-  @@index([status])
   @@index([processingStatus])
   @@index([isActive])
   @@index([isArchived])
   @@index([createdAt])
   @@index([version, isLatest])
+  @@index([email])
+  @@index([fullName])
+  @@index([industry])
+  @@index([experienceLevel])
   @@map("cv_data")
 }
 
@@ -273,18 +284,18 @@ model JobData {
 
   // === Job Content & Description ===
   content                 String       // Raw job posting content
-  title                   String?      // Job title
-  companyName             String?      @map("company_name") // Company name (normalized)
+  title                   String?      @db.VarChar(255) // Job title
+  companyName             String?      @map("company_name") @db.VarChar(255) // Company name (normalized)
   companyDescription      String?      @map("company_description") // Company description
-  companyLogoUrl          String?      @map("company_logo_url") // Company logo URL
-  companySize             String?      @map("company_size") // Company size (startup/small/medium/large/enterprise)
-  industry                String?      // Industry sector
-  department              String?      // Department
-  jobType                 String?      @map("job_type") // Type of job (full-time, contract, etc.)
-  remoteType              String?      @map("remote_type") // Remote/hybrid/onsite
-  location                String?      // Job location
-  salaryRange             String?      @map("salary_range") // Salary range
-  experienceLevel         String?      @map("experience_level") // Required experience level
+  companyLogoUrl          String?      @map("company_logo_url") @db.VarChar(500) // Company logo URL
+  companySize             String?      @map("company_size") @db.VarChar(50) // Company size (startup/small/medium/large/enterprise)
+  industry                String?      @db.VarChar(100) // Industry sector
+  department              String?      @db.VarChar(100) // Department
+  jobType                 String?      @map("job_type") @db.VarChar(50) // Type of job (full-time, contract, etc.)
+  remoteType              String?      @map("remote_type") @db.VarChar(50) // Remote/hybrid/onsite
+  location                String?      @db.VarChar(255) // Job location
+  salaryRange             String?      @map("salary_range") @db.VarChar(100) // Salary range
+  experienceLevel         String?      @map("experience_level") @db.VarChar(50) // Required experience level
   applicationDeadline     DateTime?    @map("application_deadline") // Application deadline
   benefits                Json?        // Job benefits
   recruiterInfo           Json?        @map("recruiter_info") // Recruiter contact/info
@@ -331,7 +342,6 @@ model JobData {
 
   // === Indexes & Mapping ===
   @@index([userId])
-  @@index([status])
   @@index([processingStatus])
   @@index([isActive])
   @@index([isArchived])
@@ -341,6 +351,9 @@ model JobData {
   @@index([location])
   @@index([experienceLevel])
   @@index([version, isLatest])
+  @@index([companyName])
+  @@index([title])
+  @@index([applicationDeadline])
   @@map("job_data")
 }
 
@@ -439,6 +452,9 @@ model Skill {
   popularity  Int      @default(0)
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
+  
+  profileSkills ProfileSkill[]
+  cvSkills      CvSkill[]
 
   @@index([category])
   @@index([isActive])
@@ -465,3 +481,10 @@ model AnalysisTemplate {
   @@index([createdBy])
   @@map("analysis_templates")
 }
+
+
+
+
+
+
+
