@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { useAuth } from "@/components/auth/auth-provider"
 import { cn } from "@/lib/utils"
+import { isPricingEnabled } from "@/lib/feature-flags"
 
 interface UserProfileCardProps {
     className?: string
@@ -165,13 +166,16 @@ export const UserProfileCard = ({ className }: UserProfileCardProps) => {
 
                             <Separator className="my-2" />
 
-                            {/* Account Info */}
-                            <div className="px-3 py-2 bg-gray-50 rounded-lg">
-                                <p className="text-xs text-gray-500 mb-1">Account Type</p>
-                                <p className="text-sm font-medium text-gray-900">Free Plan</p>
-                            </div>
-
-                            <Separator className="my-2" />
+                            {/* Account Info - Only show if pricing is enabled */}
+                            {isPricingEnabled() && (
+                                <>
+                                    <div className="px-3 py-2 bg-gray-50 rounded-lg">
+                                        <p className="text-xs text-gray-500 mb-1">Account Type</p>
+                                        <p className="text-sm font-medium text-gray-900">Free Plan</p>
+                                    </div>
+                                    <Separator className="my-2" />
+                                </>
+                            )}
 
                             {/* Logout */}
                             <Button

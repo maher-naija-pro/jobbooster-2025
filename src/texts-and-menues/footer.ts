@@ -1,3 +1,5 @@
+import { isPricingEnabled } from "@/lib/feature-flags"
+
 const templates = {
   Company: {
     items: [
@@ -5,14 +7,14 @@ const templates = {
     ]
   },
 
+  ...(isPricingEnabled() && {
+    Resources: {
+      items: [
+        { name: "Pricing", href: "/resources/pricing" }
+      ]
+    }
+  }),
 
-
-  Resources: {
-    items: [
-
-      { name: "Pricing", href: "/resources/pricing" }
-    ]
-  },
   Legal: {
     items: [
       { name: "Privacy Policy", href: "/legal/privacy-policy" },

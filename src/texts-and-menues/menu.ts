@@ -1,4 +1,6 @@
 
+import { isPricingEnabled } from "@/lib/feature-flags"
+
 const routeList = {
   Home: {
     menu: "false",
@@ -12,11 +14,13 @@ const routeList = {
     items: []
   },
 
-  Pricing: {
-    menu: "false",
-    href: "/resources/pricing",
-    items: []
-  },
+  ...(isPricingEnabled() && {
+    Pricing: {
+      menu: "false",
+      href: "/resources/pricing",
+      items: []
+    }
+  }),
 
   Legal: {
     menu: "true",

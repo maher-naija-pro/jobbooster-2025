@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
+import { isPricingEnabled } from '@/lib/feature-flags'
 import {
     FileText,
     Mail,
@@ -199,12 +200,14 @@ export default async function Dashboard() {
                                         {user.email_confirmed_at ? 'Verified' : 'Pending'}
                                     </Badge>
                                 </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm">Plan</span>
-                                    <Badge variant={subscription.plan === 'free' ? 'secondary' : 'default'}>
-                                        {subscription.plan}
-                                    </Badge>
-                                </div>
+                                {isPricingEnabled() && (
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-sm">Plan</span>
+                                        <Badge variant={subscription.plan === 'free' ? 'secondary' : 'default'}>
+                                            {subscription.plan}
+                                        </Badge>
+                                    </div>
+                                )}
                                 <div className="flex items-center justify-between">
                                     <span className="text-sm">Language</span>
                                     <span className="text-sm text-muted-foreground">
