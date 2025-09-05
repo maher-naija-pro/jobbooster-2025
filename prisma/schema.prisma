@@ -436,12 +436,6 @@ model CvJobMatch {
   locationMatchScore     Decimal   @map("location_match_score") @db.Decimal(5, 2) // Location match score
   salaryMatchScore       Decimal?  @map("salary_match_score") @db.Decimal(5, 2) // Salary match score
 
-  // === Enhanced Job Match Analysis Fields ===
- 
-  skillMatches           Json?     @map("skill_matches") // Skill matching details (see analysis.md)
-  jobStrengths           Json?     @map("job_strengths") // Strengths relevant to the job
-  jobRecommendations     Json?     @map("job_recommendations") // Job-specific recommendations
-
   // === Analysis Quality and Confidence ===
   analysisConfidence     Decimal?  @map("analysis_confidence") @db.Decimal(3, 2) // Overall confidence in analysis
   completenessScore      Decimal?  @map("completeness_score") @db.Decimal(3, 2) // How complete the CV information is
@@ -453,16 +447,21 @@ model CvJobMatch {
   extraSkills            Json?     @map("extra_skills") // Extra skills
   matchReasons           Json?     @map("match_reasons") // Reasons for match
   improvementSuggestions Json?     @map("improvement_suggestions") // Suggestions for improvement
+astDownloadedAt       DateTime? @map("last_downloaded_at") // Last time analysis downloaded
 
-  // === Status & Application ===
-  status                 MatchStatus @default(PENDING) // Match status
-  isApplied              Boolean   @default(false) @map("is_applied") // User applied
-  applicationDate        DateTime? @map("application_date") // Date applied
 
   // === Analysis Metadata ===
   analysisVersion        String?   @map("analysis_version") // Analysis version
   modelUsed              String?   @map("model_used") // Model used for analysis
   analysisDate           DateTime  @default(now()) @map("analysis_date") // Date analyzed
+  analysisDuration       Int?      @map("analysis_duration") // Analysis duration in milliseconds
+
+  // === Performance & Optimization ===
+  isActive               Boolean   @default(true) @map("is_active") // Is this match active
+  isArchived             Boolean   @default(false) @map("is_archived") // Is this match archived
+  archiveDate            DateTime? @map("archive_date") // Date archived
+  retentionDate          DateTime? @map("retention_date") // Data retention date
+  version                Int       @default(1) // Version number for optimistic locking
 
   // === Timestamps ===
   createdAt              DateTime  @default(now()) @map("created_at") // Created at
