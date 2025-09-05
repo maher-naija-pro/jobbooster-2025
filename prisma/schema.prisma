@@ -344,36 +344,49 @@ model JobData {
   @@map("job_data")
 }
 
+/// CV-Job Match Model
+/// Stores the results of matching a CV to a job posting, including scores, status, and metadata.
 model CvJobMatch {
-  id                     String    @id @default(cuid())
-  cvDataId               String    @map("cv_data_id")
-  jobDataId              String    @map("job_data_id")
-  userId                 String    @map("user_id")
-  overallMatchScore      Decimal   @map("overall_match_score") @db.Decimal(5, 2)
-  skillsMatchScore       Decimal   @map("skills_match_score") @db.Decimal(5, 2)
-  experienceMatchScore   Decimal   @map("experience_match_score") @db.Decimal(5, 2)
-  educationMatchScore    Decimal   @map("education_match_score") @db.Decimal(5, 2)
-  locationMatchScore     Decimal   @map("location_match_score") @db.Decimal(5, 2)
-  salaryMatchScore       Decimal?  @map("salary_match_score") @db.Decimal(5, 2)
-  matchedSkills          Json?     @map("matched_skills")
-  missingSkills          Json?     @map("missing_skills")
-  extraSkills            Json?     @map("extra_skills")
-  matchReasons           Json?     @map("match_reasons")
-  improvementSuggestions Json?     @map("improvement_suggestions")
-  status                 String    @default("pending")
-  isBookmarked           Boolean   @default(false) @map("is_bookmarked")
-  isApplied              Boolean   @default(false) @map("is_applied")
-  applicationDate        DateTime? @map("application_date")
-  notes                  String?
-  analysisVersion        String?   @map("analysis_version")
-  modelUsed              String?   @map("model_used")
-  analysisDate           DateTime  @default(now()) @map("analysis_date")
-  createdAt              DateTime  @default(now()) @map("created_at")
-  updatedAt              DateTime  @updatedAt @map("updated_at")
-  cvData                 CvData    @relation(fields: [cvDataId], references: [id], onDelete: Cascade)
-  jobData                JobData   @relation(fields: [jobDataId], references: [id], onDelete: Cascade)
-  profile                Profile   @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  // === Identification & Relations ===
+  id                     String    @id @default(cuid()) // Unique match ID
+  cvDataId               String    @map("cv_data_id") // Linked CV
+  jobDataId              String    @map("job_data_id") // Linked Job
+  userId                 String    @map("user_id") // Owner/User
 
+  cvData                 CvData    @relation(fields: [cvDataId], references: [id], onDelete: Cascade) // CV relation
+  jobData                JobData   @relation(fields: [jobDataId], references: [id], onDelete: Cascade) // Job relation
+  profile                Profile   @relation(fields: [userId], references: [userId], onDelete: Cascade) // User profile
+
+  // === Match Scores ===
+  overallMatchScore      Decimal   @map("overall_match_score") @db.Decimal(5, 2) // Overall match score
+  skillsMatchScore       Decimal   @map("skills_match_score") @db.Decimal(5, 2) // Skills match score
+  experienceMatchScore   Decimal   @map("experience_match_score") @db.Decimal(5, 2) // Experience match score
+  educationMatchScore    Decimal   @map("education_match_score") @db.Decimal(5, 2) // Education match score
+  locationMatchScore     Decimal   @map("location_match_score") @db.Decimal(5, 2) // Location match score
+  salaryMatchScore       Decimal?  @map("salary_match_score") @db.Decimal(5, 2) // Salary match score
+
+  // === Skills & Analysis Details ===
+  matchedSkills          Json?     @map("matched_skills") // Skills that matched
+  missingSkills          Json?     @map("missing_skills") // Skills missing
+  extraSkills            Json?     @map("extra_skills") // Extra skills
+  matchReasons           Json?     @map("match_reasons") // Reasons for match
+  improvementSuggestions Json?     @map("improvement_suggestions") // Suggestions for improvement
+
+  // === Status & Application ===
+  status                 String    @default("pending") // Match status
+  isApplied              Boolean   @default(false) @map("is_applied") // User applied
+  applicationDate        DateTime? @map("application_date") // Date applied
+
+  // === Analysis Metadata ===
+  analysisVersion        String?   @map("analysis_version") // Analysis version
+  modelUsed              String?   @map("model_used") // Model used for analysis
+  analysisDate           DateTime  @default(now()) @map("analysis_date") // Date analyzed
+
+  // === Timestamps ===
+  createdAt              DateTime  @default(now()) @map("created_at") // Created at
+  updatedAt              DateTime  @updatedAt @map("updated_at") // Updated at
+
+  // === Indexes & Constraints ===
   @@unique([cvDataId, jobDataId])
   @@index([userId])
   @@index([cvDataId])
