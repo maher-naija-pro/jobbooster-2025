@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { updateSessionActivity } from '@/lib/auth/session-manager'
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -34,6 +35,21 @@ export async function updateSession(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser()
+
+  // Update session activity for authenticated users
+  if (user) {
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session?.access_token) {
+        // Track session activity asynchronously to avoid blocking the request
+        updateSessionActivity(user.id, session.access_token, request).catch(error => {
+          console.error('Error updating session activity:', error)
+        })
+      }
+    } catch (error) {
+      console.error('Error getting session for activity tracking:', error)
+    }
+  }
 
   // Allow anonymous access to most pages - only protect specific routes
   const protectedRoutes = ['/dashboard', '/profile', '/settings']

@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
 import { updateProfileSchema } from '@/lib/auth/validation'
 import { ensureUserProfile } from '@/lib/auth/profile-utils'
+import { getSessionAnalytics } from '@/lib/auth/session-manager'
 
 export async function getProfile(userId: string) {
   try {
@@ -39,8 +40,43 @@ export async function getProfile(userId: string) {
       if (user && user.id === userId) {
         const result = await ensureUserProfile(userId, user.email!)
         if (result.success && result.profile) {
-          profile = result.profile
+          // Fetch the full profile with relations
+          profile = await prisma.profile.findUnique({
+            where: { userId },
+            include: {
+              userSessions: {
+                orderBy: { lastActivity: 'desc' },
+                take: 5
+              },
+              userActivities: {
+                orderBy: { createdAt: 'desc' },
+                take: 10
+              },
+              cvData: {
+                orderBy: { createdAt: 'desc' },
+                take: 5
+              },
+              generatedContent: {
+                orderBy: { createdAt: 'desc' },
+                take: 10
+              }
+            }
+          })
         }
+      }
+    }
+
+    // Add session analytics to profile
+    if (profile) {
+      try {
+        const sessionAnalytics = await getSessionAnalytics(userId)
+        return {
+          ...profile,
+          sessionAnalytics
+        }
+      } catch (error) {
+        console.error('Error fetching session analytics:', error)
+        return profile
       }
     }
 
@@ -172,6 +208,85 @@ export async function updatePreferences(formData: FormData) {
   } catch (error) {
     console.error('Error updating preferences:', error)
     return { success: false, error: 'Failed to update preferences' }
+  }
+}
+
+export async function getSessionManagement(userId: string) {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user || user.id !== userId) {
+      return { success: false, error: 'Unauthorized' }
+    }
+
+    const sessionAnalytics = await getSessionAnalytics(userId)
+    const activeSessions = await prisma.userSession.findMany({
+      where: {
+        userId,
+        expiresAt: { gt: new Date() }
+      },
+      orderBy: { lastActivity: 'desc' }
+    })
+
+    return {
+      success: true,
+      data: {
+        analytics: sessionAnalytics,
+        activeSessions
+      }
+    }
+  } catch (error) {
+    console.error('Error getting session management data:', error)
+    return { success: false, error: 'Failed to get session data' }
+  }
+}
+
+export async function endSession(sessionId: string) {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return { success: false, error: 'Unauthorized' }
+    }
+
+    // Get the session to verify ownership
+    const session = await prisma.userSession.findFirst({
+      where: {
+        id: sessionId,
+        userId: user.id
+      }
+    })
+
+    if (!session) {
+      return { success: false, error: 'Session not found' }
+    }
+
+    // End the session
+    await prisma.userSession.update({
+      where: { id: sessionId },
+      data: { expiresAt: new Date() }
+    })
+
+    // Log the activity
+    await prisma.userActivity.create({
+      data: {
+        userId: user.id,
+        action: 'session_ended_manually',
+        resourceType: 'session',
+        metadata: {
+          sessionId,
+          endedAt: new Date().toISOString()
+        }
+      }
+    })
+
+    revalidatePath('/profile')
+    return { success: true, message: 'Session ended successfully' }
+  } catch (error) {
+    console.error('Error ending session:', error)
+    return { success: false, error: 'Failed to end session' }
   }
 }
 

@@ -102,7 +102,9 @@ export default async function Dashboard() {
                             <Activity className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{profile?.userSessions?.length || 0}</div>
+                            <div className="text-2xl font-bold">
+                                {profile?.sessionAnalytics?.activeSessions || profile?.userSessions?.length || 0}
+                            </div>
                             <p className="text-xs text-muted-foreground">
                                 Currently active
                             </p>
@@ -190,6 +192,12 @@ export default async function Dashboard() {
                                 <Button className="w-full justify-start" variant="outline">
                                     <User className="mr-2 h-4 w-4" />
                                     Update Profile
+                                </Button>
+                                <Button className="w-full justify-start" variant="outline" asChild>
+                                    <a href="/user/sessions">
+                                        <Activity className="mr-2 h-4 w-4" />
+                                        Manage Sessions
+                                    </a>
                                 </Button>
                             </CardContent>
                         </Card>

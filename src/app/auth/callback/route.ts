@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { createUserSession } from '@/lib/auth/session-manager'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -57,6 +58,12 @@ export async function GET(request: Request) {
               }
             }
           })
+
+          // Create user session for analytics tracking
+          const { data: { session } } = await supabase.auth.getSession()
+          if (session?.access_token) {
+            await createUserSession(user, session.access_token, request)
+          }
         } catch (profileError) {
           console.error('Error updating user profile after email confirmation:', profileError)
         }

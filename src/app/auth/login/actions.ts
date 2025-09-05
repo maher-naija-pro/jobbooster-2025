@@ -3,6 +3,8 @@
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { loginSchema } from '@/lib/auth/validation'
+import { createUserSession } from '@/lib/auth/session-manager'
+import { headers } from 'next/headers'
 
 export async function login(formData: FormData) {
     const supabase = await createClient()
@@ -16,12 +18,26 @@ export async function login(formData: FormData) {
         // Validate input
         const validatedData = loginSchema.parse(data)
 
-        const { error } = await supabase.auth.signInWithPassword(validatedData)
+        const { data: authData, error } = await supabase.auth.signInWithPassword(validatedData)
 
         if (error) {
             // Map Supabase errors to user-friendly messages
             const userFriendlyMessage = mapAuthErrorToMessage(error.message)
             throw new Error(userFriendlyMessage)
+        }
+
+        // Create session tracking record
+        if (authData.user && authData.session?.access_token) {
+            try {
+                const headersList = await headers()
+                const request = new Request('http://localhost', {
+                    headers: headersList
+                })
+                await createUserSession(authData.user, authData.session.access_token, request)
+            } catch (sessionError) {
+                console.error('Error creating session tracking:', sessionError)
+                // Don't fail login if session tracking fails
+            }
         }
 
         revalidatePath('/', 'layout')
