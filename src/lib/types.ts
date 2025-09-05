@@ -6,6 +6,123 @@ export interface CVData {
   processedContent: string;
   status: 'processing' | 'completed' | 'error';
   fileUrl?: string;
+
+  // Processing & Analysis Fields
+  processingStatus?: 'uploaded' | 'extracting' | 'analyzing' | 'completed' | 'failed';
+  processingStartedAt?: Date;
+  processingCompletedAt?: Date;
+  processingError?: string;
+  processingTime?: number; // Processing time in milliseconds
+  modelUsed?: string; // AI model used for analysis
+  parameters?: Record<string, any>; // Analysis parameters used
+  errorMessage?: string; // Specific error message if analysis failed
+  analysisId?: string;
+  analysisVersion?: string;
+
+  // Enhanced Metadata Fields
+  originalFilename?: string;
+
+  // CV-Specific Extracted Data Fields
+  extractedSkills?: string[]; // Array of skills extracted from CV
+  extractedExperience?: number; // Years of experience extracted
+  extractedEducation?: Record<string, any>; // Education details (degrees, institutions)
+  extractedCertifications?: Record<string, any>; // Professional certifications found
+  extractedLanguages?: string[]; // Languages mentioned in CV
+
+  // Job-Related Fields (from job_data table)
+  company?: string; // Company name
+  requiredQualifications?: string[]; // Required qualifications
+  preferredQualifications?: string[]; // Preferred qualifications
+
+  // Job-Specific Metadata Fields (from job_data table)
+  jobType?: 'full-time' | 'part-time' | 'contract' | 'internship'; // Type of employment
+  location?: string; // Job location
+  remoteType?: 'remote' | 'hybrid' | 'onsite'; // Remote work type
+  salaryRange?: string; // Salary range
+  experienceLevel?: 'entry' | 'mid' | 'senior' | 'executive'; // Required experience level
+  industry?: string; // Industry sector
+  department?: string; // Department
+  employmentType?: string; // Employment type
+
+  // User Interaction Tracking
+  viewCount?: number;
+  lastAnalyzedAt?: Date;
+  analysisCount?: number;
+
+  // Security & Compliance Fields
+  isPublic?: boolean;
+  isActive?: boolean; // Whether CV is still active/current
+  retentionDate?: Date;
+  gdprConsent?: boolean;
+  dataClassification?: 'public' | 'internal' | 'confidential';
+
+  // Performance & Optimization Fields
+  isArchived?: boolean;
+  archiveDate?: Date;
+}
+
+export interface JobData {
+  id: string;
+  userId: string;
+  content: string;
+  title?: string;
+  company?: string;
+  status: string;
+
+  // Processing & Analysis Fields
+  processingStatus: 'uploaded' | 'extracting' | 'analyzing' | 'completed' | 'failed';
+  processingStartedAt?: Date;
+  processingCompletedAt?: Date;
+  processingError?: string;
+  processingTime?: number;
+  modelUsed?: string;
+  parameters?: any;
+  errorMessage?: string;
+  analysisId?: string;
+  analysisVersion?: string;
+
+  // Extracted Data Fields
+  extractedSkills?: string[];
+  requiredQualifications?: string[];
+  preferredQualifications?: string[];
+
+  // CV-Related Fields (from cv_data table)
+  extractedExperience?: number; // Years of experience extracted
+  extractedEducation?: Record<string, any>; // Education details (degrees, institutions)
+  extractedCertifications?: Record<string, any>; // Professional certifications found
+  extractedLanguages?: string[]; // Languages mentioned
+  originalFilename?: string; // Original filename
+  metadata?: Record<string, any>; // Additional metadata
+
+  // Job-Specific Metadata Fields
+  jobType?: 'full-time' | 'part-time' | 'contract' | 'internship';
+  location?: string;
+  remoteType?: 'remote' | 'hybrid' | 'onsite';
+  salaryRange?: string;
+  experienceLevel?: 'entry' | 'mid' | 'senior' | 'executive';
+  industry?: string;
+  department?: string;
+  employmentType?: string;
+
+  // User Interaction Tracking
+  viewCount: number;
+  lastAnalyzedAt?: Date;
+  analysisCount: number;
+
+  // Security & Compliance Fields
+  isPublic: boolean;
+  retentionDate?: Date;
+  gdprConsent: boolean;
+  isActive: boolean;
+  dataClassification?: 'public' | 'internal' | 'confidential';
+
+  // Performance & Optimization Fields
+  isArchived: boolean;
+  archiveDate?: Date;
+
+  // Standard Timestamps
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface PersonalInfo {

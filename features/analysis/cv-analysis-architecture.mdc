@@ -249,7 +249,7 @@ Existing Components → Enhanced for CV Analysis → New Features
         ▼                        ▼                      ▼
 [ContentGenerator] → [CVAnalysisGenerator] → [SkillComparison]
 [ActionButtons]    → [CVAnalysisButtons]   → [RecommendationPanel]
-[FileUpload]       → [CVUpload]            → [JobOfferInput]
+[CvUpload]         → [CVUpload]            → [JobOfferInput]
 [LanguageSelect]   → [AnalysisLanguage]    → [AnalysisSettings]
 ```
 

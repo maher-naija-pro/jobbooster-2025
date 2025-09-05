@@ -67,7 +67,7 @@ Review the technical architecture for:
 #### Content & Data
 - `cv_data` - User's uploaded CV data and metadata
 - `generated_content` - AI-generated content history and versions
-- `file_uploads` - File storage metadata and access controls
+- `cv_uploads` - CV file storage metadata and access controls
 
 
 

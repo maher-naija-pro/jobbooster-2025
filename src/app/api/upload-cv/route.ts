@@ -190,7 +190,7 @@ export async function POST(request: NextRequest) {
             publicUrl: urlData.publicUrl
         });
 
-        // Save to database using FileUpload table
+        // Save to database using CvData table
         logger.cvUpload('Saving file upload to database', {
             filename: file.name,
             storagePath: uploadData.path
@@ -208,21 +208,28 @@ export async function POST(request: NextRequest) {
                 filename: file.name
             });
 
-            const fileRecord = await prisma.fileUpload.create({
+            const fileRecord = await prisma.cvData.create({
                 data: {
                     userId: userId,
                     fileName: file.name,
                     fileUrl: urlData.publicUrl,
                     fileSize: file.size,
                     mimeType: file.type,
-                    bucket: 'pdfs',
-                    path: uploadData.path,
+                    status: 'uploaded',
+                    extractedText: extractedText,
+                    originalFilename: file.name,
+                    processingStatus: 'uploaded',
+                    processingStartedAt: new Date(),
+                    processingCompletedAt: new Date(),
+                    viewCount: 0,
+                    analysisCount: 0,
                     isPublic: true,
+                    gdprConsent: isAuthenticated, // Only authenticated users can give consent
+                    dataClassification: 'internal',
+                    isArchived: false,
                     metadata: {
-                        originalFilename: file.name,
                         uploadTimestamp: new Date().toISOString(),
                         processingTime: Date.now() - startTime,
-                        extractedText: extractedText,
                         fileType: 'cv',
                         dateFolder: dateFolder,
                         uploadDate: {
@@ -250,9 +257,25 @@ export async function POST(request: NextRequest) {
                 filename: fileRecord.fileName,
                 size: fileRecord.fileSize,
                 uploadDate: fileRecord.createdAt,
-                processedContent: fileRecord.metadata?.extractedText || '',
+                processedContent: fileRecord.extractedText || '',
                 status: 'completed',
-                fileUrl: fileRecord.fileUrl
+                fileUrl: fileRecord.fileUrl,
+                processingStatus: fileRecord.processingStatus as 'uploaded' | 'extracting' | 'analyzing' | 'completed' | 'failed',
+                processingStartedAt: fileRecord.processingStartedAt || undefined,
+                processingCompletedAt: fileRecord.processingCompletedAt || undefined,
+                processingError: fileRecord.processingError || undefined,
+                analysisId: fileRecord.analysisId || undefined,
+                analysisVersion: fileRecord.analysisVersion || undefined,
+                originalFilename: fileRecord.originalFilename || undefined,
+                viewCount: fileRecord.viewCount,
+                lastAnalyzedAt: fileRecord.lastAnalyzedAt || undefined,
+                analysisCount: fileRecord.analysisCount,
+                isPublic: fileRecord.isPublic,
+                retentionDate: fileRecord.retentionDate || undefined,
+                gdprConsent: fileRecord.gdprConsent,
+                dataClassification: fileRecord.dataClassification as 'public' | 'internal' | 'confidential' || undefined,
+                isArchived: fileRecord.isArchived,
+                archiveDate: fileRecord.archiveDate || undefined
             };
 
             const processingTime = Date.now() - startTime;

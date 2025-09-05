@@ -1,0 +1,17 @@
+-- AlterTable
+ALTER TABLE "public"."cv_data" ADD COLUMN     "analysis_count" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "analysis_id" TEXT,
+ADD COLUMN     "analysis_version" TEXT,
+ADD COLUMN     "archive_date" TIMESTAMP(3),
+ADD COLUMN     "data_classification" TEXT,
+ADD COLUMN     "gdpr_consent" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "is_archived" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "is_public" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "last_analyzed_at" TIMESTAMP(3),
+ADD COLUMN     "original_filename" TEXT,
+ADD COLUMN     "processing_completed_at" TIMESTAMP(3),
+ADD COLUMN     "processing_error" TEXT,
+ADD COLUMN     "processing_started_at" TIMESTAMP(3),
+ADD COLUMN     "processing_status" TEXT NOT NULL DEFAULT 'uploaded',
+ADD COLUMN     "retention_date" TIMESTAMP(3),
+ADD COLUMN     "view_count" INTEGER NOT NULL DEFAULT 0;
