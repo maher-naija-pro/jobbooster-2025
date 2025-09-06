@@ -7,7 +7,7 @@ import { createClient } from '../../../lib/supabase/server';
 import { prisma } from '../../../lib/prisma';
 import { nanoid } from 'nanoid';
 import { generateDateFolder } from '../../../lib/supabase/upload_supa';
-import { generateAnonymousSessionId } from '../../../lib/anonymous-session';
+import { generateAnonymousSessionId, getAnonymousSessionId } from '../../../lib/anonymous-session';
 
 export async function POST(request: NextRequest) {
     const startTime = Date.now();
@@ -200,11 +200,68 @@ export async function POST(request: NextRequest) {
             // Get user ID from Supabase auth
             const { data: { user } } = await supabase.auth.getUser();
             const isAuthenticated = !!user;
-            const userId = user?.id || generateAnonymousSessionId();
+            let userId = user?.id;
+
+            // For anonymous users, create a temporary profile
+            if (!isAuthenticated) {
+                // Try to get session ID from request headers or generate new one
+                const sessionId = request.headers.get('x-session-id');
+                const anonymousId = sessionId || generateAnonymousSessionId();
+
+                try {
+                    // Create a temporary profile for anonymous user
+                    const profile = await prisma.profile.upsert({
+                        where: { userId: anonymousId },
+                        update: {},
+                        create: {
+                            userId: anonymousId,
+                            email: `anonymous-${anonymousId}@temp.local`,
+                            fullName: `Anonymous User ${anonymousId.substring(0, 8)}`,
+                            preferences: {},
+                            subscription: { plan: 'free' }
+                        }
+                    });
+
+                    logger.cvUpload('Anonymous profile created', {
+                        profileId: profile.userId,
+                        email: profile.email,
+                        filename: file.name
+                    });
+
+                    userId = anonymousId;
+                } catch (profileError) {
+                    logger.error('Failed to create anonymous profile', {
+                        anonymousId,
+                        error: profileError instanceof Error ? profileError.message : String(profileError),
+                        filename: file.name
+                    });
+                    throw new Error('Failed to create anonymous user profile');
+                }
+            }
 
             logger.cvUpload('User authentication status', {
                 isAuthenticated,
                 userId: isAuthenticated ? userId : 'anonymous-session',
+                filename: file.name
+            });
+
+            // Verify the profile exists before creating CV data
+            const profileExists = await prisma.profile.findUnique({
+                where: { userId: userId! }
+            });
+
+            if (!profileExists) {
+                logger.error('Profile not found for user', {
+                    userId,
+                    isAuthenticated,
+                    filename: file.name
+                });
+                throw new Error('User profile not found');
+            }
+
+            logger.cvUpload('Profile verified', {
+                userId,
+                profileId: profileExists.userId,
                 filename: file.name
             });
 

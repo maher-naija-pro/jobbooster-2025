@@ -17,6 +17,8 @@ export interface FeatureFlags {
     EMAIL_VALIDATION_STRICT: boolean;
     /** Enable/disable disposable email addresses */
     ALLOW_DISPOSABLE_EMAILS: boolean;
+    /** Enable/disable social media icons in footer */
+    ENABLE_SOCIAL_ICONS: boolean;
 }
 
 /**
@@ -29,6 +31,7 @@ const DEFAULT_FEATURE_FLAGS: FeatureFlags = {
     REQUIRE_EMAIL_VERIFICATION: true,
     EMAIL_VALIDATION_STRICT: true,
     ALLOW_DISPOSABLE_EMAILS: false,
+    ENABLE_SOCIAL_ICONS: false,
 };
 
 /**
@@ -67,6 +70,10 @@ export function getFeatureFlags(): FeatureFlags {
         ALLOW_DISPOSABLE_EMAILS: parseBooleanEnvVar(
             process.env.ALLOW_DISPOSABLE_EMAILS,
             DEFAULT_FEATURE_FLAGS.ALLOW_DISPOSABLE_EMAILS
+        ),
+        ENABLE_SOCIAL_ICONS: parseBooleanEnvVar(
+            process.env.NEXT_PUBLIC_ENABLE_SOCIAL_ICONS,
+            DEFAULT_FEATURE_FLAGS.ENABLE_SOCIAL_ICONS
         ),
     };
 }

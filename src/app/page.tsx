@@ -12,6 +12,9 @@ import { ErrorBoundary } from '../components/error-boundary';
 import { Language } from '../lib/types';
 import { useState } from 'react';
 import { FeatureGate } from '../components/auth/feature-gate';
+import Link from 'next/link';
+import { Button } from '../components/ui/button';
+import { Database } from 'lucide-react';
 
 export default function Home() {
   const { state, dispatch } = useApp();
@@ -395,6 +398,16 @@ export default function Home() {
 
   return (
     <div className="min-h-screen px-4 sm:px-6 lg:px-8">
+      {/* Demo Link */}
+      <div className="flex justify-end pt-4">
+        <Link href="/demo-llm-process">
+          <Button variant="outline" className="flex items-center gap-2">
+            <Database className="w-4 h-4" />
+            LLM Processing Demo
+          </Button>
+        </Link>
+      </div>
+
       <div className="w-full">
         {/* Conditional Layout - Centered when no content, two-column when generating or has results */}
         {!state.isGenerating && !state.generatedContent && !state.cvAnalysis ? (

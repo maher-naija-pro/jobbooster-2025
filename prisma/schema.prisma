@@ -261,8 +261,7 @@ model CvData {
   // === File Information ===
   fileName                String?  @map("file_name") @db.VarChar(255) // Uploaded file name
   fileUrl                 String?  @map("file_url") @db.VarChar(500) // File storage URL
-  fileSize                Int?     @map("file_size") // File size in bytes
-  mimeType                String?  @map("mime_type") @db.VarChar(100) // File MIME type
+
  
 
   // === Status & Processing ===
@@ -275,11 +274,7 @@ model CvData {
   archiveDate             DateTime? @map("archive_date") // Date archived
   retentionDate           DateTime? @map("retention_date") // Data retention date
   deletedAt               DateTime? @map("deleted_at") // Soft delete timestamp
-  deletedBy               String?   @map("deleted_by") @db.VarChar(50) // Who deleted the record
-  
-  // === Audit Trail ===
-  createdBy               String?   @map("created_by") @db.VarChar(50) // Who created the record
-  updatedBy               String?   @map("updated_by") @db.VarChar(50) // Who last updated the record
+
 
   // === Processing Timestamps & Error Tracking ===
   createdAt               DateTime @default(now()) @map("created_at") // Record creation timestamp
@@ -313,19 +308,19 @@ model CvData {
   totalJobMatches          Int       @default(0) @map("total_job_matches") // Total job matches generated
   
   // === Content Quality Metrics ===
-  completenessScore        Decimal?  @map("completeness_score") @db.Decimal(3, 2) // CV completeness (0-1)
-  readabilityScore         Decimal?  @map("readability_score") @db.Decimal(3, 2) // Content readability
-  atsScore                 Decimal?  @map("ats_score") @db.Decimal(3, 2) // ATS compatibility score
-  keywordDensity           Json?     @map("keyword_density") // Keyword density analysis
-  improvementSuggestions   Json?     @map("improvement_suggestions") // AI-generated suggestions
-  templateTags             Json?     @map("template_tags") // Template tags for search
+  // completenessScore        Decimal?  @map("completeness_score") @db.Decimal(3, 2) // CV completeness (0-1)
+  // readabilityScore         Decimal?  @map("readability_score") @db.Decimal(3, 2) // Content readability
+  // atsScore                 Decimal?  @map("ats_score") @db.Decimal(3, 2) // ATS compatibility score
+  // keywordDensity           Json?     @map("keyword_density") // Keyword density analysis
+  // improvementSuggestions   Json?     @map("improvement_suggestions") // AI-generated suggestions
+  // templateTags             Json?     @map("template_tags") // Template tags for search
    
   // === Extracted Raw Data ===
   extractedText           String?  @map("extracted_text") // Raw extracted text from file
   metadata                Json?    // Additional metadata
 
   // === Personal Information ===
-  personalInfo            Json?    @map("personal_info") // Name, contact info, location, etc.
+
   firstName               String?  @map("first_name") @db.VarChar(100) // First name
   lastName                String?  @map("last_name") @db.VarChar(100) // Last name
   fullName                String?  @map("full_name") @db.VarChar(255) // Full name
@@ -337,8 +332,7 @@ model CvData {
   websiteUrl              String?  @map("website_url") @db.VarChar(500) // Personal website URL
   githubUrl               String?  @map("github_url") @db.VarChar(500) // GitHub profile URL
 
-  // === Professional Summary & Objectives ===
-  professionalSummary     String?  @map("professional_summary") // Professional summary/summary
+
 
   // === Skills, Experience, and Education ===
   technicalSkills         Json?    @map("technical_skills") // Array of technical skills (legacy)
@@ -348,7 +342,7 @@ model CvData {
   education               Json?    // Educational background details
   workExperience          Json?    @map("work_experience") // Work experience details
   projects                Json?    // Notable projects and achievements
-  salaryRange             String?  @map("salary_range") // Salary range
+
 
   // === Relations ===
   profile                 Profile  @relation(fields: [userId], references: [userId], onDelete: Cascade) // Link to Profile
@@ -356,29 +350,15 @@ model CvData {
   generatedContent        GeneratedContent[] // Generated content for this CV
 
   // === Data Quality & Monitoring ===
-  dataQualityScore        Decimal?  @map("data_quality_score") @db.Decimal(3, 2) // Overall data quality (0-1)
-  completenessPercentage  Decimal?  @map("completeness_percentage") @db.Decimal(5, 2) // Data completeness %
-  errorCount              Int       @default(0) @map("error_count") // Error count
-  warningCount            Int       @default(0) @map("warning_count") // Warning count
+ // dataQualityScore        Decimal?  @map("data_quality_score") @db.Decimal(3, 2) // Overall data quality (0-1)
+ // completenessPercentage  Decimal?  @map("completeness_percentage") @db.Decimal(5, 2) // Data completeness %
+ // errorCount              Int       @default(0) @map("error_count") // Error count
+ // warningCount            Int       @default(0) @map("warning_count") // Warning count
 
 
   // === Indexes & Table Mapping ===
   @@index([userId])
-  @@index([processingStatus])
-  @@index([isActive])
-  @@index([isArchived])
-  @@index([isDeleted])
   @@index([createdAt])
-  @@index([version, isLatest])
-  @@index([email])
-  @@index([fullName])
-  @@index([averageMatchScore])
-  @@index([bestMatchScore])
-  @@index([userId, isLatest, createdAt])
-  @@index([processingStatus, createdAt])
-  @@index([dataQualityScore, isActive])
-  @@index([isActive, isArchived, createdAt])
-  @@index([averageMatchScore, isActive, createdAt])
   @@map("cv_data")
 }
 

@@ -122,6 +122,73 @@ class Logger {
         this.info(`[User Action] ${action}`, context);
     }
 
+    // Mac-specific logging methods
+    macProcessStart(processName: string, context?: LogContext): void {
+        this.info(`[Mac Process] Starting ${processName}`, {
+            ...(typeof context === 'object' && context !== null ? context : {}),
+            platform: 'macOS',
+            processType: 'start'
+        });
+    }
+
+    macProcessEnd(processName: string, duration: number, context?: LogContext): void {
+        this.info(`[Mac Process] Completed ${processName}`, {
+            ...(typeof context === 'object' && context !== null ? context : {}),
+            platform: 'macOS',
+            processType: 'end',
+            duration: `${duration}ms`
+        });
+    }
+
+    macSystemInfo(context?: LogContext): void {
+        this.info(`[Mac System] System information logged`, {
+            ...(typeof context === 'object' && context !== null ? context : {}),
+            platform: 'macOS',
+            userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'server-side',
+            timestamp: new Date().toISOString()
+        });
+    }
+
+    macFileOperation(operation: string, filePath: string, context?: LogContext): void {
+        this.info(`[Mac File] ${operation}`, {
+            ...(typeof context === 'object' && context !== null ? context : {}),
+            platform: 'macOS',
+            filePath,
+            operation
+        });
+    }
+
+    macNetworkRequest(url: string, method: string, status: number, context?: LogContext): void {
+        this.info(`[Mac Network] ${method} ${url}`, {
+            ...(typeof context === 'object' && context !== null ? context : {}),
+            platform: 'macOS',
+            url,
+            method,
+            status,
+            timestamp: new Date().toISOString()
+        });
+    }
+
+    macError(error: Error | string, context?: LogContext): void {
+        this.error(`[Mac Error] ${error}`, {
+            ...(typeof context === 'object' && context !== null ? context : {}),
+            platform: 'macOS',
+            error: error instanceof Error ? error.message : error,
+            stack: error instanceof Error ? error.stack : undefined,
+            timestamp: new Date().toISOString()
+        });
+    }
+
+    macPerformance(operation: string, duration: number, context?: LogContext): void {
+        this.info(`[Mac Performance] ${operation}`, {
+            ...(typeof context === 'object' && context !== null ? context : {}),
+            platform: 'macOS',
+            operation,
+            duration: `${duration}ms`,
+            performance: duration > 1000 ? 'slow' : duration > 500 ? 'moderate' : 'fast'
+        });
+    }
+
     // Get recent logs (for debugging)
     getRecentLogs(count: number = 10): LogEntry[] {
         return this.logs.slice(-count);
