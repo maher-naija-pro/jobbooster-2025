@@ -9,7 +9,7 @@ export const sendPasswordResetEmail = async (
   token: string,
 ) => {
   console.log("🚀 ~ sendResetEmail sent to:", email);
-  const resetLink = `${Site_name.domain}/new-password?token=${token}`;
+  const resetLink = `${Site_name.domain}/auth/update-password?token=${token}`;
 
   const htmlTemplate = `
   <!DOCTYPE html>

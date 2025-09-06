@@ -285,6 +285,18 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
                 Must contain uppercase, lowercase, and number
               </p>
             )}
+            {isLogin && (
+              <div className="mt-2">
+                <button
+                  type="button"
+                  onClick={onResetPassword}
+                  className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 rounded-sm"
+                  aria-label="Reset password"
+                >
+                  Forgot password?
+                </button>
+              </div>
+            )}
           </div>
 
           {!isLogin && (
@@ -357,27 +369,15 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
           </>
         ) : isLogin ? (
           <>
-            <div>
-              <span className="text-slate-600 dark:text-slate-400">Don't have an account? </span>
-              <button
-                type="button"
-                onClick={onToggleMode}
-                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 rounded-sm"
-                aria-label="Switch to create account mode"
-              >
-                Sign up
-              </button>
-            </div>
-            <div>
-              <button
-                type="button"
-                onClick={onResetPassword}
-                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 rounded-sm"
-                aria-label="Reset password"
-              >
-                Forgot password?
-              </button>
-            </div>
+            <span className="text-slate-600 dark:text-slate-400">Don't have an account? </span>
+            <button
+              type="button"
+              onClick={onToggleMode}
+              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 rounded-sm"
+              aria-label="Switch to create account mode"
+            >
+              Sign up
+            </button>
           </>
         ) : (
           <>
