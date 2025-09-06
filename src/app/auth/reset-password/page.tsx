@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -18,21 +18,32 @@ export default function ResetPasswordPage({ searchParams }: ResetPasswordPagePro
     const [message, setMessage] = useState<string>('')
     const [error, setError] = useState<string>('')
 
+    // Handle URL message parameter
+    const [urlMessage, setUrlMessage] = useState<string>('')
+
+    // Effect to handle URL message parameter
+    React.useEffect(() => {
+        searchParams.then(params => {
+            if (params.message) {
+                setUrlMessage(params.message)
+            }
+        })
+    }, [searchParams])
+
     const handleSubmit = async (formData: FormData) => {
         setIsLoading(true)
         setError('')
         setMessage('')
 
         try {
-            await requestPasswordReset(formData)
-            setMessage('Password reset email sent! Please check your inbox and follow the instructions.')
-        } catch (err) {
-            // Check if it's a NEXT_REDIRECT error (which is expected behavior for redirects)
-            if (err instanceof Error && err.message === 'NEXT_REDIRECT') {
-                // Don't show error for redirects - this is expected behavior
-                return
-            }
+            const result = await requestPasswordReset(formData)
 
+            if (result.success) {
+                setMessage(result.message || 'Password reset email sent! Please check your inbox and follow the instructions.')
+            } else {
+                setError(result.error || 'Failed to send password reset email')
+            }
+        } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to send password reset email'
             setError(errorMessage)
         } finally {
@@ -50,9 +61,9 @@ export default function ResetPasswordPage({ searchParams }: ResetPasswordPagePro
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {message && (
+                    {(message || urlMessage) && (
                         <div className="mb-4 p-3 text-sm text-green-600 bg-green-50 rounded-md">
-                            {message}
+                            {message || urlMessage}
                         </div>
                     )}
 

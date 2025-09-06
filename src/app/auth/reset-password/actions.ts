@@ -47,7 +47,7 @@ export async function requestPasswordReset(formData: FormData) {
       stack: validationError instanceof Error ? validationError.stack : undefined,
       inputData: { email: data.email ? `${data.email.substring(0, 3)}***@${data.email.split('@')[1]}` : 'null' }
     })
-    throw validationError
+    return { success: false, error: 'Invalid email address' }
   }
 
   const validatedData = resetPasswordSchema.parse(data)
@@ -73,7 +73,7 @@ export async function requestPasswordReset(formData: FormData) {
         email: validatedData.email ? `${validatedData.email.substring(0, 3)}***@${validatedData.email.split('@')[1]}` : 'null',
         supabaseError: error
       })
-      redirect('/error?message=' + encodeURIComponent('Failed to send password reset email'))
+      return { success: false, error: 'Failed to send password reset email' }
     }
 
     const duration = Date.now() - startTime
@@ -81,23 +81,12 @@ export async function requestPasswordReset(formData: FormData) {
       action: 'requestPasswordReset',
       step: 'reset_email_sent',
       email: validatedData.email ? `${validatedData.email.substring(0, 3)}***@${validatedData.email.split('@')[1]}` : 'null',
-      duration: `${duration}ms`,
-      redirectUrl: '/auth/reset-password?message=Password%20reset%20email%20sent!%20Check%20your%20inbox.'
+      duration: `${duration}ms`
     })
 
-    redirect('/auth/reset-password?message=' + encodeURIComponent('Password reset email sent! Check your inbox.'))
+    return { success: true, message: 'Password reset email sent! Check your inbox.' }
   } catch (error) {
     const duration = Date.now() - startTime
-
-    // Check if it's a NEXT_REDIRECT error (which is expected behavior)
-    if (error instanceof Error && error.message === 'NEXT_REDIRECT') {
-      logger.debug('NEXT_REDIRECT error caught (expected behavior)', {
-        action: 'requestPasswordReset',
-        step: 'redirect_handling',
-        duration: `${duration}ms`
-      })
-      throw error // Re-throw to let Next.js handle the redirect
-    }
 
     logger.error('Unexpected error during password reset request', {
       action: 'requestPasswordReset',
@@ -107,7 +96,7 @@ export async function requestPasswordReset(formData: FormData) {
       duration: `${duration}ms`,
       email: validatedData.email ? `${validatedData.email.substring(0, 3)}***@${validatedData.email.split('@')[1]}` : 'null'
     })
-    redirect('/error?message=' + encodeURIComponent('Failed to send password reset email'))
+    return { success: false, error: 'Failed to send password reset email' }
   }
 }
 

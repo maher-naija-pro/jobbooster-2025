@@ -36,6 +36,12 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
     }
   }, [isLogin, isResetPassword])
 
+  // Clear success message when switching modes
+  useEffect(() => {
+    setSuccess('')
+    setError('')
+  }, [isLogin, isResetPassword])
+
   // Real-time validation
   const validateField = (name: string, value: string) => {
     const errors: Record<string, string> = { ...fieldErrors }
@@ -120,12 +126,17 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
 
     try {
       if (isResetPassword) {
-        await requestPasswordReset(formData)
-        setSuccess('Password reset email sent! Please check your inbox and follow the instructions.')
-        // Close modal after a short delay to show success message
-        setTimeout(() => {
-          onSuccess()
-        }, 3000)
+        const result = await requestPasswordReset(formData)
+        if (result.success) {
+          // Show success message on the same modal
+          setSuccess(result.message || 'Please check your mail to reset password')
+          // Close modal after 3 seconds to let user see the success message
+          setTimeout(() => {
+            onSuccess()
+          }, 3000)
+        } else {
+          setError(result.error || 'Failed to send password reset email')
+        }
       } else if (isLogin) {
         const result = await login(formData)
         if (result?.success) {
