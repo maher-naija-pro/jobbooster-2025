@@ -946,17 +946,18 @@ export function ContentGenerator({
                                 {content.type === 'cover-letter' ? 'Cover Letter' :
                                     content.type === 'email' ? 'Email' : 'CV Analysis'} Generated Successfully
                             </span>
+                        </div>
+                        <div className="flex items-center gap-3">
                             <Button
                                 onClick={handleCopyContent}
                                 variant="ghost"
                                 size="sm"
-                                className={`group gap-1.5 h-8 px-3 transition-all duration-200 ease-in-out ${
-                                    isCopied 
-                                        ? 'text-green-600 bg-green-50 hover:bg-green-100 border border-green-200' 
-                                        : copyError 
-                                            ? 'text-red-600 bg-red-50 hover:bg-red-100 border border-red-200' 
-                                            : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 border border-transparent hover:border-gray-200'
-                                }`}
+                                className={`group gap-1.5 h-8 px-3 transition-all duration-200 ease-in-out ${isCopied
+                                    ? 'text-green-600 bg-green-50 hover:bg-green-100 border border-green-200'
+                                    : copyError
+                                        ? 'text-red-600 bg-red-50 hover:bg-red-100 border border-red-200'
+                                        : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 border border-transparent hover:border-gray-200'
+                                    }`}
                                 disabled={!content}
                                 title={isCopied ? 'Content copied to clipboard!' : copyError ? 'Failed to copy content' : 'Copy content to clipboard'}
                             >
