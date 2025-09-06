@@ -57,11 +57,11 @@ export async function requestPasswordReset(formData: FormData) {
       action: 'requestPasswordReset',
       step: 'supabase_reset_initiated',
       email: validatedData.email ? `${validatedData.email.substring(0, 3)}***@${validatedData.email.split('@')[1]}` : 'null',
-      redirectUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/update-password`
+      redirectUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/reset-password/callback`
     })
 
     const { error } = await supabase.auth.resetPasswordForEmail(validatedData.email, {
-      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/update-password`,
+      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/reset-password/callback`,
     })
 
     if (error) {

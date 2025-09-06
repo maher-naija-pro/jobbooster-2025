@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { updatePassword } from '../reset-password/actions'
+import { createClient } from '@/lib/supabase/client'
 
 interface UpdatePasswordPageProps {
   searchParams: Promise<{
@@ -19,6 +20,22 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
   const [message, setMessage] = useState<string>('')
   const [error, setError] = useState<string>('')
   const [token, setToken] = useState<string>('')
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
+
+  // Check authentication status
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      setIsAuthenticated(!!user)
+
+      if (!user) {
+        setError('You must be authenticated to update your password. Please use the password reset link from your email.')
+      }
+    }
+
+    checkAuth()
+  }, [])
 
   // Handle search params on client side
   useEffect(() => {
@@ -48,6 +65,22 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
     }
   }
 
+  // Show loading state while checking authentication
+  if (isAuthenticated === null) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-center">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+              <span className="ml-2">Verifying authentication...</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <Card className="w-full max-w-md">
@@ -70,49 +103,60 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
             </div>
           )}
 
-          <form action={handleSubmit} className="space-y-4">
-            {token && (
-              <input type="hidden" name="token" value={token} />
-            )}
-            <div className="space-y-2">
-              <Label htmlFor="password">New password</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="Enter your new password"
-                required
-                disabled={isLoading}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm new password</Label>
-              <Input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                placeholder="Confirm your new password"
-                required
-                disabled={isLoading}
-              />
-            </div>
-
-            <Button
-              type="submit"
-              className="w-full h-10 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <div className="flex items-center space-x-2">
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                  <span>Updating...</span>
-                </div>
-              ) : (
-                'Update password'
+          {isAuthenticated ? (
+            <form action={handleSubmit} className="space-y-4">
+              {token && (
+                <input type="hidden" name="token" value={token} />
               )}
-            </Button>
-          </form>
+              <div className="space-y-2">
+                <Label htmlFor="password">New password</Label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="Enter your new password"
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm new password</Label>
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  placeholder="Confirm your new password"
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full h-10 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <div className="flex items-center space-x-2">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    <span>Updating...</span>
+                  </div>
+                ) : (
+                  'Update password'
+                )}
+              </Button>
+            </form>
+          ) : (
+            <div className="text-center">
+              <p className="text-sm text-gray-600 mb-4">
+                Please use the password reset link from your email to access this page.
+              </p>
+              <a href="/auth/reset-password" className="text-primary hover:underline">
+                Request new password reset
+              </a>
+            </div>
+          )}
 
           <div className="mt-4 text-center text-sm">
             <a href="/profile" className="text-primary hover:underline">

@@ -69,6 +69,12 @@ export function AuthModal({ isOpen, onClose, feature }: AuthModalProps) {
     setOauthError('')
   }
 
+  const handleSwitchToLogin = () => {
+    setIsResetPassword(false)
+    setIsLogin(true)
+    setOauthError('')
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent
@@ -159,6 +165,7 @@ export function AuthModal({ isOpen, onClose, feature }: AuthModalProps) {
               onResetPassword={handleResetPassword}
               onBackToLogin={handleBackToLogin}
               onSuccess={handleClose}
+              onSwitchToLogin={handleSwitchToLogin}
             />
           </div>
         </div>

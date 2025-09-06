@@ -15,12 +15,14 @@ interface AuthFormProps {
   onResetPassword?: () => void
   onBackToLogin?: () => void
   onSuccess: () => void
+  onSwitchToLogin?: () => void
 }
 
-export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onResetPassword, onBackToLogin, onSuccess }: AuthFormProps) {
+export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onResetPassword, onBackToLogin, onSuccess, onSwitchToLogin }: AuthFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [resetSuccess, setResetSuccess] = useState('')
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [touched, setTouched] = useState<Record<string, boolean>>({})
 
@@ -40,6 +42,10 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
   useEffect(() => {
     setSuccess('')
     setError('')
+    // Clear reset success when switching away from login form
+    if (!isLogin) {
+      setResetSuccess('')
+    }
   }, [isLogin, isResetPassword])
 
   // Real-time validation
@@ -128,12 +134,11 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
       if (isResetPassword) {
         const result = await requestPasswordReset(formData)
         if (result.success) {
-          // Show success message on the same modal
-          setSuccess(result.message || 'Please check your mail to reset password')
-          // Close modal after 3 seconds to let user see the success message
-          setTimeout(() => {
-            onSuccess()
-          }, 3000)
+          // Set reset success message and switch to login form
+          setResetSuccess('Mail sent successfully! Please check your mail to reset password.')
+          if (onSwitchToLogin) {
+            onSwitchToLogin()
+          }
         } else {
           setError(result.error || 'Failed to send password reset email')
         }
@@ -215,7 +220,7 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
         </div>
       )}
 
-      {success && (
+      {success && isResetPassword && (
         <div
           className="text-sm text-green-700 dark:text-green-300 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 p-3 rounded-lg border border-green-200 dark:border-green-800/30 shadow-sm"
           role="alert"
@@ -232,6 +237,12 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
             </svg>
             <p className="font-medium">{success}</p>
           </div>
+        </div>
+      )}
+
+      {resetSuccess && isLogin && (
+        <div className="mb-3 p-2 text-sm text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 rounded-md border border-green-200 dark:border-green-800/30">
+          <p className="font-medium">{resetSuccess}</p>
         </div>
       )}
 
