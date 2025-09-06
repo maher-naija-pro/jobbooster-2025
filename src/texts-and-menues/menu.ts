@@ -8,12 +8,6 @@ const routeList = {
     items: []
   },
 
-  Support: {
-    menu: "false",
-    href: "/company/contact",
-    items: []
-  },
-
   ...(isPricingEnabled() && {
     Pricing: {
       menu: "false",

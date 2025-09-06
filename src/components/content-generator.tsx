@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { FileText, CheckCircle, Copy, TrendingUp, TrendingDown, Star, Target, Award, BookOpen, Briefcase, Users, Lightbulb, AlertTriangle, ChevronDown, ChevronUp, Eye, EyeOff, Building, MapPin, DollarSign, Calendar, GraduationCap, Code, Heart, Globe, Wrench } from 'lucide-react';
+import { FileText, CheckCircle, Copy, XCircle, TrendingUp, TrendingDown, Star, Target, Award, BookOpen, Briefcase, Users, Lightbulb, AlertTriangle, ChevronDown, ChevronUp, Eye, EyeOff, Building, MapPin, DollarSign, Calendar, GraduationCap, Code, Heart, Globe, Wrench } from 'lucide-react';
 import { GeneratedContent, CVAnalysisResult, JobAnalysis } from '../lib/types';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader } from './ui/card';
@@ -39,6 +39,7 @@ export function ContentGenerator({
     const [displayContent, setDisplayContent] = useState('');
     const [localProgress, setLocalProgress] = useState(0);
     const [isCopied, setIsCopied] = useState(false);
+    const [copyError, setCopyError] = useState(false);
     const [isMissingSkillsExpanded, setIsMissingSkillsExpanded] = useState(true);
     const [isStrengthsExpanded, setIsStrengthsExpanded] = useState(true);
     const [analysisMode, setAnalysisMode] = useState<'compact' | 'detailed'>('compact');
@@ -891,14 +892,39 @@ export function ContentGenerator({
     const handleCopyContent = async () => {
         if (content) {
             try {
-                await navigator.clipboard.writeText(content.content);
+                const textToCopy = content.content;
+
+                // Try modern clipboard API first
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(textToCopy);
+                } else {
+                    // Fallback for older browsers
+                    const textArea = document.createElement('textarea');
+                    textArea.value = textToCopy;
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '-999999px';
+                    textArea.style.top = '-999999px';
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    document.execCommand('copy');
+                    textArea.remove();
+                }
+
                 setIsCopied(true);
-                // Reset the copied state after 2 seconds
+                setCopyError(false);
+                // Reset the copied state after 3 seconds
                 setTimeout(() => {
                     setIsCopied(false);
-                }, 2000);
+                }, 3000);
             } catch (err) {
                 console.error('Failed to copy content:', err);
+                setCopyError(true);
+                setIsCopied(false);
+                // Reset the error state after 3 seconds
+                setTimeout(() => {
+                    setCopyError(false);
+                }, 3000);
             }
         }
     };
@@ -914,30 +940,38 @@ export function ContentGenerator({
                 {/* Content Header */}
                 {content && !isGenerating && (
                     <CardHeader className="bg-gray-50 px-4 py-3 border-b border-gray-200 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
                             <CheckCircle className="w-4 h-4 text-green-600" />
                             <span className="text-sm font-medium text-gray-900">
                                 {content.type === 'cover-letter' ? 'Cover Letter' :
                                     content.type === 'email' ? 'Email' : 'CV Analysis'} Generated Successfully
                             </span>
-                        </div>
-                        <div className="flex items-center gap-3">
                             <Button
                                 onClick={handleCopyContent}
                                 variant="ghost"
                                 size="sm"
-                                className="gap-1.5 text-gray-500 hover:text-gray-700"
+                                className={`group gap-1.5 h-8 px-3 transition-all duration-200 ease-in-out ${
+                                    isCopied 
+                                        ? 'text-green-600 bg-green-50 hover:bg-green-100 border border-green-200' 
+                                        : copyError 
+                                            ? 'text-red-600 bg-red-50 hover:bg-red-100 border border-red-200' 
+                                            : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 border border-transparent hover:border-gray-200'
+                                }`}
+                                disabled={!content}
+                                title={isCopied ? 'Content copied to clipboard!' : copyError ? 'Failed to copy content' : 'Copy content to clipboard'}
                             >
                                 {isCopied ? (
-                                    <CheckCircle className="w-3.5 h-3.5 text-green-600" />
+                                    <CheckCircle className="w-3.5 h-3.5 animate-pulse" />
+                                ) : copyError ? (
+                                    <XCircle className="w-3.5 h-3.5 animate-pulse" />
                                 ) : (
-                                    <Copy className="w-3.5 h-3.5" />
+                                    <Copy className="w-3.5 h-3.5 transition-transform duration-200 group-hover:scale-110 group-hover:rotate-12" />
                                 )}
                                 <span className="text-xs font-medium">
-                                    {isCopied ? 'Copied!' : 'Copy'}
+                                    {isCopied ? 'Copied!' : copyError ? 'Failed' : 'Copy'}
                                 </span>
                             </Button>
-                            <div className="text-xs text-gray-600">
+                            <div className="text-xs text-gray-600 flex items-center h-8">
                                 {content.metadata.wordCount} words • {content.metadata.estimatedReadTime} min read
                             </div>
                         </div>
