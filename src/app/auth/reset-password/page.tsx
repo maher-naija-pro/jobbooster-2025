@@ -27,6 +27,12 @@ export default function ResetPasswordPage({ searchParams }: ResetPasswordPagePro
             await requestPasswordReset(formData)
             setMessage('Password reset email sent! Please check your inbox and follow the instructions.')
         } catch (err) {
+            // Check if it's a NEXT_REDIRECT error (which is expected behavior for redirects)
+            if (err instanceof Error && err.message === 'NEXT_REDIRECT') {
+                // Don't show error for redirects - this is expected behavior
+                return
+            }
+
             const errorMessage = err instanceof Error ? err.message : 'Failed to send password reset email'
             setError(errorMessage)
         } finally {

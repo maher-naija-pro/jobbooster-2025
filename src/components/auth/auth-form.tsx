@@ -143,6 +143,12 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
         }, 2000)
       }
     } catch (err) {
+      // Check if it's a NEXT_REDIRECT error (which is expected behavior for redirects)
+      if (err instanceof Error && err.message === 'NEXT_REDIRECT') {
+        // Don't show error for redirects - this is expected behavior
+        return
+      }
+
       const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred'
       setError(errorMessage)
 
