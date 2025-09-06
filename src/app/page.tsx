@@ -10,19 +10,44 @@ import { useUserLanguage } from '../hooks/use-user-language';
 
 import { ErrorBoundary } from '../components/error-boundary';
 import { Language } from '../lib/types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FeatureGate } from '../components/auth/feature-gate';
 import Link from 'next/link';
 import { Button } from '../components/ui/button';
 import { Database } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function Home() {
   const { state, dispatch } = useApp();
   const [streamingContent, setStreamingContent] = useState('');
   const [debugApiResponse, setDebugApiResponse] = useState<any>(null);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   // Load user's language preference
   useUserLanguage();
+
+  // Handle password reset errors from URL parameters
+  useEffect(() => {
+    const error = searchParams.get('error');
+    const errorCode = searchParams.get('error_code');
+    const errorDescription = searchParams.get('error_description');
+
+    if (error) {
+      let errorMessage = 'An error occurred during password reset';
+
+      if (errorCode === 'otp_expired') {
+        errorMessage = 'Password reset link has expired. Please request a new one.';
+      } else if (errorCode === 'access_denied') {
+        errorMessage = 'Access denied. Please request a new password reset link.';
+      } else if (errorDescription) {
+        errorMessage = decodeURIComponent(errorDescription.replace(/\+/g, ' '));
+      }
+
+      // Redirect to password reset page with error message
+      router.replace(`/auth/reset-password?message=${encodeURIComponent(errorMessage)}`);
+    }
+  }, [searchParams, router]);
 
   // Store the current abort controller for cancellation
   const [currentAbortController, setCurrentAbortController] = useState<AbortController | null>(null);

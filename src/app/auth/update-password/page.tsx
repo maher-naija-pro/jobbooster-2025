@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { updatePassword } from '../reset-password/actions'
 import { createClient } from '@/lib/supabase/client'
+import { logger } from '@/lib/logger'
 
 interface UpdatePasswordPageProps {
   searchParams: Promise<{
@@ -25,12 +26,57 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
   // Check authentication status
   useEffect(() => {
     const checkAuth = async () => {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      setIsAuthenticated(!!user)
+      const startTime = Date.now()
+      logger.info('Checking authentication for password update', {
+        action: 'checkPasswordUpdateAuth',
+        step: 'auth_check_initiated',
+        timestamp: new Date().toISOString()
+      })
 
-      if (!user) {
-        setError('You must be authenticated to update your password. Please use the password reset link from your email.')
+      try {
+        const supabase = createClient()
+        const { data: { user }, error } = await supabase.auth.getUser()
+
+        if (error) {
+          logger.error('Error checking authentication for password update', {
+            action: 'checkPasswordUpdateAuth',
+            step: 'auth_check_failed',
+            error: error.message,
+            duration: `${Date.now() - startTime}ms`
+          })
+          setError('Authentication check failed. Please try the password reset link again.')
+          setIsAuthenticated(false)
+          return
+        }
+
+        setIsAuthenticated(!!user)
+
+        if (!user) {
+          logger.warn('No authenticated user found for password update', {
+            action: 'checkPasswordUpdateAuth',
+            step: 'no_user_found',
+            duration: `${Date.now() - startTime}ms`
+          })
+          setError('You must be authenticated to update your password. Please use the password reset link from your email.')
+        } else {
+          logger.info('User authenticated successfully for password update', {
+            action: 'checkPasswordUpdateAuth',
+            step: 'user_authenticated',
+            userId: user.id ? `${user.id.substring(0, 8)}...` : 'null',
+            userEmail: user.email ? `${user.email.substring(0, 3)}***@${user.email.split('@')[1]}` : 'null',
+            duration: `${Date.now() - startTime}ms`
+          })
+        }
+      } catch (err) {
+        logger.error('Unexpected error during authentication check for password update', {
+          action: 'checkPasswordUpdateAuth',
+          step: 'unexpected_error',
+          error: err instanceof Error ? err.message : 'Unknown error',
+          stack: err instanceof Error ? err.stack : undefined,
+          duration: `${Date.now() - startTime}ms`
+        })
+        setError('Authentication check failed. Please try the password reset link again.')
+        setIsAuthenticated(false)
       }
     }
 
@@ -155,6 +201,17 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
               <a href="/auth/reset-password" className="text-primary hover:underline">
                 Request new password reset
               </a>
+            </div>
+          )}
+
+          {/* Debug information - remove in production */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="mt-4 p-3 bg-gray-100 rounded-md text-xs">
+              <p><strong>Debug Info:</strong></p>
+              <p>Authenticated: {isAuthenticated ? 'Yes' : 'No'}</p>
+              <p>Message: {message || 'None'}</p>
+              <p>Error: {error || 'None'}</p>
+              <p>Token: {token ? 'Present' : 'None'}</p>
             </div>
           )}
 
