@@ -9,9 +9,9 @@ interface LogoProps {
 
 export const Logo = ({ withLink = true, className = "" }: LogoProps) => {
   const logoContent = (
-    <div className={`hover:opacity-80 hover:scale-95 items-center mt-2 flex gap-0 justify-center lg:justify-start ${className}`}>
-      <Image src="/logo.svg" alt="Logo" width={50} height={50} />
-      <span className="sm:text-2xl text-xl font-bold break-normal text-slate-800">
+    <div className={`hover:opacity-80 hover:scale-95 items-center mt-2 flex  justify-center lg:justify-start ${className}`}>
+      <Image src="/logo.svg" alt="Logo" width={40} height={40} />
+      <span className="sm:text-2xl text-xl font-bold  text-slate-800">
         {Site_name.siteName}
       </span>
     </div>
