@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect } from "react"
 import { Icons } from "@/components/icons"
-import { Button } from "@/components/ui/button"
+import { MetaButton } from "@/components/ui/meta-button"
 import { useAuth } from "@/components/auth/auth-provider";
 import { AuthModal } from "@/components/auth/auth-modal";
 import { UserProfileCard } from "@/components/user-profile-card";
@@ -9,13 +9,16 @@ import { UserProfileCard } from "@/components/user-profile-card";
 export const LoginButton = () => {
   const { user, loading, refreshAuth } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   const handleLogin = () => {
+    setIsButtonDisabled(true);
     setIsAuthModalOpen(true);
   };
 
   const handleAuthModalClose = () => {
     setIsAuthModalOpen(false);
+    setIsButtonDisabled(false);
     // Refresh auth state after modal closes to ensure real-time updates
     refreshAuth();
   };
@@ -29,14 +32,15 @@ export const LoginButton = () => {
   // Show loading state while checking auth
   if (loading) {
     return (
-      <Button
-        variant="outline"
-        className="text-base font-semibold mr-5 py-2 px-8 w-full"
+      <MetaButton
+        variant="primary-outline"
+        size="md"
+        width="sm"
+        text="Loading..."
         disabled
-      >
-        <Icons.Loader2 className="h-4 w-4 mr-2 animate-spin" />
-        Loading...
-      </Button>
+        className="text-base font-semibold mr-5 py-2 px-8 w-full"
+        icon={Icons.Loader2}
+      />
     );
   }
 
@@ -44,14 +48,20 @@ export const LoginButton = () => {
   if (!user) {
     return (
       <>
-        <Button
+        <MetaButton
           onClick={handleLogin}
-          variant="outline"
+          variant="primary"
+          size="md"
+          width="sm"
+          text="Login"
+          disabled={isButtonDisabled}
+          analyticsEvent="login_button_click"
+          analyticsData={{
+            location: 'header'
+          }}
           className="text-base font-semibold mr-5 py-2 px-8 w-full"
-        >
-          Login
-          <Icons.next className="h-6 w-4 ml-2" />
-        </Button>
+          icon={Icons.next}
+        />
 
         <AuthModal
           isOpen={isAuthModalOpen}
