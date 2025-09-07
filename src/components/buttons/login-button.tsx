@@ -17,6 +17,7 @@ export const LoginButton = () => {
   };
 
   const handleAuthModalClose = () => {
+    console.log('handleAuthModalClose called');
     setIsAuthModalOpen(false);
 
     // Reset button state when modal closes

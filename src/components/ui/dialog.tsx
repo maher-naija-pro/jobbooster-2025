@@ -69,8 +69,11 @@ function DialogContent({
         {showCloseButton && (
           <DialogPrimitive.Close
             data-slot="dialog-close"
-            className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-3 right-3 sm:top-4 sm:right-4 rounded-lg opacity-80 transition-all duration-200 hover:opacity-100 hover:bg-gray-200 hover:scale-110 dark:hover:bg-slate-800 focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-6 p-3 min-h-[48px] min-w-[48px] flex items-center justify-center"
+            className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-3 right-3 sm:top-4 sm:right-4 rounded-lg opacity-80 transition-all duration-200 hover:opacity-100 hover:bg-gray-200 hover:scale-110 dark:hover:bg-slate-800 focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-6 p-3 min-h-[48px] min-w-[48px] flex items-center justify-center z-[60] pointer-events-auto"
             aria-label="Close dialog"
+            onClick={() => {
+              console.log('Close button clicked')
+            }}
           >
             <XIcon aria-hidden="true" />
             <span className="sr-only">Close</span>

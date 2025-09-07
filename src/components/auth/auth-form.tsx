@@ -49,13 +49,13 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
   }, [isLogin, isResetPassword])
 
   // Real-time validation
-  const validateField = useCallback((name: string, value: string) => {
+  const validateField = useCallback((name: string, value: string, isSubmit = false) => {
     const errors: Record<string, string> = { ...fieldErrors }
 
     switch (name) {
       case 'email':
         if (!value) {
-          errors.email = 'Email is required'
+          errors.email = isSubmit ? 'Email is required' : ''
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
           errors.email = 'Please enter a valid email address'
         } else {
@@ -64,7 +64,7 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
         break
       case 'password':
         if (!value) {
-          errors.password = 'Password is required'
+          errors.password = isSubmit ? 'Password is required' : ''
         } else if (value.length < 8) {
           errors.password = 'Password must be at least 8 characters'
         } else if (!isLogin && !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(value)) {
@@ -76,7 +76,7 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
       case 'confirmPassword':
         const password = formRef.current?.password?.value || ''
         if (!value) {
-          errors.confirmPassword = 'Please confirm your password'
+          errors.confirmPassword = isSubmit ? 'Please confirm your password' : ''
         } else if (value !== password) {
           errors.confirmPassword = 'Passwords do not match'
         } else {
@@ -91,7 +91,11 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setTouched(prev => ({ ...prev, [name]: true }))
-    validateField(name, value)
+
+    // Only validate if user has actually typed something
+    if (value.length > 0) {
+      validateField(name, value)
+    }
 
     // Clear general error when user starts typing
     if (error) {
@@ -102,7 +106,11 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
   const handleBlur = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setTouched(prev => ({ ...prev, [name]: true }))
-    validateField(name, value)
+
+    // Only validate on blur if user has actually typed something
+    if (value.length > 0) {
+      validateField(name, value)
+    }
   }, [validateField])
 
   const handleSubmit = async (formData: FormData) => {
@@ -115,11 +123,11 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
     const password = formData.get('password') as string
     const confirmPassword = formData.get('confirmPassword') as string
 
-    validateField('email', email)
+    validateField('email', email, true)
     if (!isResetPassword) {
-      validateField('password', password)
+      validateField('password', password, true)
       if (!isLogin) {
-        validateField('confirmPassword', confirmPassword)
+        validateField('confirmPassword', confirmPassword, true)
       }
     }
 

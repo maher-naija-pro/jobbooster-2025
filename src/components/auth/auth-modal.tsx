@@ -40,7 +40,9 @@ export function AuthModal({ isOpen, onClose, feature }: AuthModalProps) {
     }
   }, [isOpen])
 
-  const handleClose = () => {
+  // Close handler for direct calls
+  const handleDirectClose = () => {
+    console.log('handleDirectClose called')
     setIsLogin(true)
     setIsResetPassword(false)
     setOauthError('')
@@ -76,7 +78,12 @@ export function AuthModal({ isOpen, onClose, feature }: AuthModalProps) {
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      console.log('Dialog onOpenChange called with:', open)
+      if (!open) {
+        handleDirectClose()
+      }
+    }}>
       <DialogContent
         ref={modalRef}
         className="sm:max-w-xs relative overflow-hidden"
@@ -164,7 +171,7 @@ export function AuthModal({ isOpen, onClose, feature }: AuthModalProps) {
               onToggleMode={handleToggleMode}
               onResetPassword={handleResetPassword}
               onBackToLogin={handleBackToLogin}
-              onSuccess={handleClose}
+              onSuccess={handleDirectClose}
               onSwitchToLogin={handleSwitchToLogin}
             />
           </div>
