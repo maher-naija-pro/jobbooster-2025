@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
-import { AnimatedButton } from "@/components/ui/animated-button"
+import { MetaButton } from "@/components/ui/meta-button"
 import { Icons } from "@/components/icons"
 
 // Mock icons for demonstration
@@ -101,10 +101,10 @@ export default function ButtonDemoPage() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-12">
                     <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                        AnimatedButton Demo
+                        MetaButton Demo
                     </h1>
                     <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-                        Explore all the variants, sizes, and interactive features of the AnimatedButton component
+                        Explore all the variants, sizes, and interactive features of the MetaButton component
                     </p>
 
                     {/* Controls */}
@@ -142,48 +142,48 @@ export default function ButtonDemoPage() {
                         title="Primary"
                         description="Default primary action button with blue gradient"
                     >
-                        <AnimatedButton variant="primary" text="Primary Action" theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton variant="primary" text="With Icon" icon={Icons.arrowRight} theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton variant="primary" text="Primary Action" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton variant="primary" text="With Icon" icon={Icons.arrowRight} theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
 
                     <ButtonCard
                         title="Secondary"
                         description="Secondary action with gray gradient"
                     >
-                        <AnimatedButton variant="secondary" text="Secondary" theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton variant="secondary" text="Cancel" icon={XIcon} theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton variant="secondary" text="Secondary" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton variant="secondary" text="Cancel" icon={XIcon} theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
 
                     <ButtonCard
                         title="Success"
                         description="Success actions with green gradient"
                     >
-                        <AnimatedButton variant="success" text="Save Changes" icon={SaveIcon} theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton variant="success" text="Complete" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton variant="success" text="Save Changes" icon={SaveIcon} theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton variant="success" text="Complete" theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
 
                     <ButtonCard
                         title="Warning"
                         description="Warning actions with orange gradient"
                     >
-                        <AnimatedButton variant="warning" text="Warning" theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton variant="warning" text="Proceed" icon={AlertTriangleIcon} theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton variant="warning" text="Warning" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton variant="warning" text="Proceed" icon={AlertTriangleIcon} theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
 
                     <ButtonCard
                         title="Danger"
                         description="Dangerous actions with red gradient"
                     >
-                        <AnimatedButton variant="danger" text="Delete" icon={DeleteIcon} theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton variant="danger" text="Remove" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton variant="danger" text="Delete" icon={DeleteIcon} theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton variant="danger" text="Remove" theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
 
                     <ButtonCard
                         title="Default"
                         description="Default styling with gray gradient"
                     >
-                        <AnimatedButton variant="default" text="Default" theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton text="No Variant" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton variant="default" text="Default" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton text="No Variant" theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
                 </DemoSection>
 
@@ -193,24 +193,24 @@ export default function ButtonDemoPage() {
                         title="Primary Outline"
                         description="Primary action with border-only styling"
                     >
-                        <AnimatedButton variant="primary-outline" text="Primary Outline" theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton variant="primary-outline" text="With Icon" icon={Icons.arrowRight} theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton variant="primary-outline" text="Primary Outline" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton variant="primary-outline" text="With Icon" icon={Icons.arrowRight} theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
 
                     <ButtonCard
                         title="Success Outline"
                         description="Success action with border-only styling"
                     >
-                        <AnimatedButton variant="success-outline" text="Save" icon={SaveIcon} theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton variant="success-outline" text="Complete" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton variant="success-outline" text="Save" icon={SaveIcon} theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton variant="success-outline" text="Complete" theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
 
                     <ButtonCard
                         title="Danger Outline"
                         description="Danger action with border-only styling"
                     >
-                        <AnimatedButton variant="danger-outline" text="Delete" icon={DeleteIcon} theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton variant="danger-outline" text="Remove" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton variant="danger-outline" text="Delete" icon={DeleteIcon} theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton variant="danger-outline" text="Remove" theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
                 </DemoSection>
 
@@ -220,24 +220,24 @@ export default function ButtonDemoPage() {
                         title="Primary Ghost"
                         description="Transparent primary action with subtle hover"
                     >
-                        <AnimatedButton variant="primary-ghost" text="Primary Ghost" theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton variant="primary-ghost" text="With Icon" icon={Icons.arrowRight} theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton variant="primary-ghost" text="Primary Ghost" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton variant="primary-ghost" text="With Icon" icon={Icons.arrowRight} theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
 
                     <ButtonCard
                         title="Success Ghost"
                         description="Transparent success action"
                     >
-                        <AnimatedButton variant="success-ghost" text="Save" icon={SaveIcon} theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton variant="success-ghost" text="Complete" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton variant="success-ghost" text="Save" icon={SaveIcon} theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton variant="success-ghost" text="Complete" theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
 
                     <ButtonCard
                         title="Danger Ghost"
                         description="Transparent danger action"
                     >
-                        <AnimatedButton variant="danger-ghost" text="Delete" icon={DeleteIcon} theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton variant="danger-ghost" text="Remove" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton variant="danger-ghost" text="Delete" icon={DeleteIcon} theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton variant="danger-ghost" text="Remove" theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
                 </DemoSection>
 
@@ -247,24 +247,24 @@ export default function ButtonDemoPage() {
                         title="Small"
                         description="Compact size for tight spaces"
                     >
-                        <AnimatedButton size="sm" text="Small" variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton size="sm" text="Save" icon={SaveIcon} variant="success" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton size="sm" text="Small" variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton size="sm" text="Save" icon={SaveIcon} variant="success" theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
 
                     <ButtonCard
                         title="Medium"
                         description="Default size for most use cases"
                     >
-                        <AnimatedButton size="md" text="Medium" variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton size="md" text="Download" icon={DownloadIcon} variant="secondary" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton size="md" text="Medium" variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton size="md" text="Download" icon={DownloadIcon} variant="secondary" theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
 
                     <ButtonCard
                         title="Large"
                         description="Prominent size for important actions"
                     >
-                        <AnimatedButton size="lg" text="Large" variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton size="lg" text="Get Started" icon={Icons.arrowRight} variant="success" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton size="lg" text="Large" variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton size="lg" text="Get Started" icon={Icons.arrowRight} variant="success" theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
                 </DemoSection>
 
@@ -274,17 +274,17 @@ export default function ButtonDemoPage() {
                         title="Fixed Widths"
                         description="Different fixed width options"
                     >
-                        <AnimatedButton width="sm" text="Small" variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton width="md" text="Medium" variant="success" theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton width="lg" text="Large Width" variant="warning" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton width="sm" text="Small" variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton width="md" text="Medium" variant="success" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton width="lg" text="Large Width" variant="warning" theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
 
                     <ButtonCard
                         title="Full Width"
                         description="Buttons that span the full width of their container"
                     >
-                        <AnimatedButton fullWidth text="Full Width Button" variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton fullWidth text="Another Full Width" variant="success" icon={SaveIcon} theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton fullWidth text="Full Width Button" variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton fullWidth text="Another Full Width" variant="success" icon={SaveIcon} theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
                 </DemoSection>
 
@@ -294,17 +294,17 @@ export default function ButtonDemoPage() {
                         title="Tooltip Positions"
                         description="Tooltips with different positioning options"
                     >
-                        <AnimatedButton text="Top Tooltip" tooltip="This is a top tooltip" tooltipPosition="top" variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton text="Bottom Tooltip" tooltip="This is a bottom tooltip" tooltipPosition="bottom" variant="success" theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton text="Left Tooltip" tooltip="This is a left tooltip" tooltipPosition="left" variant="warning" theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton text="Right Tooltip" tooltip="This is a right tooltip" tooltipPosition="right" variant="danger" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton text="Top Tooltip" tooltip="This is a top tooltip" tooltipPosition="top" variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton text="Bottom Tooltip" tooltip="This is a bottom tooltip" tooltipPosition="bottom" variant="success" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton text="Left Tooltip" tooltip="This is a left tooltip" tooltipPosition="left" variant="warning" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton text="Right Tooltip" tooltip="This is a right tooltip" tooltipPosition="right" variant="danger" theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
 
                     <ButtonCard
                         title="Long Tooltips"
                         description="Tooltips with longer content"
                     >
-                        <AnimatedButton
+                        <MetaButton
                             text="Long Tooltip"
                             tooltip="This is a very long tooltip that demonstrates how the component handles longer text content and wraps appropriately."
                             variant="primary"
@@ -320,26 +320,26 @@ export default function ButtonDemoPage() {
                         title="Common Shortcuts"
                         description="Buttons with common keyboard shortcuts"
                     >
-                        <AnimatedButton text="Save" shortcut="Ctrl+S" variant="success" icon={SaveIcon} theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton text="New" shortcut="Ctrl+N" variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton text="Open" shortcut="Ctrl+O" variant="secondary" theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton text="Close" shortcut="Esc" variant="warning" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton text="Save" shortcut="Ctrl+S" variant="success" icon={SaveIcon} theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton text="New" shortcut="Ctrl+N" variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton text="Open" shortcut="Ctrl+O" variant="secondary" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton text="Close" shortcut="Esc" variant="warning" theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
 
                     <ButtonCard
                         title="Custom Shortcuts"
                         description="Buttons with custom keyboard shortcuts"
                     >
-                        <AnimatedButton text="Custom Action" shortcut="Alt+Shift+C" variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton text="Another Action" shortcut="F5" variant="success" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton text="Custom Action" shortcut="Alt+Shift+C" variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton text="Another Action" shortcut="F5" variant="success" theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
 
                     <ButtonCard
                         title="No Shortcut Display"
                         description="Buttons with shortcuts but display disabled"
                     >
-                        <AnimatedButton text="Hidden Shortcut" shortcut="Ctrl+H" showShortcut={false} variant="secondary" theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton text="Another Hidden" shortcut="Ctrl+Alt+H" showShortcut={false} variant="warning" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton text="Hidden Shortcut" shortcut="Ctrl+H" showShortcut={false} variant="secondary" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton text="Another Hidden" shortcut="Ctrl+Alt+H" showShortcut={false} variant="warning" theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
                 </DemoSection>
 
@@ -349,7 +349,7 @@ export default function ButtonDemoPage() {
                         title="Analytics Events"
                         description="Buttons with built-in analytics tracking"
                     >
-                        <AnimatedButton
+                        <MetaButton
                             text="Track Click"
                             analyticsEvent="button_clicked"
                             analyticsData={{ button_type: "primary", page: "demo" }}
@@ -357,7 +357,7 @@ export default function ButtonDemoPage() {
                             theme={theme}
                             disableAnimations={!animationsEnabled}
                         />
-                        <AnimatedButton
+                        <MetaButton
                             text="Track Save"
                             analyticsEvent="save_action"
                             analyticsData={{ action: "save", item: "document" }}
@@ -372,7 +372,7 @@ export default function ButtonDemoPage() {
                         title="Complex Analytics"
                         description="Buttons with detailed analytics data"
                     >
-                        <AnimatedButton
+                        <MetaButton
                             text="User Action"
                             analyticsEvent="user_interaction"
                             analyticsData={{
@@ -394,7 +394,7 @@ export default function ButtonDemoPage() {
                         title="Loading States"
                         description="Buttons with loading spinners and custom loading text"
                     >
-                        <AnimatedButton
+                        <MetaButton
                             text="Loading..."
                             isLoading={loadingStates.loading1}
                             onClick={() => handleLoadingToggle('loading1')}
@@ -402,7 +402,7 @@ export default function ButtonDemoPage() {
                             theme={theme}
                             disableAnimations={!animationsEnabled}
                         />
-                        <AnimatedButton
+                        <MetaButton
                             text="Processing"
                             isLoading={loadingStates.loading2}
                             loadingText="Please wait..."
@@ -417,22 +417,22 @@ export default function ButtonDemoPage() {
                         title="Disabled States"
                         description="Buttons that are disabled and show visual feedback"
                     >
-                        <AnimatedButton text="Disabled" disabled variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton text="Disabled with Icon" disabled icon={Icons.settings} variant="secondary" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton text="Disabled" disabled variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton text="Disabled with Icon" disabled icon={Icons.settings} variant="secondary" theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
 
                     <ButtonCard
                         title="Click Animations"
                         description="Buttons with click state management and animations"
                     >
-                        <AnimatedButton
+                        <MetaButton
                             text="Click Me"
                             onClick={() => handleButtonClick('click1')}
                             variant="primary"
                             theme={theme}
                             disableAnimations={!animationsEnabled}
                         />
-                        <AnimatedButton
+                        <MetaButton
                             text="Animated"
                             onClick={() => handleButtonClick('click2')}
                             icon={Icons.arrowRight}
@@ -449,32 +449,32 @@ export default function ButtonDemoPage() {
                         title="Custom Icons"
                         description="Using custom icon components"
                     >
-                        <AnimatedButton text="Settings" icon={SettingsIcon} variant="secondary" theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton text="Download" icon={DownloadIcon} variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton text="Delete Item" icon={DeleteIcon} variant="danger" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton text="Settings" icon={SettingsIcon} variant="secondary" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton text="Download" icon={DownloadIcon} variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton text="Delete Item" icon={DeleteIcon} variant="danger" theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
 
                     <ButtonCard
                         title="Custom Text"
                         description="Using text prop instead of children"
                     >
-                        <AnimatedButton text="Custom Text" variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton text="Another Button" variant="success" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton text="Custom Text" variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton text="Another Button" variant="success" theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
 
                     <ButtonCard
                         title="Children Content"
                         description="Using children for complex content"
                     >
-                        <AnimatedButton variant="primary" theme={theme} disableAnimations={!animationsEnabled}>
+                        <MetaButton variant="primary" theme={theme} disableAnimations={!animationsEnabled}>
                             <span className="flex items-center gap-2">
                                 <Icons.arrowRight className="h-4 w-4" />
                                 Complex Content
                             </span>
-                        </AnimatedButton>
-                        <AnimatedButton variant="success" theme={theme} disableAnimations={!animationsEnabled}>
+                        </MetaButton>
+                        <MetaButton variant="success" theme={theme} disableAnimations={!animationsEnabled}>
                             <span className="font-bold">Bold Text</span>
-                        </AnimatedButton>
+                        </MetaButton>
                     </ButtonCard>
                 </DemoSection>
 
@@ -484,26 +484,26 @@ export default function ButtonDemoPage() {
                         title="Form Buttons"
                         description="Different button types for forms"
                     >
-                        <AnimatedButton type="submit" text="Submit Form" variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton type="button" text="Regular Button" variant="secondary" theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton type="reset" text="Reset Form" variant="warning" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton type="submit" text="Submit Form" variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton type="button" text="Regular Button" variant="secondary" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton type="reset" text="Reset Form" variant="warning" theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
 
                     <ButtonCard
                         title="Icon Only"
                         description="Buttons with icons but no text"
                     >
-                        <AnimatedButton icon={Icons.settings} variant="secondary" showIcon={true} theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton icon={SaveIcon} variant="success" showIcon={true} theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton icon={DeleteIcon} variant="danger" showIcon={true} theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton icon={Icons.settings} variant="secondary" showIcon={true} theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton icon={SaveIcon} variant="success" showIcon={true} theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton icon={DeleteIcon} variant="danger" showIcon={true} theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
 
                     <ButtonCard
                         title="No Icons"
                         description="Buttons without icons"
                     >
-                        <AnimatedButton text="No Icon" variant="primary" showIcon={false} theme={theme} disableAnimations={!animationsEnabled} />
-                        <AnimatedButton text="Text Only" variant="success" showIcon={false} theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton text="No Icon" variant="primary" showIcon={false} theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton text="Text Only" variant="success" showIcon={false} theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
                 </DemoSection>
 
@@ -516,13 +516,13 @@ export default function ButtonDemoPage() {
                             <div>
                                 <h4 className="font-medium text-gray-700 mb-2">Basic Usage:</h4>
                                 <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto">
-                                    {`<AnimatedButton text="Click me" variant="primary" />`}
+                                    {`<MetaButton text="Click me" variant="primary" />`}
                                 </pre>
                             </div>
                             <div>
                                 <h4 className="font-medium text-gray-700 mb-2">With Tooltip and Shortcut:</h4>
                                 <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto">
-                                    {`<AnimatedButton 
+                                    {`<MetaButton 
   text="Save" 
   tooltip="Save your changes"
   shortcut="Ctrl+S"
@@ -534,7 +534,7 @@ export default function ButtonDemoPage() {
                             <div>
                                 <h4 className="font-medium text-gray-700 mb-2">Outline Variant:</h4>
                                 <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto">
-                                    {`<AnimatedButton 
+                                    {`<MetaButton 
   text="Cancel" 
   variant="primary-outline"
   theme="dark"
@@ -545,7 +545,7 @@ export default function ButtonDemoPage() {
                             <div>
                                 <h4 className="font-medium text-gray-700 mb-2">Ghost Variant with Analytics:</h4>
                                 <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto">
-                                    {`<AnimatedButton 
+                                    {`<MetaButton 
   text="Delete" 
   variant="danger-ghost"
   analyticsEvent="item_deleted"
@@ -557,7 +557,7 @@ export default function ButtonDemoPage() {
                             <div>
                                 <h4 className="font-medium text-gray-700 mb-2">Disabled Animations:</h4>
                                 <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto">
-                                    {`<AnimatedButton 
+                                    {`<MetaButton 
   text="No Animation" 
   variant="primary"
   disableAnimations={true}
@@ -568,7 +568,7 @@ export default function ButtonDemoPage() {
                             <div>
                                 <h4 className="font-medium text-gray-700 mb-2">Full Width with Loading:</h4>
                                 <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto">
-                                    {`<AnimatedButton 
+                                    {`<MetaButton 
   text="Submit" 
   variant="primary"
   fullWidth

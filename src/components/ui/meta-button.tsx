@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 
-interface AnimatedButtonProps {
+interface MetaButtonProps {
     isLoading?: boolean
     disabled?: boolean
     children?: React.ReactNode
@@ -36,7 +36,7 @@ interface AnimatedButtonProps {
     fullWidth?: boolean
 }
 
-export function AnimatedButton({
+export function MetaButton({
     isLoading = false,
     disabled = false,
     children,
@@ -59,7 +59,7 @@ export function AnimatedButton({
     analyticsEvent,
     analyticsData,
     fullWidth = false
-}: AnimatedButtonProps) {
+}: MetaButtonProps) {
     const [isClicked, setIsClicked] = useState(false)
     const [isHovered, setIsHovered] = useState(false)
     const [showTooltip, setShowTooltip] = useState(false)
