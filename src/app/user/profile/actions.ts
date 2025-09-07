@@ -5,7 +5,6 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
 import { updateProfileSchema } from '@/lib/auth/validation'
-import { ensureUserProfile } from '@/lib/auth/profile-utils'
 import { getSessionAnalytics } from '@/lib/auth/session-manager'
 
 export async function getProfile(userId: string) {
@@ -32,39 +31,8 @@ export async function getProfile(userId: string) {
       }
     })
 
-    // If profile doesn't exist, create it as a fallback
-    if (!profile) {
-      const supabase = await createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-
-      if (user && user.id === userId) {
-        const result = await ensureUserProfile(userId, user.email!)
-        if (result.success && result.profile) {
-          // Fetch the full profile with relations
-          profile = await prisma.profile.findUnique({
-            where: { userId },
-            include: {
-              userSessions: {
-                orderBy: { lastActivity: 'desc' },
-                take: 5
-              },
-              userActivities: {
-                orderBy: { createdAt: 'desc' },
-                take: 10
-              },
-              cvData: {
-                orderBy: { createdAt: 'desc' },
-                take: 5
-              },
-              generatedContent: {
-                orderBy: { createdAt: 'desc' },
-                take: 10
-              }
-            }
-          })
-        }
-      }
-    }
+    // Profile should exist - if not, return null
+    // Profiles are only created during registration, not on profile page load
 
     // Add session analytics to profile
     if (profile) {

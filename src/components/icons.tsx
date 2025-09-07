@@ -1,4 +1,4 @@
-import { ArrowRight, LogIn, Settings, User, User2Icon, UserX2Icon, X } from "lucide-react"
+import { ArrowRight, LogIn, Settings, User, User2Icon, UserX2Icon, X, Shield, Lock, Mail, Loader2 as Spinner } from "lucide-react"
 import { HiOutlineTrash } from "react-icons/hi2";
 import { FileUp, Plus, Loader2 } from "lucide-react";
 import { MdContentCopy } from "react-icons/md";
@@ -25,6 +25,11 @@ export const Icons = {
   settings: Settings,
   user: User,
   arrowRight: ArrowRight,
+  // Security & Auth
+  shield: Shield,
+  lock: Lock,
+  mail: Mail,
+  spinner: Spinner,
   // Social Media
   github: FaGithub,
   discord: FaDiscord,
