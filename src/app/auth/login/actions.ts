@@ -5,44 +5,135 @@ import { createClient } from '@/lib/supabase/server'
 import { loginSchema } from '@/lib/auth/validation'
 import { createUserSession } from '@/lib/auth/session-manager'
 import { headers } from 'next/headers'
+import { logger } from '@/lib/logger'
 
 export async function login(formData: FormData) {
+    const startTime = Date.now()
+    logger.info('User login initiated', {
+        action: 'login',
+        timestamp: new Date().toISOString(),
+        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'server-side'
+    })
+
     const supabase = await createClient()
+    logger.debug('Supabase client created for login', {
+        action: 'login',
+        step: 'supabase_client_created'
+    })
 
     const data = {
         email: formData.get('email') as string,
         password: formData.get('password') as string,
     }
 
+    logger.debug('Form data extracted for login', {
+        action: 'login',
+        step: 'form_data_extracted',
+        email: data.email ? `${data.email.substring(0, 3)}***@${data.email.split('@')[1]}` : 'null',
+        hasEmail: !!data.email,
+        hasPassword: !!data.password,
+        passwordLength: data.password ? data.password.length : 0
+    })
+
     try {
         // Validate input
         const validatedData = loginSchema.parse(data)
+        logger.info('Login data validated successfully', {
+            action: 'login',
+            step: 'validation_success',
+            email: validatedData.email ? `${validatedData.email.substring(0, 3)}***@${validatedData.email.split('@')[1]}` : 'null'
+        })
+
+        logger.debug('Initiating Supabase authentication', {
+            action: 'login',
+            step: 'supabase_auth_initiated',
+            email: validatedData.email ? `${validatedData.email.substring(0, 3)}***@${validatedData.email.split('@')[1]}` : 'null'
+        })
 
         const { data: authData, error } = await supabase.auth.signInWithPassword(validatedData)
 
         if (error) {
+            logger.warn('Supabase authentication failed', {
+                action: 'login',
+                step: 'supabase_auth_failed',
+                error: error.message,
+                errorCode: error.status,
+                email: validatedData.email ? `${validatedData.email.substring(0, 3)}***@${validatedData.email.split('@')[1]}` : 'null',
+                supabaseError: error
+            })
             // Map Supabase errors to user-friendly messages
             const userFriendlyMessage = mapAuthErrorToMessage(error.message)
             throw new Error(userFriendlyMessage)
         }
 
+        logger.info('Supabase authentication successful', {
+            action: 'login',
+            step: 'supabase_auth_success',
+            userId: authData.user?.id ? `${authData.user.id.substring(0, 8)}...` : 'null',
+            email: validatedData.email ? `${validatedData.email.substring(0, 3)}***@${validatedData.email.split('@')[1]}` : 'null',
+            hasSession: !!authData.session
+        })
+
         // Create session tracking record
         if (authData.user && authData.session?.access_token) {
             try {
+                logger.debug('Creating user session tracking', {
+                    action: 'login',
+                    step: 'session_tracking_initiated',
+                    userId: authData.user.id ? `${authData.user.id.substring(0, 8)}...` : 'null'
+                })
+
                 const headersList = await headers()
                 const request = new Request('http://localhost', {
                     headers: headersList
                 })
                 await createUserSession(authData.user, authData.session.access_token, request)
+
+                logger.info('User session tracking created successfully', {
+                    action: 'login',
+                    step: 'session_tracking_success',
+                    userId: authData.user.id ? `${authData.user.id.substring(0, 8)}...` : 'null'
+                })
             } catch (sessionError) {
-                console.error('Error creating session tracking:', sessionError)
+                logger.error('Error creating session tracking', {
+                    action: 'login',
+                    step: 'session_tracking_failed',
+                    error: sessionError instanceof Error ? sessionError.message : 'Unknown session error',
+                    stack: sessionError instanceof Error ? sessionError.stack : undefined,
+                    userId: authData.user.id ? `${authData.user.id.substring(0, 8)}...` : 'null'
+                })
                 // Don't fail login if session tracking fails
             }
         }
 
+        logger.debug('Revalidating paths after login', {
+            action: 'login',
+            step: 'path_revalidation'
+        })
+
         revalidatePath('/', 'layout')
+
+        const totalDuration = Date.now() - startTime
+        logger.info('User login completed successfully', {
+            action: 'login',
+            step: 'login_completed',
+            userId: authData.user?.id ? `${authData.user.id.substring(0, 8)}...` : 'null',
+            email: validatedData.email ? `${validatedData.email.substring(0, 3)}***@${validatedData.email.split('@')[1]}` : 'null',
+            duration: `${totalDuration}ms`
+        })
+
         return { success: true }
     } catch (error) {
+        const duration = Date.now() - startTime
+        logger.error('Login failed', {
+            action: 'login',
+            step: 'login_failed',
+            error: error instanceof Error ? error.message : 'Unknown login error',
+            stack: error instanceof Error ? error.stack : undefined,
+            duration: `${duration}ms`,
+            email: data.email ? `${data.email.substring(0, 3)}***@${data.email.split('@')[1]}` : 'null'
+        })
+
         if (error instanceof Error) {
             throw error
         }

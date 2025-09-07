@@ -111,7 +111,8 @@ export async function GET(request: Request) {
             step: 'redirect_to_update_password',
             userId: user.id ? `${user.id.substring(0, 8)}...` : 'null',
             userEmail: user.email ? `${user.email.substring(0, 3)}***@${user.email.split('@')[1]}` : 'null',
-            duration: `${Date.now() - startTime}ms`
+            duration: `${Date.now() - startTime}ms`,
+            redirectUrl: `${origin}/auth/update-password?message=Please enter your new password`
         })
 
         // Redirect to the update password page with success message

@@ -204,16 +204,6 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
             </div>
           )}
 
-          {/* Debug information - remove in production */}
-          {process.env.NODE_ENV === 'development' && (
-            <div className="mt-4 p-3 bg-gray-100 rounded-md text-xs">
-              <p><strong>Debug Info:</strong></p>
-              <p>Authenticated: {isAuthenticated ? 'Yes' : 'No'}</p>
-              <p>Message: {message || 'None'}</p>
-              <p>Error: {error || 'None'}</p>
-              <p>Token: {token ? 'Present' : 'None'}</p>
-            </div>
-          )}
 
           <div className="mt-4 text-center text-sm">
             <a href="/profile" className="text-primary hover:underline">

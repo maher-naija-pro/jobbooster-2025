@@ -2,27 +2,70 @@ import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { createUserSession } from '@/lib/auth/session-manager'
+import { logger } from '@/lib/logger'
 
 export async function GET(request: Request) {
+  const startTime = Date.now()
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
   // if "next" is in param, use it as the redirect URL
   const next = searchParams.get('next') ?? '/'
 
+  logger.info('Auth callback initiated', {
+    action: 'auth_callback',
+    step: 'callback_received',
+    hasCode: !!code,
+    next: next,
+    origin: origin,
+    timestamp: new Date().toISOString()
+  })
+
   if (code) {
     const supabase = await createClient()
+    logger.debug('Supabase client created for auth callback', {
+      action: 'auth_callback',
+      step: 'supabase_client_created'
+    })
+
+    logger.debug('Exchanging code for session', {
+      action: 'auth_callback',
+      step: 'session_exchange_initiated',
+      codeLength: code.length
+    })
+
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
+      logger.info('Code exchanged for session successfully', {
+        action: 'auth_callback',
+        step: 'session_exchange_success'
+      })
+
       // Get the user after successful session exchange
       const { data: { user } } = await supabase.auth.getUser()
 
       if (user) {
+        logger.info('User retrieved after session exchange', {
+          action: 'auth_callback',
+          step: 'user_retrieved',
+          userId: user.id ? `${user.id.substring(0, 8)}...` : 'null',
+          userEmail: user.email ? `${user.email.substring(0, 3)}***@${user.email.split('@')[1]}` : 'null',
+          emailConfirmed: !!user.email_confirmed_at
+        })
         // Update user profile after email confirmation (profile may already exist from registration)
         const registrationMethod = user.app_metadata?.provider || 'email'
         const additionalData = {
           fullName: user.user_metadata?.full_name || user.user_metadata?.name,
           avatarUrl: user.user_metadata?.avatar_url || user.user_metadata?.picture
         }
+
+        logger.debug('Updating user profile after email confirmation', {
+          action: 'auth_callback',
+          step: 'profile_update_initiated',
+          userId: user.id ? `${user.id.substring(0, 8)}...` : 'null',
+          registrationMethod: registrationMethod,
+          hasFullName: !!additionalData.fullName,
+          hasAvatarUrl: !!additionalData.avatarUrl
+        })
 
         try {
           // Update existing profile or create new one
@@ -44,6 +87,13 @@ export async function GET(request: Request) {
             }
           })
 
+          logger.info('User profile updated successfully', {
+            action: 'auth_callback',
+            step: 'profile_update_success',
+            userId: user.id ? `${user.id.substring(0, 8)}...` : 'null',
+            userEmail: user.email ? `${user.email.substring(0, 3)}***@${user.email.split('@')[1]}` : 'null'
+          })
+
           // Log the email confirmation activity
           await prisma.userActivity.create({
             data: {
@@ -59,18 +109,60 @@ export async function GET(request: Request) {
             }
           })
 
+          logger.info('Email confirmation activity logged', {
+            action: 'auth_callback',
+            step: 'activity_logged',
+            userId: user.id ? `${user.id.substring(0, 8)}...` : 'null',
+            registrationMethod: registrationMethod
+          })
+
           // Create user session for analytics tracking
           const { data: { session } } = await supabase.auth.getSession()
           if (session?.access_token) {
+            logger.debug('Creating user session for analytics tracking', {
+              action: 'auth_callback',
+              step: 'session_creation_initiated',
+              userId: user.id ? `${user.id.substring(0, 8)}...` : 'null'
+            })
+
             await createUserSession(user, session.access_token, request)
+
+            logger.info('User session created for analytics tracking', {
+              action: 'auth_callback',
+              step: 'session_creation_success',
+              userId: user.id ? `${user.id.substring(0, 8)}...` : 'null'
+            })
           }
         } catch (profileError) {
-          console.error('Error updating user profile after email confirmation:', profileError)
+          logger.error('Error updating user profile after email confirmation', {
+            action: 'auth_callback',
+            step: 'profile_update_failed',
+            error: profileError instanceof Error ? profileError.message : 'Unknown profile error',
+            stack: profileError instanceof Error ? profileError.stack : undefined,
+            userId: user.id ? `${user.id.substring(0, 8)}...` : 'null',
+            userEmail: user.email ? `${user.email.substring(0, 3)}***@${user.email.split('@')[1]}` : 'null'
+          })
         }
       }
 
       const forwardedHost = request.headers.get('x-forwarded-host') // original origin before load balancer
       const isLocalEnv = process.env.NODE_ENV === 'development'
+
+      const redirectUrl = isLocalEnv
+        ? `${origin}${next}`
+        : forwardedHost
+          ? `https://${forwardedHost}${next}`
+          : `${origin}${next}`
+
+      logger.info('Auth callback completed successfully, redirecting user', {
+        action: 'auth_callback',
+        step: 'redirect_user',
+        redirectUrl: redirectUrl,
+        isLocalEnv: isLocalEnv,
+        hasForwardedHost: !!forwardedHost,
+        duration: `${Date.now() - startTime}ms`
+      })
+
       if (isLocalEnv) {
         // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
         return NextResponse.redirect(`${origin}${next}`)
@@ -79,9 +171,28 @@ export async function GET(request: Request) {
       } else {
         return NextResponse.redirect(`${origin}${next}`)
       }
+    } else {
+      logger.error('Code exchange for session failed', {
+        action: 'auth_callback',
+        step: 'session_exchange_failed',
+        error: error.message,
+        errorCode: error.status,
+        duration: `${Date.now() - startTime}ms`
+      })
     }
+  } else {
+    logger.warn('Auth callback received without code', {
+      action: 'auth_callback',
+      step: 'no_code_received',
+      duration: `${Date.now() - startTime}ms`
+    })
   }
 
   // return the user to an error page with instructions
+  logger.warn('Redirecting to auth error page', {
+    action: 'auth_callback',
+    step: 'redirect_to_error',
+    duration: `${Date.now() - startTime}ms`
+  })
   return NextResponse.redirect(`${origin}/auth/auth-code-error`)
 }
