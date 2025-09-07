@@ -3,14 +3,18 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { ensureAvatarsBucket } from '@/lib/supabase/storage'
 import { prisma } from '@/lib/prisma'
 
 export async function uploadAvatar(formData: FormData) {
   const supabase = await createClient()
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+  console.log('Auth debug:', { user: user?.id, authError })
 
   if (!user) {
+    console.log('No user found, auth error:', authError)
     return { success: false, error: 'Not authenticated' }
   }
 
@@ -32,18 +36,8 @@ export async function uploadAvatar(formData: FormData) {
   }
 
   try {
-    // Check if avatars bucket exists
-    const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets()
-    if (bucketsError) {
-      console.error('Error listing buckets:', bucketsError)
-      return { success: false, error: 'Failed to access storage buckets' }
-    }
-
-    const avatarsBucket = buckets?.find(bucket => bucket.name === 'avatars')
-    if (!avatarsBucket) {
-      console.error('Avatars bucket not found')
-      return { success: false, error: 'Storage bucket not configured. Please contact support.' }
-    }
+    // Ensure avatars bucket exists
+    await ensureAvatarsBucket()
 
     // Generate unique filename
     const fileExt = file.name.split('.').pop()
