@@ -3,7 +3,6 @@ import { createClient } from '@/lib/supabase/server'
 import { getProfile } from '@/app/user/profile/actions'
 import { ProfileForm } from '@/components/user/profile-form'
 import { AvatarUpload } from '@/components/user/avatar-upload'
-import { PreferencesForm } from '@/components/user/preferences-form'
 import { ResetPasswordModal } from '@/components/auth/reset-password-modal'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -176,18 +175,6 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                         </CardContent>
                     </Card>
 
-                    {/* Preferences Section */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Preferences</CardTitle>
-                            <CardDescription>
-                                Configure your application preferences and settings
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <PreferencesForm profile={finalProfile} />
-                        </CardContent>
-                    </Card>
                 </div>
             </div>
         </div>
