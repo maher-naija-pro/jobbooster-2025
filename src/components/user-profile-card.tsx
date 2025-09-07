@@ -169,7 +169,7 @@ export const UserProfileCard = ({ className }: UserProfileCardProps) => {
                                 className="w-full justify-start h-8 text-gray-700 hover:bg-gray-100 hover:text-gray-900 text-sm"
                             >
                                 <Icons.settings className="mr-2 h-3.5 w-3.5" />
-                                Settings
+                                Preferences
                             </Button>
 
                             <Separator className="my-1.5" />
