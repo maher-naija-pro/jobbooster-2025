@@ -57,7 +57,7 @@ function FormInputs({ username, setUsername, fullName, setFullName, usernameStat
       </div>
 
       {/* Profile Information Section - 2/3 width */}
-      <div className="lg:col-span-2 space-y-6">
+      <div className="lg:col-span-2 space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <Label htmlFor="fullName">Full Name</Label>
@@ -262,7 +262,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
   }
 
   return (
-    <form action={updateProfile} className="space-y-6">
+    <form action={updateProfile} className="space-y-4">
       {error && (
         <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">
           {error}

@@ -63,12 +63,12 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
             } else {
                 // If still no profile, show error
                 return (
-                    <div className="container mx-auto py-8 px-4">
+                    <div className="container mx-auto py-12 px-4">
                         <div className="max-w-4xl mx-auto">
                             <div className="mb-8">
-                                <h1 className="text-3xl font-bold">Profile Settings</h1>
+                                <h1 className="text-3xl font-bold">Profile</h1>
                                 <p className="text-muted-foreground">
-                                    Manage your account settings and preferences
+                                    Manage your account
                                 </p>
                             </div>
                             <div className="p-6 text-center">
@@ -81,12 +81,12 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
         } else {
             // If profile creation failed, show error
             return (
-                <div className="container mx-auto py-8 px-4">
+                <div className="container mx-auto  px-4">
                     <div className="max-w-4xl mx-auto">
                         <div className="mb-8">
-                            <h1 className="text-3xl font-bold">Profile Settings</h1>
+                            <h1 className="text-3xl font-bold">Profile</h1>
                             <p className="text-muted-foreground">
-                                Manage your account settings and preferences
+                                Manage your account
                             </p>
                         </div>
                         <div className="p-6 text-center">
@@ -99,12 +99,12 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
     }
 
     return (
-        <div className="container mx-auto py-8 px-4">
+        <div className="container mx-auto py-12 px-4">
             <div className="max-w-4xl mx-auto">
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold">Profile Settings</h1>
+                    <h1 className="text-3xl font-bold">Profile</h1>
                     <p className="text-muted-foreground">
-                        Manage your account settings and preferences
+                        Manage your account
                     </p>
                 </div>
 
@@ -117,13 +117,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                 <div className="space-y-8">
                     {/* Profile Information and Picture Section */}
                     <Card>
-                        <CardHeader>
-                            <CardTitle>Profile Information</CardTitle>
-                            <CardDescription>
-                                Update your personal information, account details, and profile picture
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
+                        <CardContent className="pt-12">
                             <ProfileForm profile={finalProfile} />
                         </CardContent>
                     </Card>

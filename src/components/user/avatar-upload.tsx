@@ -97,6 +97,7 @@ function DeleteButton({ onDelete }: { onDelete: () => void }) {
       variant="outline"
       onClick={handleDelete}
       disabled={isDeleting}
+      className="w-full"
     >
       {isDeleting ? (
         <>
@@ -181,7 +182,7 @@ export function AvatarUpload({ profile }: AvatarUploadProps) {
     <>
       <div className="space-y-4">
         <div className="flex flex-col items-center space-y-4">
-          <Avatar className="h-32 w-32">
+          <Avatar className="h-32 w-32 border-4 border-gray-200 shadow-lg">
             <AvatarImage src={profile?.avatarUrl} alt={profile?.fullName || profile?.email} />
             <AvatarFallback className="text-2xl">{initials}</AvatarFallback>
           </Avatar>
