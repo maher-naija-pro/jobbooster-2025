@@ -24,6 +24,7 @@ Apply now to be part of digital transformation across telecom and transport sect
     cvAnalysisProgress: 0,
     isAnalyzingJob: false,
     jobAnalysisProgress: 0,
+    isTestMode: false,
 };
 
 function appReducer(state: AppState, action: AppAction): AppState {
@@ -76,6 +77,8 @@ function appReducer(state: AppState, action: AppAction): AppState {
             return { ...state, uploadProgress: action.payload };
         case 'COMPLETE_UPLOAD':
             return { ...state, isUploading: false, uploadProgress: 100 };
+        case 'TOGGLE_TEST_MODE':
+            return { ...state, isTestMode: !state.isTestMode };
         default:
             return state;
     }

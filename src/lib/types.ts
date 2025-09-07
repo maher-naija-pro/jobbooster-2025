@@ -284,6 +284,7 @@ export interface AppState {
   cvAnalysisProgress: number;
   isAnalyzingJob: boolean;
   jobAnalysisProgress: number;
+  isTestMode: boolean;
 }
 
 export type AppAction =
@@ -310,7 +311,8 @@ export type AppAction =
   | { type: 'CLEAR_ERROR' }
   | { type: 'START_UPLOAD' }
   | { type: 'SET_UPLOAD_PROGRESS'; payload: number }
-  | { type: 'COMPLETE_UPLOAD' };
+  | { type: 'COMPLETE_UPLOAD' }
+  | { type: 'TOGGLE_TEST_MODE' };
 
 export const SUPPORTED_LANGUAGES: Language[] = [
   { code: 'en', name: 'English', nativeName: 'English', flag: '🇺🇸', isRTL: false },

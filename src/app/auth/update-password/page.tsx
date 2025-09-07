@@ -1,19 +1,22 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { MetaButton } from '@/components/buttons/meta-button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Icons } from '@/components/icons'
 import { updatePassword } from '../reset-password/actions'
 import { createClient } from '@/lib/supabase/client'
 import { logger } from '@/lib/logger'
 import { getHumanReadableError, ErrorInfo } from '@/lib/auth/error-messages'
+import { updatePasswordSchema } from '@/lib/auth/validation'
 
 interface UpdatePasswordPageProps {
   searchParams: Promise<{
     message?: string
     token?: string
+    test?: string
   }>
 }
 
@@ -23,9 +26,23 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
   const [errorInfo, setErrorInfo] = useState<ErrorInfo | null>(null)
   const [token, setToken] = useState<string>('')
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
+  const [isTestMode, setIsTestMode] = useState<boolean>(false)
+
+  // Form state management
+  const [formValues, setFormValues] = useState<Record<string, string>>({})
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [touched, setTouched] = useState<Record<string, boolean>>({})
+  const formRef = useRef<HTMLFormElement>(null)
+  const passwordRef = useRef<HTMLInputElement>(null)
+  const confirmPasswordRef = useRef<HTMLInputElement>(null)
 
   // Check authentication status
   useEffect(() => {
+    // Skip authentication check in test mode
+    if (isTestMode) {
+      return
+    }
+
     const checkAuth = async () => {
       const startTime = Date.now()
       logger.info('Checking authentication for password update', {
@@ -89,7 +106,7 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
     }
 
     checkAuth()
-  }, [])
+  }, [isTestMode])
 
   // Handle search params on client side
   useEffect(() => {
@@ -100,21 +117,220 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
       if (params.token) {
         setToken(params.token)
       }
+      if (params.test === 'true') {
+        setIsTestMode(true)
+        setIsAuthenticated(true)
+        setMessage('Test mode enabled - you can test the password update form')
+        // Clear any existing errors in test mode
+        setErrorInfo(null)
+      }
     })
   }, [searchParams])
 
+  // Real-time validation
+  const validateField = useCallback((fieldName: string, value: string) => {
+    try {
+      const data = {
+        password: formValues.password || '',
+        confirmPassword: formValues.confirmPassword || '',
+        token: token || null
+      }
+
+      // Update the field being validated
+      if (fieldName === 'password') {
+        data.password = value
+      } else if (fieldName === 'confirmPassword') {
+        data.confirmPassword = value
+      }
+
+      // Validate using the schema
+      updatePasswordSchema.parse(data)
+
+      // Clear error if validation passes
+      setFieldErrors(prev => {
+        const newErrors = { ...prev }
+        delete newErrors[fieldName]
+        return newErrors
+      })
+
+      return true
+    } catch (error: any) {
+      if (error.errors && error.errors.length > 0) {
+        const fieldError = error.errors.find((e: any) => e.path.includes(fieldName))
+        if (fieldError) {
+          setFieldErrors(prev => ({
+            ...prev,
+            [fieldName]: fieldError.message
+          }))
+        }
+      }
+      return false
+    }
+  }, [formValues, token])
+
+  // Handle input changes
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormValues(prev => ({ ...prev, [name]: value }))
+
+    // Clear message when user starts typing
+    if (message) {
+      setMessage('')
+    }
+    if (errorInfo) {
+      setErrorInfo(null)
+    }
+
+    // Validate field if it's been touched
+    if (touched[name]) {
+      validateField(name, value)
+    }
+  }, [message, errorInfo, touched, validateField])
+
+  // Handle input blur
+  const handleBlur = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setTouched(prev => ({ ...prev, [name]: true }))
+    validateField(name, value)
+  }, [validateField])
+
+  // Check if a field is invalid
+  const isFieldInvalid = (fieldName: string) => {
+    return touched[fieldName] && fieldErrors[fieldName]
+  }
+
+  // Get field error message
+  const getFieldError = (fieldName: string) => {
+    return fieldErrors[fieldName] || ''
+  }
+
+  // Check if form is valid for submission
+  const isFormValid = () => {
+    // Check if there are any validation errors
+    if (Object.keys(fieldErrors).length > 0) {
+      return false
+    }
+
+    // Check if required fields are filled
+    const password = formValues.password || formRef.current?.password?.value || ''
+    const confirmPassword = formValues.confirmPassword || formRef.current?.confirmPassword?.value || ''
+
+    // Both password fields are required
+    if (!password.trim() || !confirmPassword.trim()) {
+      return false
+    }
+
+    // Check if passwords match
+    if (password !== confirmPassword) {
+      return false
+    }
+
+    // Check minimum length
+    if (password.length < 6) {
+      return false
+    }
+
+    return true
+  }
+
   const handleSubmit = async (formData: FormData) => {
+    logger.info('Password update form submitted', {
+      action: 'handleSubmit',
+      step: 'form_submission_started',
+      timestamp: new Date().toISOString(),
+      isTestMode
+    })
+
     setIsLoading(true)
     setMessage('')
     setErrorInfo(null)
 
     try {
-      await updatePassword(formData)
-      setMessage('Password updated successfully! You can now use your new password.')
+      // In test mode, simulate the form submission
+      if (isTestMode) {
+        logger.info('Test mode: simulating password update', {
+          action: 'handleSubmit',
+          step: 'test_mode_simulation',
+          timestamp: new Date().toISOString()
+        })
+
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 2000))
+
+        // Simulate success or error based on password
+        const password = formData.get('password') as string
+        const confirmPassword = formData.get('confirmPassword') as string
+
+        if (password !== confirmPassword) {
+          throw new Error('Passwords do not match')
+        }
+
+        if (password.length < 6) {
+          throw new Error('Password must be at least 6 characters long')
+        }
+
+        setMessage('Test mode: Password updated successfully! (This is a simulation)')
+        return
+      }
+
+      logger.debug('Calling updatePassword action', {
+        action: 'handleSubmit',
+        step: 'calling_update_password',
+        timestamp: new Date().toISOString()
+      })
+
+      const result = await updatePassword(formData)
+
+      if (result.success) {
+        logger.info('Password update action completed successfully', {
+          action: 'handleSubmit',
+          step: 'update_password_success',
+          timestamp: new Date().toISOString()
+        })
+        setMessage(result.message || 'Password updated successfully! You can now use your new password.')
+      } else {
+        logger.error('Password update action failed', {
+          action: 'handleSubmit',
+          step: 'update_password_failed',
+          error: result.error,
+          timestamp: new Date().toISOString()
+        })
+        setErrorInfo({
+          title: 'Password Update Failed',
+          message: result.error || 'Failed to update password. Please try again.',
+          details: 'Please check your password and try again.'
+        })
+      }
     } catch (err) {
+      logger.error('Error in password update form submission', {
+        action: 'handleSubmit',
+        step: 'form_submission_error',
+        error: err instanceof Error ? err.message : 'Unknown error',
+        errorType: err instanceof Error ? err.constructor.name : 'Unknown',
+        timestamp: new Date().toISOString(),
+        isTestMode
+      })
+
+      // Check if it's a NEXT_REDIRECT error (which is expected behavior for redirects)
+      if (err instanceof Error && err.message === 'NEXT_REDIRECT') {
+        logger.info('NEXT_REDIRECT error caught (expected behavior)', {
+          action: 'handleSubmit',
+          step: 'redirect_handling',
+          timestamp: new Date().toISOString()
+        })
+        // Don't show error for redirects - this is expected behavior
+        // The loading state will be reset when the component unmounts due to redirect
+        return
+      }
+
       const errorInfo = getHumanReadableError(err)
       setErrorInfo(errorInfo)
     } finally {
+      logger.debug('Password update form submission completed, resetting loading state', {
+        action: 'handleSubmit',
+        step: 'form_submission_completed',
+        timestamp: new Date().toISOString()
+      })
       setIsLoading(false)
     }
   }
@@ -178,13 +394,14 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
 
 
           {isAuthenticated ? (
-            <form action={handleSubmit} className="space-y-4">
+            <form ref={formRef} action={handleSubmit} className="space-y-4">
               {token && (
                 <input type="hidden" name="token" value={token} />
               )}
               <div className="space-y-2">
                 <Label htmlFor="password">New password</Label>
                 <Input
+                  ref={passwordRef}
                   id="password"
                   name="password"
                   type="password"
@@ -192,12 +409,31 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
                   autoComplete="new-password"
                   required
                   disabled={isLoading}
+                  onChange={handleInputChange}
+                  onBlur={handleBlur}
+                  aria-invalid={isFieldInvalid('password') ? 'true' : 'false'}
+                  aria-describedby={isFieldInvalid('password') ? 'password-error' : undefined}
+                  className={`transition-all duration-200 ${isFieldInvalid('password')
+                    ? 'border-red-300 dark:border-red-600 focus-visible:ring-red-500/20'
+                    : 'border-slate-300 dark:border-slate-600 focus-visible:ring-blue-500/20'
+                    }`}
                 />
+                {isFieldInvalid('password') && (
+                  <p id="password-error" className="text-sm text-red-600 dark:text-red-400 mt-1" role="alert">
+                    {getFieldError('password')}
+                  </p>
+                )}
+                {!isFieldInvalid('password') && (
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    Must be at least 6 characters long
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">Confirm new password</Label>
                 <Input
+                  ref={confirmPasswordRef}
                   id="confirmPassword"
                   name="confirmPassword"
                   type="password"
@@ -205,23 +441,51 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
                   autoComplete="new-password"
                   required
                   disabled={isLoading}
+                  onChange={handleInputChange}
+                  onBlur={handleBlur}
+                  aria-invalid={isFieldInvalid('confirmPassword') ? 'true' : 'false'}
+                  aria-describedby={isFieldInvalid('confirmPassword') ? 'confirmPassword-error' : undefined}
+                  className={`transition-all duration-200 ${isFieldInvalid('confirmPassword')
+                    ? 'border-red-300 dark:border-red-600 focus-visible:ring-red-500/20'
+                    : 'border-slate-300 dark:border-slate-600 focus-visible:ring-blue-500/20'
+                    }`}
                 />
+                {isFieldInvalid('confirmPassword') && (
+                  <p id="confirmPassword-error" className="text-sm text-red-600 dark:text-red-400 mt-1" role="alert">
+                    {getFieldError('confirmPassword')}
+                  </p>
+                )}
               </div>
 
-              <Button
+              <MetaButton
                 type="submit"
-                className="w-full h-10 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <div className="flex items-center space-x-2">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                    <span>Updating...</span>
-                  </div>
-                ) : (
-                  'Update password'
-                )}
-              </Button>
+                variant="primary"
+                size="lg"
+                width="full"
+                isLoading={isLoading}
+                loadingText="Updating password..."
+                showLoadingText={true}
+                loadingTextAnimation="pulse"
+                loadingIconType="spinner"
+                showLoadingIcon={true}
+                loadingSpeed="normal"
+                icon={Icons.settings}
+                disabled={isLoading || !isFormValid()}
+                text="Update password"
+                tooltip="Update your account password"
+                tooltipPosition="top"
+                analyticsEvent="password_update_attempt"
+                analyticsData={{
+                  formType: 'update_password',
+                  timestamp: new Date().toISOString()
+                }}
+                onClick={() => {
+                  if (formRef.current && !isLoading && isFormValid()) {
+                    setIsLoading(true)
+                    formRef.current.requestSubmit()
+                  }
+                }}
+              />
             </form>
           ) : (
             <div className="text-center">

@@ -9,14 +9,18 @@ interface AuthModalProps {
   isOpen: boolean
   onClose: () => void
   feature?: string
+  onTestModeToggle?: () => void
 }
 
-export function AuthModal({ isOpen, onClose, feature }: AuthModalProps) {
+export function AuthModal({ isOpen, onClose, feature, onTestModeToggle }: AuthModalProps) {
   const [isLogin, setIsLogin] = useState(true)
   const [isResetPassword, setIsResetPassword] = useState(false)
   const [oauthError, setOauthError] = useState('')
   const [isAnimating, setIsAnimating] = useState(false)
   const modalRef = useRef<HTMLDivElement>(null)
+
+  // Check if test mode is enabled via environment variable
+  const isTestModeEnabled = process.env.NEXT_PUBLIC_ENABLE_TEST_MODE !== 'false'
 
   // Focus management for accessibility
   useEffect(() => {
@@ -162,6 +166,24 @@ export function AuthModal({ isOpen, onClose, feature }: AuthModalProps) {
                     </span>
                   </div>
                 </div>
+
+                {/* Test Mode Toggle */}
+                {onTestModeToggle && isTestModeEnabled && (
+                  <div className="mb-4 p-3 text-sm bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/30 rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-blue-800 dark:text-blue-200 font-medium">Test Mode</p>
+                        <p className="text-blue-600 dark:text-blue-300 text-xs">Enable test mode to try the form without authentication</p>
+                      </div>
+                      <button
+                        onClick={onTestModeToggle}
+                        className="px-3 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+                      >
+                        Enable Test Mode
+                      </button>
+                    </div>
+                  </div>
+                )}
               </>
             )}
 

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { AuthModal } from './auth-modal'
 import { useAuth } from './auth-provider'
+import { useApp } from '@/lib/app-context'
 
 interface FeatureGateProps {
     children: React.ReactNode
@@ -13,14 +14,29 @@ interface FeatureGateProps {
 export function FeatureGate({ children, feature, fallback }: FeatureGateProps) {
     const [showAuthModal, setShowAuthModal] = useState(false)
     const { user, loading } = useAuth()
+    const { state, dispatch } = useApp()
+    const { isTestMode } = state
+
+    // Check if test mode is enabled via environment variable
+    const isTestModeEnabled = process.env.NEXT_PUBLIC_ENABLE_TEST_MODE !== 'false'
 
     const handleFeatureAccess = () => {
-        if (!user) {
+        if (!user && !isTestMode) {
             setShowAuthModal(true)
             return
         }
 
-        // User is authenticated, allow access
+        // User is authenticated or in test mode, allow access
+    }
+
+    const handleTestModeToggle = () => {
+        // Only allow test mode if enabled in environment
+        if (isTestModeEnabled) {
+            dispatch({ type: 'TOGGLE_TEST_MODE' })
+            if (showAuthModal) {
+                setShowAuthModal(false)
+            }
+        }
     }
 
     if (loading) {
@@ -31,7 +47,7 @@ export function FeatureGate({ children, feature, fallback }: FeatureGateProps) {
         )
     }
 
-    if (!user) {
+    if (!user && !isTestMode) {
         return (
             <>
                 <div onClick={handleFeatureAccess} className="cursor-pointer">
@@ -43,6 +59,7 @@ export function FeatureGate({ children, feature, fallback }: FeatureGateProps) {
                         isOpen={showAuthModal}
                         onClose={() => setShowAuthModal(false)}
                         feature={feature}
+                        onTestModeToggle={handleTestModeToggle}
                     />
                 )}
             </>

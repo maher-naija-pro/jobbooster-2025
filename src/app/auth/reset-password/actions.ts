@@ -200,7 +200,17 @@ export async function updatePassword(formData: FormData) {
         userId: user.id ? `${user.id.substring(0, 8)}...` : 'null',
         supabaseError: error
       })
-      redirect('/error?message=' + encodeURIComponent('Failed to update password'))
+
+      // Return user-friendly error messages based on Supabase error codes
+      if (error.code === 'same_password') {
+        return { success: false, error: 'New password must be different from your current password.' }
+      } else if (error.code === 'weak_password') {
+        return { success: false, error: 'Password is too weak. Please choose a stronger password.' }
+      } else if (error.status === 422) {
+        return { success: false, error: 'Invalid password. Please check your password requirements.' }
+      } else {
+        return { success: false, error: 'Failed to update password. Please try again.' }
+      }
     }
 
     logger.info('Password updated successfully in Supabase', {
@@ -223,11 +233,10 @@ export async function updatePassword(formData: FormData) {
       action: 'updatePassword',
       step: 'update_completed',
       userId: user.id ? `${user.id.substring(0, 8)}...` : 'null',
-      duration: `${totalDuration}ms`,
-      redirectUrl: '/profile?message=Password%20updated%20successfully'
+      duration: `${totalDuration}ms`
     })
 
-    redirect('/profile?message=' + encodeURIComponent('Password updated successfully'))
+    return { success: true, message: 'Password updated successfully!' }
   } catch (error) {
     const duration = Date.now() - startTime
 
@@ -250,6 +259,7 @@ export async function updatePassword(formData: FormData) {
       duration: `${duration}ms`,
       userId: user.id ? `${user.id.substring(0, 8)}...` : 'null'
     })
-    redirect('/error?message=' + encodeURIComponent('Failed to update password'))
+
+    return { success: false, error: 'An unexpected error occurred. Please try again.' }
   }
 }

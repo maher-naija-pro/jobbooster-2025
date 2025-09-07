@@ -24,6 +24,9 @@ export default function Home() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // Check if test mode is enabled via environment variable
+  const isTestModeEnabled = process.env.NEXT_PUBLIC_ENABLE_TEST_MODE !== 'false';
+
   // Load user's language preference
   useUserLanguage();
 
@@ -426,8 +429,23 @@ export default function Home() {
 
   return (
     <div className="min-h-screen px-4 sm:px-6 lg:px-8">
-      {/* Demo Link */}
-      <div className="flex justify-end pt-4">
+      {/* Demo Link and Test Mode Indicator */}
+      <div className="flex justify-between items-center pt-4">
+        {/* Test Mode Indicator */}
+        {state.isTestMode && isTestModeEnabled && (
+          <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/30 rounded-lg">
+            <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+            <span className="text-sm font-medium text-blue-800 dark:text-blue-200">Test Mode Active</span>
+            <button
+              onClick={() => dispatch({ type: 'TOGGLE_TEST_MODE' })}
+              className="text-xs text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100 underline"
+            >
+              Disable
+            </button>
+          </div>
+        )}
+
+        {/* Demo Link */}
         <Link href="/demo-llm-process">
           <Button variant="outline" className="flex items-center gap-2">
             <Database className="w-4 h-4" />
