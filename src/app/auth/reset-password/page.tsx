@@ -81,6 +81,7 @@ export default function ResetPasswordPage({ searchParams }: ResetPasswordPagePro
                                 name="email"
                                 type="email"
                                 placeholder="Enter your email"
+                                autoComplete="email"
                                 required
                                 disabled={isLoading}
                             />

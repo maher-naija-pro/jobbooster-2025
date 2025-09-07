@@ -189,6 +189,7 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
                   name="password"
                   type="password"
                   placeholder="Enter your new password"
+                  autoComplete="new-password"
                   required
                   disabled={isLoading}
                 />
@@ -201,6 +202,7 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
                   name="confirmPassword"
                   type="password"
                   placeholder="Confirm your new password"
+                  autoComplete="new-password"
                   required
                   disabled={isLoading}
                 />

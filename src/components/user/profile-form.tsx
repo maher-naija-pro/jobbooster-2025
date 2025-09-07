@@ -46,6 +46,7 @@ function FormInputs({ username, setUsername, fullName, setFullName, usernameStat
             name="fullName"
             type="text"
             placeholder="Enter your full name"
+            autoComplete="name"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             disabled={pending}
@@ -60,6 +61,7 @@ function FormInputs({ username, setUsername, fullName, setFullName, usernameStat
               name="username"
               type="text"
               placeholder="Enter your username"
+              autoComplete="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               disabled={pending}
@@ -96,6 +98,7 @@ function FormInputs({ username, setUsername, fullName, setFullName, usernameStat
           id="email"
           name="email"
           type="email"
+          autoComplete="email"
           value={profile?.email || ''}
           disabled
           className="bg-gray-50"

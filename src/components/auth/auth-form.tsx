@@ -323,6 +323,7 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
           name="email"
           type="email"
           placeholder="Enter your email address"
+          autoComplete="email"
           required
           disabled={isLoading}
           onChange={handleInputChange}
@@ -356,6 +357,7 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
               name="password"
               type="password"
               placeholder="Enter your password"
+              autoComplete={isLogin ? "current-password" : "new-password"}
               required
               disabled={isLoading}
               onChange={handleInputChange}
@@ -405,6 +407,7 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
                 name="confirmPassword"
                 type="password"
                 placeholder="Confirm your password"
+                autoComplete="new-password"
                 required
                 disabled={isLoading}
                 onChange={handleInputChange}

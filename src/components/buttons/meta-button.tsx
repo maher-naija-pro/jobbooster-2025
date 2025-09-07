@@ -335,7 +335,7 @@ export function MetaButton({
     const animationState = getAnimationState()
 
     return (
-        <div className="relative inline-block">
+        <div className={cn("relative", width === "full" ? "block" : "inline-block")}>
             <button
                 type={type}
                 className={cn(
