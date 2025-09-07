@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Your Signup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border: 1px solid #eaeaea;
+        }
+
+        .header {
+            background-color: #0f172a;
+            /* Tailwind bg-slate-900 */
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header img {
+            max-width: 50px;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 20px;
+            color: #333;
+        }
+
+        .content h1 {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .content h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #0f172a;
+        }
+
+        .content p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .content a.button {
+            display: inline-block;
+            margin: 20px 0;
+            padding: 12px 24px;
+            background-color: #0f172a;
+            /* Tailwind bg-slate-900 */
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .content a.button:hover {
+            background-color: #1e293b;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 10px 20px;
+            font-size: 12px;
+            color: #777;
+            border-top: 1px solid #eaeaea;
+            background-color: #f9f9f9;
+        }
+
+        .footer a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .security-note {
+            background-color: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="email-container">
+        <div class="header">
+            <img src="{{ .SiteURL }}/logo.png" alt="Logo">
+            <h1>{{ .SiteName }}</h1>
+        </div>
+        <div class="content">
+            <h2>Confirm your signup</h2>
+            <p>Hi there,</p>
+            <p>We noticed you signed up for {{ .SiteName }}. To complete the process, please confirm your email address
+                by clicking the button below:</p>
+
+            <a href="{{ .ConfirmationURL }}" class="button">Confirm your mail</a>
+
+            <div class="security-note">
+                <p><strong>Security Note:</strong> If you didn't sign up for this account, please ignore this message.
+                    Your email address will not be verified and the account will remain inactive.</p>
+            </div>
+
+            <p>This confirmation link will expire in 24 hours for security reasons.</p>
+
+            <p>If you have any questions, feel free to <a href="mailto:support@{{ .SiteName }}">contact support</a>.</p>
+        </div>
+        <div class="footer">
+            <p>&copy; {{ .CurrentYear }} {{ .SiteName }}. All rights reserved.</p>
+            <p>This email was sent to {{ .Email }}. If you didn't request this, please ignore this message.</p>
+        </div>
+    </div>
+</body>
+
+</html>

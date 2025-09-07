@@ -35,18 +35,12 @@ export default async function ErrorPage({ searchParams }: ErrorPageProps) {
                         <p className="mt-2 text-sm text-gray-500">
                             We encountered an error while processing your request. Please try again.
                         </p>
-                        <div className="mt-6 space-x-4">
+                        <div className="mt-6">
                             <Link
                                 href="/"
                                 className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-md shadow-sm"
                             >
                                 Return to home
-                            </Link>
-                            <Link
-                                href="javascript:history.back()"
-                                className="inline-flex items-center px-4 py-2 border text-sm font-medium rounded-md shadow-sm"
-                            >
-                                Go back
                             </Link>
                         </div>
                     </div>
