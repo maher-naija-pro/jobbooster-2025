@@ -5,7 +5,9 @@ import { useFormStatus } from 'react-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { LanguageCardSelector } from '@/components/ui/language-card-selector'
+import { TimezoneCardSelector } from '@/components/ui/timezone-card-selector'
+import { PrivacyCardSelector } from '@/components/ui/privacy-card-selector'
 import { Switch } from '@/components/ui/switch'
 import { updatePreferences } from '@/app/user/profile/actions'
 import { toast } from 'sonner'
@@ -57,40 +59,28 @@ function FormInputs({ language, timezone, notifications, privacy }: any) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="language">Preferred Language</Label>
-            <Select name="language" defaultValue={language || 'en'}>
-              <SelectTrigger disabled={pending}>
-                <SelectValue placeholder="Select language" />
-              </SelectTrigger>
-              <SelectContent>
-                {SUPPORTED_LANGUAGES.map((lang) => (
-                  <SelectItem key={lang.code} value={lang.code}>
-                    {lang.flag} {lang.nativeName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <LanguageCardSelector
+              value={language || 'en'}
+              onChange={(value) => {
+                const input = document.querySelector('input[name="language"]') as HTMLInputElement
+                if (input) input.value = value
+              }}
+              disabled={pending}
+            />
+            <input type="hidden" name="language" value={language || 'en'} />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="timezone">Timezone</Label>
-            <Select name="timezone" defaultValue={timezone || 'UTC'}>
-              <SelectTrigger disabled={pending}>
-                <SelectValue placeholder="Select timezone" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="UTC">UTC</SelectItem>
-                <SelectItem value="America/New_York">Eastern Time (ET)</SelectItem>
-                <SelectItem value="America/Chicago">Central Time (CT)</SelectItem>
-                <SelectItem value="America/Denver">Mountain Time (MT)</SelectItem>
-                <SelectItem value="America/Los_Angeles">Pacific Time (PT)</SelectItem>
-                <SelectItem value="Europe/London">London (GMT)</SelectItem>
-                <SelectItem value="Europe/Paris">Paris (CET)</SelectItem>
-                <SelectItem value="Europe/Berlin">Berlin (CET)</SelectItem>
-                <SelectItem value="Asia/Tokyo">Tokyo (JST)</SelectItem>
-                <SelectItem value="Asia/Shanghai">Shanghai (CST)</SelectItem>
-                <SelectItem value="Australia/Sydney">Sydney (AEST)</SelectItem>
-              </SelectContent>
-            </Select>
+            <TimezoneCardSelector
+              value={timezone || 'UTC'}
+              onChange={(value) => {
+                const input = document.querySelector('input[name="timezone"]') as HTMLInputElement
+                if (input) input.value = value
+              }}
+              disabled={pending}
+            />
+            <input type="hidden" name="timezone" value={timezone || 'UTC'} />
           </div>
         </div>
       </div>
@@ -138,15 +128,15 @@ function FormInputs({ language, timezone, notifications, privacy }: any) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="profileVisibility">Profile Visibility</Label>
-            <Select name="profileVisibility" defaultValue={privacy.profileVisibility || 'private'}>
-              <SelectTrigger disabled={pending}>
-                <SelectValue placeholder="Select visibility" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="public">Public</SelectItem>
-                <SelectItem value="private">Private</SelectItem>
-              </SelectContent>
-            </Select>
+            <PrivacyCardSelector
+              value={privacy.profileVisibility || 'private'}
+              onChange={(value) => {
+                const input = document.querySelector('input[name="profileVisibility"]') as HTMLInputElement
+                if (input) input.value = value
+              }}
+              disabled={pending}
+            />
+            <input type="hidden" name="profileVisibility" value={privacy.profileVisibility || 'private'} />
           </div>
 
           <div className="space-y-2">
