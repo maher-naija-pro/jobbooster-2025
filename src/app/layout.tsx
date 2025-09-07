@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "../lib/app-context";
 import { AuthProvider } from "@/components/auth/auth-provider";
+import { ProfileProvider } from "@/components/auth/profile-provider";
 import Navbar from "./layout/Navbar";
 import Footer from "./layout/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -35,13 +36,15 @@ export default function RootLayout({
       >
         <AppProvider>
           <AuthProvider>
-            <Navbar />
-            <main className="flex-1">
-              {children}
-            </main>
-            <Footer />
-            <ScrollToTop />
-            <Toaster position="top-right" richColors />
+            <ProfileProvider>
+              <Navbar />
+              <main className="flex-1">
+                {children}
+              </main>
+              <Footer />
+              <ScrollToTop />
+              <Toaster position="top-right" richColors />
+            </ProfileProvider>
           </AuthProvider>
         </AppProvider>
       </body>

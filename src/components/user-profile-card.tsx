@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { useAuth } from "@/components/auth/auth-provider"
+import { useProfile } from "@/components/auth/profile-provider"
 import { cn } from "@/lib/utils"
 import { isPricingEnabled } from "@/lib/feature-flags"
 
@@ -18,6 +19,7 @@ interface UserProfileCardProps {
 
 export const UserProfileCard = ({ className }: UserProfileCardProps) => {
     const { user, signOut, loading } = useAuth()
+    const { profile } = useProfile()
     const router = useRouter()
     const [isOpen, setIsOpen] = useState(false)
 
@@ -77,15 +79,15 @@ export const UserProfileCard = ({ className }: UserProfileCardProps) => {
             >
                 <Avatar className="h-6 w-6 mr-1.5">
                     <AvatarImage
-                        src={user.user_metadata?.avatar_url || user.user_metadata?.picture}
-                        alt={user.user_metadata?.full_name || user.email || "User"}
+                        src={profile?.avatarUrl || user.user_metadata?.avatar_url || user.user_metadata?.picture}
+                        alt={profile?.fullName || user.user_metadata?.full_name || user.email || "User"}
                     />
                     <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                        {user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0) || "U"}
+                        {profile?.fullName?.charAt(0) || user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0) || "U"}
                     </AvatarFallback>
                 </Avatar>
                 <span className="hidden sm:inline text-sm">
-                    {user.user_metadata?.full_name || user.email?.split('@')[0] || "User"}
+                    {profile?.username || profile?.fullName || user.user_metadata?.full_name || user.email?.split('@')[0] || "User"}
                 </span>
                 <Icons.down className={cn("h-3 w-3 ml-1.5 transition-transform duration-200", isOpen && "rotate-180")} />
             </Button>
@@ -112,16 +114,16 @@ export const UserProfileCard = ({ className }: UserProfileCardProps) => {
                         <div className="flex items-center space-x-2">
                             <Avatar className="h-8 w-8">
                                 <AvatarImage
-                                    src={user.user_metadata?.avatar_url || user.user_metadata?.picture}
-                                    alt={user.user_metadata?.full_name || user.email || "User"}
+                                    src={profile?.avatarUrl || user.user_metadata?.avatar_url || user.user_metadata?.picture}
+                                    alt={profile?.fullName || user.user_metadata?.full_name || user.email || "User"}
                                 />
                                 <AvatarFallback className="text-sm bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                                    {user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0) || "U"}
+                                    {profile?.fullName?.charAt(0) || user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0) || "U"}
                                 </AvatarFallback>
                             </Avatar>
                             <div className="flex-1 min-w-0">
                                 <h3 className="font-medium text-gray-900 truncate text-sm">
-                                    {user.user_metadata?.full_name || "User"}
+                                    {profile?.username || profile?.fullName || user.user_metadata?.full_name || "User"}
                                 </h3>
                                 <p className="text-xs text-gray-500 truncate">
                                     {user.email}

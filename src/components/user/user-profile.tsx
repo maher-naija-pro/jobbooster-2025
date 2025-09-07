@@ -14,6 +14,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useAuth } from '@/components/auth/auth-provider'
+import { useProfile } from '@/components/auth/profile-provider'
 import { logout } from '@/app/auth/logout/actions'
 import { AuthModal } from '@/components/auth/auth-modal'
 import { User, Settings, LogOut, ChevronDown } from 'lucide-react'
@@ -21,6 +22,7 @@ import Link from 'next/link'
 
 export function UserProfile() {
     const { user, signOut } = useAuth()
+    const { profile } = useProfile()
     const [isSigningOut, setIsSigningOut] = useState(false)
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -96,11 +98,15 @@ export function UserProfile() {
                     onMouseLeave={handleMouseLeave}
                 >
                     <div className="hidden sm:block">
-                        {user.email?.split('@')[0]}
+                        {profile?.username || profile?.fullName || user.email?.split('@')[0]}
                     </div>
                     <Avatar className="ml-2 h-10 w-10">
-                        <AvatarFallback className="text-xs">
-                            {user.email?.charAt(0).toUpperCase()}
+                        <AvatarImage
+                            src={profile?.avatarUrl || user.user_metadata?.avatar_url || user.user_metadata?.picture}
+                            alt={profile?.fullName || user.user_metadata?.full_name || user.email || "User"}
+                        />
+                        <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                            {profile?.fullName?.charAt(0) || user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0).toUpperCase() || "U"}
                         </AvatarFallback>
                     </Avatar>
                 </div>
@@ -114,7 +120,7 @@ export function UserProfile() {
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                         <p className="text-sm font-medium leading-none">
-                            {user.email?.split('@')[0]}
+                            {profile?.username || profile?.fullName || user.email?.split('@')[0]}
                         </p>
                         <p className="text-xs leading-none text-muted-foreground">
                             {user.email}

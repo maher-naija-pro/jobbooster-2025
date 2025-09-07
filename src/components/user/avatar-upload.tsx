@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { uploadAvatar, deleteAvatar } from '@/app/user/avatar/actions'
+import { useProfile } from '@/components/auth/profile-provider'
 import { toast } from 'sonner'
 import { Icons } from '@/components/icons'
 
@@ -110,6 +111,7 @@ function DeleteButton({ onDelete }: { onDelete: () => void }) {
 }
 
 export function AvatarUpload({ profile }: AvatarUploadProps) {
+  const { refetch } = useProfile()
   const [error, setError] = useState('')
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false)
 
@@ -122,6 +124,8 @@ export function AvatarUpload({ profile }: AvatarUploadProps) {
       if (result.success) {
         toast.success(result.message)
         setError('')
+        // Refresh profile data to show the updated avatar
+        await refetch()
       } else {
         const errorMsg = result.error || 'An unknown error occurred'
         setError(errorMsg)
@@ -153,8 +157,8 @@ export function AvatarUpload({ profile }: AvatarUploadProps) {
       if (result.success) {
         toast.success(result.message)
         setError('')
-        // Refresh the page to show the new avatar
-        window.location.reload()
+        // Refresh profile data to show the new avatar
+        await refetch()
       } else {
         const errorMsg = result.error || 'An unknown error occurred'
         setError(errorMsg)
