@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { useAuth } from "@/components/auth/auth-provider"
 import { useProfile } from "@/components/auth/profile-provider"
+import { logout } from "@/app/auth/logout/actions"
 import { cn } from "@/lib/utils"
 import { isPricingEnabled } from "@/lib/feature-flags"
 
@@ -26,7 +27,12 @@ export const UserProfileCard = ({ className }: UserProfileCardProps) => {
     const handleLogout = async () => {
         console.log('🚀 UserProfileCard: Logout clicked')
         setIsOpen(false) // Close immediately for better UX
-        await signOut()
+        try {
+            await signOut()
+            await logout() // This will handle the redirect to home
+        } catch (error) {
+            console.error('Sign out error:', error)
+        }
         console.log('🚀 UserProfileCard: Logout completed')
     }
 

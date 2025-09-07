@@ -1,6 +1,6 @@
 "use client"
 
-import { logout } from "@/app/(auth)/(logout)/_actions"
+import { logout } from "@/app/auth/logout/actions"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
