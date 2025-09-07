@@ -3,10 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getProfile } from '@/app/user/profile/actions'
 import { ProfileForm } from '@/components/user/profile-form'
 import { AvatarUpload } from '@/components/user/avatar-upload'
-import { ResetPasswordModal } from '@/components/auth/reset-password-modal'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Icons } from '@/components/icons'
 import { prisma } from '@/lib/prisma'
 
 interface ProfilePageProps {
@@ -145,35 +142,6 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                         </CardContent>
                     </Card>
 
-                    {/* Security Section */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Icons.shield className="h-5 w-5" />
-                                Security Settings
-                            </CardTitle>
-                            <CardDescription>
-                                Manage your account security and password settings
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="flex items-center justify-between p-4 border rounded-lg">
-                                <div className="space-y-1">
-                                    <h4 className="font-medium">Password</h4>
-                                    <p className="text-sm text-muted-foreground">
-                                        Update your password to keep your account secure
-                                    </p>
-                                </div>
-                                <ResetPasswordModal>
-                                    <Button variant="outline" size="sm">
-                                        <Icons.lock className="mr-2 h-4 w-4" />
-                                        Reset Password
-                                    </Button>
-                                </ResetPasswordModal>
-                            </div>
-
-                        </CardContent>
-                    </Card>
 
                 </div>
             </div>

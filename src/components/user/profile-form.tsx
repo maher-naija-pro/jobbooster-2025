@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { updateProfile } from '@/app/user/profile/actions'
+import { ResetPasswordModal } from '@/components/auth/reset-password-modal'
 import { toast } from 'sonner'
 import { Icons } from '@/components/icons'
 
@@ -106,6 +107,34 @@ function FormInputs({ username, setUsername, fullName, setFullName, usernameStat
         <p className="text-sm text-muted-foreground">
           Email address cannot be changed. Contact support if you need to update it.
         </p>
+      </div>
+
+      {/* Security Settings Section */}
+      <div className="space-y-4 pt-6 border-t">
+        <div className="space-y-2">
+          <h4 className="text-lg font-medium flex items-center gap-2">
+            <Icons.shield className="h-5 w-5" />
+            Security Settings
+          </h4>
+          <p className="text-sm text-muted-foreground">
+            Manage your account security and password settings
+          </p>
+        </div>
+
+        <div className="flex items-center justify-between p-4 border rounded-lg">
+          <div className="space-y-1">
+            <h4 className="font-medium">Password</h4>
+            <p className="text-sm text-muted-foreground">
+              Update your password to keep your account secure
+            </p>
+          </div>
+          <ResetPasswordModal>
+            <Button variant="outline" size="sm">
+              <Icons.lock className="mr-2 h-4 w-4" />
+              Reset Password
+            </Button>
+          </ResetPasswordModal>
+        </div>
       </div>
     </>
   )
