@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { Button } from '@/components/ui/button'
+import { MetaButton } from '@/components/buttons/meta-button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Icons } from '@/components/icons'
 import { login } from '@/app/auth/login/actions'
 import { register } from '@/app/auth/register/actions'
 import { requestPasswordReset } from '@/app/auth/reset-password/actions'
@@ -25,6 +26,7 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
   const [resetSuccess, setResetSuccess] = useState('')
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [touched, setTouched] = useState<Record<string, boolean>>({})
+  const [formValues, setFormValues] = useState<Record<string, string>>({})
 
   const formRef = useRef<HTMLFormElement>(null)
   const emailRef = useRef<HTMLInputElement>(null)
@@ -42,6 +44,9 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
   useEffect(() => {
     setSuccess('')
     setError('')
+    setFormValues({})
+    setFieldErrors({})
+    setTouched({})
     // Clear reset success when switching away from login form
     if (!isLogin) {
       setResetSuccess('')
@@ -91,6 +96,7 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setTouched(prev => ({ ...prev, [name]: true }))
+    setFormValues(prev => ({ ...prev, [name]: value }))
 
     // Only validate if user has actually typed something
     if (value.length > 0) {
@@ -191,6 +197,56 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
 
   const isFieldInvalid = (fieldName: string) => {
     return touched[fieldName] && fieldErrors[fieldName]
+  }
+
+  // Check if form is valid for submission
+  const isFormValid = () => {
+    // Check if there are any validation errors
+    if (Object.keys(fieldErrors).length > 0) {
+      console.log('Form invalid: field errors', fieldErrors)
+      return false
+    }
+
+    // Check if required fields are filled - try state first, then DOM as fallback
+    const email = formValues.email || formRef.current?.email?.value || ''
+    const password = formValues.password || formRef.current?.password?.value || ''
+    const confirmPassword = formValues.confirmPassword || formRef.current?.confirmPassword?.value || ''
+
+    console.log('Form validation check:', {
+      email,
+      password: password ? '***' : '',
+      confirmPassword: confirmPassword ? '***' : '',
+      isLogin,
+      isResetPassword,
+      fieldErrors: Object.keys(fieldErrors),
+      formValues,
+      domValues: {
+        email: formRef.current?.email?.value || '',
+        password: formRef.current?.password?.value || '',
+        confirmPassword: formRef.current?.confirmPassword?.value || ''
+      }
+    })
+
+    // Email is always required
+    if (!email.trim()) {
+      console.log('Form invalid: email empty')
+      return false
+    }
+
+    // Password is required for login and register (not for reset password)
+    if (!isResetPassword && !password.trim()) {
+      console.log('Form invalid: password empty')
+      return false
+    }
+
+    // Confirm password is required for register only
+    if (!isLogin && !isResetPassword && !confirmPassword.trim()) {
+      console.log('Form invalid: confirm password empty')
+      return false
+    }
+
+    console.log('Form is valid!')
+    return true
   }
 
   return (
@@ -405,25 +461,70 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
         </div>
       )}
 
-      <Button
+      <MetaButton
         type="submit"
-        className="w-full h-10 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-        disabled={isLoading || Object.keys(fieldErrors).length > 0}
-        aria-describedby={isLoading ? 'loading-text' : undefined}
-      >
-        {isLoading ? (
-          <div className="flex items-center space-x-2">
-            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-            <span id="loading-text">Processing...</span>
-          </div>
-        ) : (
+        variant="primary"
+        size="lg"
+        width="full"
+        isLoading={isLoading}
+        loadingText={
+          isResetPassword
+            ? 'Sending reset link...'
+            : isLogin
+              ? 'Signing in...'
+              : 'Creating account...'
+        }
+        showLoadingText={true}
+        loadingTextAnimation="pulse"
+        loadingIconType="spinner"
+        showLoadingIcon={true}
+        loadingSpeed="normal"
+        icon={
+          isResetPassword
+            ? Icons.arrowRight
+            : isLogin
+              ? Icons.login
+              : Icons.user
+        }
+        disabled={(() => {
+          const disabled = isLoading || !isFormValid()
+          console.log('MetaButton disabled state:', { isLoading, isFormValid: isFormValid(), disabled })
+          return disabled
+        })()}
+        onClick={() => {
+          if (formRef.current && !isLoading && isFormValid()) {
+            setIsLoading(true)
+            formRef.current.requestSubmit()
+          }
+        }}
+        text={
           isResetPassword
             ? 'Send Reset Link'
             : isLogin
               ? 'Sign In'
               : 'Create Account'
-        )}
-      </Button>
+        }
+        tooltip={
+          isResetPassword
+            ? 'Send password reset link to your email'
+            : isLogin
+              ? 'Sign in to your account'
+              : 'Create a new account'
+        }
+        tooltipPosition="top"
+        analyticsEvent={
+          isResetPassword
+            ? 'password_reset_attempt'
+            : isLogin
+              ? 'login_attempt'
+              : 'registration_attempt'
+        }
+        analyticsData={{
+          formType: isResetPassword ? 'reset' : isLogin ? 'login' : 'register',
+          timestamp: new Date().toISOString()
+        }}
+        className=""
+      />
 
       {/* Reset password back to login link */}
       {isResetPassword && (

@@ -13,11 +13,25 @@ interface MetaButtonProps {
     variant?: "primary" | "secondary" | "success" | "warning" | "danger" | "default" |
     "primary-outline" | "secondary-outline" | "success-outline" | "warning-outline" | "danger-outline" |
     "primary-ghost" | "secondary-ghost" | "success-ghost" | "warning-ghost" | "danger-ghost"
+    /** Controls button height, padding, and text size */
     size?: "sm" | "md" | "lg"
-    width?: "sm" | "md" | "lg" | "full"
+    /** Controls button width - use 'auto' for content-based width, 'fit' for minimal width, 'full' for container width, or specific sizes */
+    width?: "auto" | "fit" | "full"
     loadingText?: string
+    /** Show loading text with different styles */
+    showLoadingText?: boolean
+    /** Loading text animation type */
+    loadingTextAnimation?: "pulse" | "bounce" | "fade" | "none"
     showIcon?: boolean
     icon?: React.ComponentType<{ className?: string }>
+    /** Custom loading icon component. If not provided, uses default spinner */
+    loadingIcon?: React.ComponentType<{ className?: string }>
+    /** Loading icon type - spinner, dots, bars, or custom */
+    loadingIconType?: "spinner" | "dots" | "bars" | "pulse" | "custom"
+    /** Show loading icon */
+    showLoadingIcon?: boolean
+    /** Loading animation speed */
+    loadingSpeed?: "slow" | "normal" | "fast"
     text?: string
     // Tooltip props
     tooltip?: string
@@ -32,8 +46,6 @@ interface MetaButtonProps {
     // Analytics props
     analyticsEvent?: string
     analyticsData?: Record<string, any>
-    // Layout props
-    fullWidth?: boolean
     // Reset props
     resetClicked?: boolean
 }
@@ -49,8 +61,14 @@ export function MetaButton({
     size = "md",
     width,
     loadingText,
+    showLoadingText = true,
+    loadingTextAnimation = "pulse",
     showIcon = true,
     icon,
+    loadingIcon,
+    loadingIconType = "spinner",
+    showLoadingIcon = true,
+    loadingSpeed = "normal",
     text,
     tooltip,
     tooltipPosition = "top",
@@ -60,26 +78,29 @@ export function MetaButton({
     theme = "auto",
     analyticsEvent,
     analyticsData,
-    fullWidth = false,
     resetClicked = false
 }: MetaButtonProps) {
     const [isClicked, setIsClicked] = useState(false)
     const [isHovered, setIsHovered] = useState(false)
     const [showTooltip, setShowTooltip] = useState(false)
 
-    // Reset clicked state when loading changes
-    useEffect(() => {
-        if (!isLoading) {
-            setIsClicked(false)
+    // Animation state helper
+    const getAnimationState = () => {
+        const canAnimate = !isDisabled && !disableAnimations
+        return {
+            canAnimate,
+            isHovered: canAnimate && isHovered,
+            isClicked: canAnimate && isClicked,
+            isActive: canAnimate
         }
-    }, [isLoading])
+    }
 
-    // Reset clicked state when resetClicked prop changes
+    // Reset clicked state when loading changes or resetClicked prop changes
     useEffect(() => {
-        if (resetClicked) {
+        if (!isLoading || resetClicked) {
             setIsClicked(false)
         }
-    }, [resetClicked])
+    }, [isLoading, resetClicked])
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         if (isLoading || disabled || isClicked) return
@@ -110,36 +131,112 @@ export function MetaButton({
         return icon
     }
 
-    // Get size styles
-    const getSizeStyles = () => {
-        switch (size) {
-            case "sm":
-                return "h-8 px-3 text-sm"
-            case "lg":
-                return "h-12 px-6 text-base"
+    // Get loading icon component
+    const getLoadingIcon = () => {
+        return loadingIcon
+    }
+
+    // Get loading text animation classes
+    const getLoadingTextAnimation = () => {
+        if (!showLoadingText || loadingTextAnimation === "none") return ""
+
+        switch (loadingTextAnimation) {
+            case "pulse":
+                return "animate-pulse"
+            case "bounce":
+                return "animate-bounce"
+            case "fade":
+                return "animate-pulse opacity-75"
             default:
-                return "h-10 px-4 text-sm"
+                return "animate-pulse"
         }
     }
 
-    // Get width styles
-    const getWidthStyles = () => {
-        if (fullWidth) return "w-full"
-        if (width) {
-            switch (width) {
-                case "sm":
-                    return "w-24"
-                case "md":
-                    return "w-32"
-                case "lg":
-                    return "w-48"
-                case "full":
-                    return "w-full"
-                default:
-                    return ""
-            }
+    // Get loading speed classes
+    const getLoadingSpeed = () => {
+        switch (loadingSpeed) {
+            case "slow":
+                return "duration-1000"
+            case "fast":
+                return "duration-300"
+            default: // "normal"
+                return "duration-500"
         }
-        return ""
+    }
+
+    // Get loading icon component based on type
+    const getLoadingIconComponent = (): React.ReactNode => {
+        if (!showLoadingIcon) return null
+
+        if (loadingIconType === "custom" && loadingIcon) {
+            const LoadingIconComponent = loadingIcon
+            return <LoadingIconComponent className={cn("h-4 w-4 animate-spin", getLoadingSpeed())} />
+        }
+
+        const iconSize = size === "sm" ? "h-3 w-3" : size === "lg" ? "h-5 w-5" : "h-4 w-4"
+        const speedClass = getLoadingSpeed()
+        const isOutline = variant.includes("outline") || variant.includes("ghost")
+        const borderColor = isOutline ? "border-current" : "border-white"
+
+        switch (loadingIconType) {
+            case "dots":
+                return (
+                    <div className="flex space-x-1">
+                        <div className={cn("h-1 w-1 rounded-full bg-current animate-bounce", speedClass)} style={{ animationDelay: "0ms" }} />
+                        <div className={cn("h-1 w-1 rounded-full bg-current animate-bounce", speedClass)} style={{ animationDelay: "150ms" }} />
+                        <div className={cn("h-1 w-1 rounded-full bg-current animate-bounce", speedClass)} style={{ animationDelay: "300ms" }} />
+                    </div>
+                )
+            case "bars":
+                return (
+                    <div className="flex space-x-0.5">
+                        <div className={cn("h-3 w-0.5 bg-current animate-pulse", speedClass)} style={{ animationDelay: "0ms" }} />
+                        <div className={cn("h-3 w-0.5 bg-current animate-pulse", speedClass)} style={{ animationDelay: "150ms" }} />
+                        <div className={cn("h-3 w-0.5 bg-current animate-pulse", speedClass)} style={{ animationDelay: "300ms" }} />
+                    </div>
+                )
+            case "pulse":
+                return (
+                    <div className={cn("h-4 w-4 rounded-full bg-current animate-pulse", speedClass)} />
+                )
+            default: // "spinner"
+                return (
+                    <div className={cn(
+                        "rounded-full border-2 border-t-transparent animate-spin",
+                        iconSize,
+                        borderColor,
+                        speedClass
+                    )} />
+                )
+        }
+    }
+
+    // Get size styles - controls height, padding, and text size
+    const getSizeStyles = () => {
+        switch (size) {
+            case "sm":
+                return "h-8 px-3 text-sm"      // 32px height, 12px padding, small text
+            case "lg":
+                return "h-12 px-6 text-base"   // 48px height, 24px padding, base text
+            default: // "md"
+                return "h-10 px-4 text-sm"     // 40px height, 16px padding, small text
+        }
+    }
+
+    // Get width styles - controls button width
+    const getWidthStyles = () => {
+        if (!width) return ""
+
+        switch (width) {
+            case "auto":
+                return "w-auto"    // Content-based width
+            case "fit":
+                return "w-fit"     // Minimal width to fit content
+            case "full":
+                return "w-full"    // Full container width     // 256px fixed width
+            default:
+                return ""
+        }
     }
 
     // Get variant styles
@@ -234,6 +331,8 @@ export function MetaButton({
     }
 
     const IconComponent = getIcon()
+    const LoadingIconComponent = getLoadingIcon()
+    const animationState = getAnimationState()
 
     return (
         <div className="relative inline-block">
@@ -254,12 +353,10 @@ export function MetaButton({
                     // Variant styles
                     getVariantStyles(),
 
-                    // Hover effects (only when not disabled and animations enabled)
-                    !isDisabled && isHovered && !disableAnimations && "hover:shadow-lg hover:shadow-blue-500/25",
-
-                    // Click animation (only when animations enabled)
-                    !isDisabled && isClicked && !disableAnimations && "scale-[0.98]",
-                    !isDisabled && !disableAnimations && "active:scale-[0.96]",
+                    // Animation effects
+                    animationState.isHovered && "hover:shadow-lg hover:shadow-blue-500/25",
+                    animationState.isClicked && "scale-[0.98]",
+                    animationState.isActive && "active:scale-[0.96]",
 
                     // Disabled styles
                     isDisabled && "opacity-50 cursor-not-allowed pointer-events-none",
@@ -283,46 +380,48 @@ export function MetaButton({
                 title={tooltip}
             >
                 {/* Animated background shimmer effect */}
-                {!isDisabled && !disableAnimations && (
+                {animationState.canAnimate && (
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-out" />
                 )}
 
                 {/* Content container */}
                 <div className="relative flex items-center justify-center space-x-2">
-                    {isLoading ? (
-                        <>
-                            {/* Animated loading spinner */}
-                            <div className="flex items-center space-x-2">
-                                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                                <span className="font-medium">{getButtonText()}</span>
-                            </div>
-                        </>
-                    ) : (
-                        <>
-                            {/* Icon with animation */}
-                            <div className="flex items-center space-x-2">
-                                {showIcon && IconComponent && (
-                                    <IconComponent
-                                        className={cn(
-                                            "h-4 w-4 transition-all duration-300",
-                                            !isDisabled && isHovered && !disableAnimations && "scale-110",
-                                            !isDisabled && isClicked && !disableAnimations && "scale-95"
-                                        )}
-                                    />
-                                )}
-                                <span className="font-medium">{getButtonText()}</span>
-                                {shortcut && showShortcut && (
-                                    <span className="text-xs opacity-60 ml-1">
-                                        {shortcut}
-                                    </span>
-                                )}
-                            </div>
-                        </>
-                    )}
+                    <div className="flex items-center space-x-2">
+                        {/* Loading state */}
+                        {isLoading ? (
+                            showLoadingIcon && getLoadingIconComponent()
+                        ) : (
+                            /* Normal state with icon */
+                            showIcon && IconComponent && (
+                                <IconComponent
+                                    className={cn(
+                                        "h-4 w-4 transition-all duration-300",
+                                        animationState.isHovered && "scale-110",
+                                        animationState.isClicked && "scale-95"
+                                    )}
+                                />
+                            )
+                        )}
+
+                        {/* Button text */}
+                        <span className={cn(
+                            "font-medium",
+                            isLoading && showLoadingText && getLoadingTextAnimation()
+                        )}>
+                            {getButtonText()}
+                        </span>
+
+                        {/* Keyboard shortcut (only show when not loading) */}
+                        {!isLoading && shortcut && showShortcut && (
+                            <span className="text-xs opacity-60 ml-1">
+                                {shortcut}
+                            </span>
+                        )}
+                    </div>
                 </div>
 
                 {/* Progress indicator overlay when clicked */}
-                {isClicked && !isLoading && !disableAnimations && (
+                {animationState.isClicked && !isLoading && (
                     <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/20 animate-pulse" />
                 )}
             </button>

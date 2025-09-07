@@ -580,6 +580,118 @@ export default function ButtonDemoPage() {
                         </div>
                     </div>
                 </div>
+
+                {/* Loading Options Section */}
+                <div className="space-y-6">
+                    <div>
+                        <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">
+                            Loading States & Animations
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {/* Loading Text Animations */}
+                            <div className="space-y-3">
+                                <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300">Loading Text Animations</h4>
+                                <div className="space-y-2">
+                                    <MetaButton
+                                        text="Pulse Animation"
+                                        loadingText="Loading with pulse..."
+                                        loadingTextAnimation="pulse"
+                                        isLoading={loadingStates.pulse}
+                                        onClick={() => toggleLoading('pulse')}
+                                        variant="primary"
+                                        size="sm"
+                                    />
+                                    <MetaButton
+                                        text="Bounce Animation"
+                                        loadingText="Loading with bounce..."
+                                        loadingTextAnimation="bounce"
+                                        isLoading={loadingStates.bounce}
+                                        onClick={() => toggleLoading('bounce')}
+                                        variant="secondary"
+                                        size="sm"
+                                    />
+                                    <MetaButton
+                                        text="Fade Animation"
+                                        loadingText="Loading with fade..."
+                                        loadingTextAnimation="fade"
+                                        isLoading={loadingStates.fade}
+                                        onClick={() => toggleLoading('fade')}
+                                        variant="success"
+                                        size="sm"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Loading Icon Types */}
+                            <div className="space-y-3">
+                                <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300">Loading Icon Types</h4>
+                                <div className="space-y-2">
+                                    <MetaButton
+                                        text="Spinner Icon"
+                                        loadingText="Spinning..."
+                                        loadingIconType="spinner"
+                                        isLoading={loadingStates.spinner}
+                                        onClick={() => toggleLoading('spinner')}
+                                        variant="primary"
+                                        size="sm"
+                                    />
+                                    <MetaButton
+                                        text="Dots Icon"
+                                        loadingText="Dots loading..."
+                                        loadingIconType="dots"
+                                        isLoading={loadingStates.dots}
+                                        onClick={() => toggleLoading('dots')}
+                                        variant="warning"
+                                        size="sm"
+                                    />
+                                    <MetaButton
+                                        text="Bars Icon"
+                                        loadingText="Bars loading..."
+                                        loadingIconType="bars"
+                                        isLoading={loadingStates.bars}
+                                        onClick={() => toggleLoading('bars')}
+                                        variant="danger"
+                                        size="sm"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Loading Speeds */}
+                            <div className="space-y-3">
+                                <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300">Loading Speeds</h4>
+                                <div className="space-y-2">
+                                    <MetaButton
+                                        text="Slow Speed"
+                                        loadingText="Slow loading..."
+                                        loadingSpeed="slow"
+                                        isLoading={loadingStates.slow}
+                                        onClick={() => toggleLoading('slow')}
+                                        variant="primary-outline"
+                                        size="sm"
+                                    />
+                                    <MetaButton
+                                        text="Normal Speed"
+                                        loadingText="Normal loading..."
+                                        loadingSpeed="normal"
+                                        isLoading={loadingStates.normal}
+                                        onClick={() => toggleLoading('normal')}
+                                        variant="secondary-outline"
+                                        size="sm"
+                                    />
+                                    <MetaButton
+                                        text="Fast Speed"
+                                        loadingText="Fast loading..."
+                                        loadingSpeed="fast"
+                                        isLoading={loadingStates.fast}
+                                        onClick={() => toggleLoading('fast')}
+                                        variant="success-outline"
+                                        size="sm"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     )
