@@ -4,32 +4,49 @@ import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { SUPPORTED_LANGUAGES } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import ReactCountryFlag from 'react-country-flag'
 
 interface LanguageCardSelectorProps {
-    value?: string
-    onChange: (value: string) => void
-    disabled?: boolean
-    className?: string
+  value?: string
+  onChange: (value: string) => void
+  disabled?: boolean
+  className?: string
+}
+
+// Mapping from language codes to country codes for flags
+const LANGUAGE_TO_COUNTRY: Record<string, string> = {
+  'en': 'US',
+  'fr': 'FR',
+  'es': 'ES',
+  'de': 'DE',
+  'it': 'IT',
+  'pt': 'PT',
+  'nl': 'NL',
+  'ru': 'RU',
+  'ja': 'JP',
+  'ko': 'KR',
+  'zh': 'CN',
+  'ar': 'SA'
 }
 
 export function LanguageCardSelector({
-    value,
-    onChange,
-    disabled = false,
-    className
+  value,
+  onChange,
+  disabled = false,
+  className
 }: LanguageCardSelectorProps) {
-    const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
 
-    const selectedLanguage = SUPPORTED_LANGUAGES.find(lang => lang.code === value) || SUPPORTED_LANGUAGES[0]
+  const selectedLanguage = SUPPORTED_LANGUAGES.find(lang => lang.code === value) || SUPPORTED_LANGUAGES[0]
 
-    const handleSelect = (languageCode: string) => {
-        onChange(languageCode)
-        setIsOpen(false)
-    }
+  const handleSelect = (languageCode: string) => {
+    onChange(languageCode)
+    setIsOpen(false)
+  }
 
-    return (
-        <div className={cn("relative", className)}>
-      <Card 
+  return (
+    <div className={cn("relative", className)}>
+      <Card
         className={cn(
           "cursor-pointer transition-all duration-200 hover:shadow-sm",
           isOpen && "ring-1 ring-primary",
@@ -40,7 +57,16 @@ export function LanguageCardSelector({
         <CardContent className="p-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-lg">{selectedLanguage.flag}</span>
+              <ReactCountryFlag
+                countryCode={LANGUAGE_TO_COUNTRY[selectedLanguage.code] || 'US'}
+                svg
+                style={{
+                  width: '20px',
+                  height: '15px',
+                  borderRadius: '2px'
+                }}
+                title={selectedLanguage.nativeName}
+              />
               <div>
                 <div className="font-medium text-xs">{selectedLanguage.nativeName}</div>
                 <div className="text-xs text-muted-foreground">{selectedLanguage.name}</div>
@@ -71,7 +97,16 @@ export function LanguageCardSelector({
             >
               <CardContent className="p-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-base">{language.flag}</span>
+                  <ReactCountryFlag
+                    countryCode={LANGUAGE_TO_COUNTRY[language.code] || 'US'}
+                    svg
+                    style={{
+                      width: '18px',
+                      height: '13px',
+                      borderRadius: '2px'
+                    }}
+                    title={language.nativeName}
+                  />
                   <div>
                     <div className="font-medium text-xs">{language.nativeName}</div>
                     <div className="text-xs text-muted-foreground">{language.name}</div>
@@ -82,6 +117,6 @@ export function LanguageCardSelector({
           ))}
         </div>
       )}
-        </div>
-    )
+    </div>
+  )
 }
