@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback, useRef, useEffect } from 'react'
+import React, { useState, useCallback, useRef, useEffect, forwardRef } from 'react'
 import { Mail, AlertCircle, CheckCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
@@ -14,8 +14,8 @@ import { logger } from '@/lib/logger'
 interface EmailInputProps {
     name: string
     value: string
-    onChange: (value: string) => void
-    onBlur?: () => void
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+    onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
     placeholder?: string
     className?: string
     constraints?: EmailConstraints
@@ -24,9 +24,11 @@ interface EmailInputProps {
     autoComplete?: string
     id?: string
     type?: 'email' | 'text'
+    'aria-invalid'?: boolean | string
+    'aria-describedby'?: string
 }
 
-export const EmailInput: React.FC<EmailInputProps> = ({
+export const EmailInput = forwardRef<HTMLInputElement, EmailInputProps>(({
     name,
     value,
     onChange,
@@ -38,8 +40,10 @@ export const EmailInput: React.FC<EmailInputProps> = ({
     required = false,
     autoComplete = 'email',
     id,
-    type = 'email'
-}) => {
+    type = 'email',
+    'aria-invalid': ariaInvalid,
+    'aria-describedby': ariaDescribedby
+}, ref) => {
     const [validationResult, setValidationResult] = useState<EmailValidationResult | null>(null)
     const [isFocused, setIsFocused] = useState(false)
     const inputRef = useRef<HTMLInputElement>(null)
@@ -63,9 +67,11 @@ export const EmailInput: React.FC<EmailInputProps> = ({
     }, [])
 
     const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const newValue = e.target.value
-        onChange(newValue)
+        // Call the parent onChange handler
+        onChange(e)
 
+        // Also do our own validation for visual feedback
+        const newValue = e.target.value
         if (newValue.length > 0) {
             validateEmail(newValue)
         } else {
@@ -77,10 +83,10 @@ export const EmailInput: React.FC<EmailInputProps> = ({
         setIsFocused(true)
     }, [])
 
-    const handleBlur = useCallback(() => {
+    const handleBlur = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
         setIsFocused(false)
         if (onBlur) {
-            onBlur()
+            onBlur(e)
         }
     }, [onBlur])
 
@@ -95,7 +101,7 @@ export const EmailInput: React.FC<EmailInputProps> = ({
                     <Mail className="w-4 h-4 text-gray-400" />
                 </div>
                 <input
-                    ref={inputRef}
+                    ref={ref || inputRef}
                     id={id}
                     name={name}
                     type={type}
@@ -107,6 +113,8 @@ export const EmailInput: React.FC<EmailInputProps> = ({
                     disabled={disabled}
                     required={required}
                     autoComplete={autoComplete}
+                    aria-invalid={ariaInvalid === 'true' || ariaInvalid === true}
+                    aria-describedby={ariaDescribedby}
                     className={cn(
                         'w-full pl-10 pr-3 py-2 border rounded-md shadow-sm transition-colors',
                         'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
@@ -139,19 +147,10 @@ export const EmailInput: React.FC<EmailInputProps> = ({
                 </div>
             )}
 
-            {/* Requirements display (optional - can be shown on focus or always) */}
-            {isFocused && requirements.length > 0 && (
-                <div className="text-xs text-gray-500 space-y-1">
-                    <div className="font-medium">Email requirements:</div>
-                    <ul className="list-disc list-inside space-y-0.5">
-                        {requirements.map((requirement, index) => (
-                            <li key={index}>{requirement}</li>
-                        ))}
-                    </ul>
-                </div>
-            )}
         </div>
     )
-}
+})
+
+EmailInput.displayName = 'EmailInput'
 
 export default EmailInput

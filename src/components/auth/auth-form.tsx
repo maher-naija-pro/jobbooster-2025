@@ -2,14 +2,15 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { MetaButton } from '@/components/buttons/meta-button'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Icons } from '@/components/icons'
 import { login } from '@/app/auth/login/actions'
 import { register } from '@/app/auth/register/actions'
 import { requestPasswordReset } from '@/app/auth/reset-password/actions'
 import { PasswordInput } from './password-input'
+import { EmailInput } from './email-input'
 import { validatePassword, validatePasswordConfirmation, DEFAULT_PASSWORD_CONSTRAINTS } from './password-constraints'
+import { DEFAULT_EMAIL_CONSTRAINTS } from './email-constraints'
 
 interface AuthFormProps {
   isLogin: boolean
@@ -328,11 +329,12 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
         >
           Email
         </Label>
-        <Input
+        <EmailInput
           ref={emailRef}
           id="email"
           name="email"
           type="email"
+          value={formValues.email || ''}
           placeholder="Enter your email address"
           autoComplete="email"
           required
@@ -341,6 +343,7 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
           onBlur={handleBlur}
           aria-invalid={isFieldInvalid('email') ? 'true' : 'false'}
           aria-describedby={isFieldInvalid('email') ? 'email-error' : undefined}
+          constraints={DEFAULT_EMAIL_CONSTRAINTS}
           className={`transition-all duration-200 ${isFieldInvalid('email')
             ? 'border-red-300 dark:border-red-600 focus-visible:ring-red-500/20'
             : 'border-slate-300 dark:border-slate-600 focus-visible:ring-blue-500/20'
