@@ -34,6 +34,8 @@ interface MetaButtonProps {
     analyticsData?: Record<string, any>
     // Layout props
     fullWidth?: boolean
+    // Reset props
+    resetClicked?: boolean
 }
 
 export function MetaButton({
@@ -58,7 +60,8 @@ export function MetaButton({
     theme = "auto",
     analyticsEvent,
     analyticsData,
-    fullWidth = false
+    fullWidth = false,
+    resetClicked = false
 }: MetaButtonProps) {
     const [isClicked, setIsClicked] = useState(false)
     const [isHovered, setIsHovered] = useState(false)
@@ -70,6 +73,13 @@ export function MetaButton({
             setIsClicked(false)
         }
     }, [isLoading])
+
+    // Reset clicked state when resetClicked prop changes
+    useEffect(() => {
+        if (resetClicked) {
+            setIsClicked(false)
+        }
+    }, [resetClicked])
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         if (isLoading || disabled || isClicked) return
