@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { JobData } from '@/lib/types';
 
 interface UseJobDataOptions {
@@ -29,7 +29,7 @@ export function useJobData(options: UseJobDataOptions = {}) {
         pages: 0,
     });
 
-    const fetchJobData = async () => {
+    const fetchJobData = useCallback(async () => {
         try {
             setLoading(true);
             setError(null);
@@ -54,11 +54,11 @@ export function useJobData(options: UseJobDataOptions = {}) {
         } finally {
             setLoading(false);
         }
-    };
+    }, [options.page, options.limit, options.status, options.archived]);
 
     useEffect(() => {
         fetchJobData();
-    }, [options.page, options.limit, options.status, options.archived]);
+    }, [fetchJobData]);
 
     const createJobData = async (data: Partial<JobData>) => {
         try {
@@ -152,7 +152,7 @@ export function useJobDataById(id: string) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchJobData = async () => {
+    const fetchJobData = useCallback(async () => {
         try {
             setLoading(true);
             setError(null);
@@ -173,13 +173,13 @@ export function useJobDataById(id: string) {
         } finally {
             setLoading(false);
         }
-    };
+    }, [id]);
 
     useEffect(() => {
         if (id) {
             fetchJobData();
         }
-    }, [id]);
+    }, [id, fetchJobData]);
 
     const updateJobData = async (data: Partial<JobData>) => {
         try {

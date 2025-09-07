@@ -44,28 +44,27 @@ export function ContentGenerator({
     const [isStrengthsExpanded, setIsStrengthsExpanded] = useState(true);
     const [analysisMode, setAnalysisMode] = useState<'compact' | 'detailed'>('compact');
 
-    // Clear display content and reset progress when generation type changes (new generation starts)
+    // Consolidated effect for content and progress management
     useEffect(() => {
+        // Clear display content and reset progress when generation type changes (new generation starts)
         if (generationType) {
             setDisplayContent('');
             setLocalProgress(0);
+            return;
         }
-    }, [generationType]);
 
-    // Also clear when generation starts and reset progress
-    useEffect(() => {
+        // Clear when generation starts and reset progress
         if (isGenerating && !content) {
             setDisplayContent('');
             setLocalProgress(0);
+            return;
         }
-    }, [isGenerating, content]);
 
-    // Immediate progress reset when content is cleared (not generating)
-    useEffect(() => {
+        // Immediate progress reset when content is cleared (not generating)
         if (!isGenerating && !content) {
             setLocalProgress(0);
         }
-    }, [isGenerating, content]);
+    }, [generationType, isGenerating, content]);
 
     // Simulate progress when generating
     useEffect(() => {

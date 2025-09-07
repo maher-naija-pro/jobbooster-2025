@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useReducer, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, ReactNode, useMemo } from 'react';
 import { AppState, AppAction, SUPPORTED_LANGUAGES } from './types';
 
 const initialState: AppState = {
@@ -95,8 +95,13 @@ interface AppProviderProps {
 export function AppProvider({ children }: AppProviderProps) {
     const [state, dispatch] = useReducer(appReducer, initialState);
 
+    const value = useMemo(() => ({
+        state,
+        dispatch
+    }), [state, dispatch]);
+
     return (
-        <AppContext.Provider value={{ state, dispatch }}>
+        <AppContext.Provider value={value}>
             {children}
         </AppContext.Provider>
     );

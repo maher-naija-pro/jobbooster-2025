@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useFormStatus } from 'react-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -148,37 +148,37 @@ export function ProfileForm({ profile }: ProfileFormProps) {
   }, [profile])
 
   // Check username uniqueness
-  useEffect(() => {
-    const checkUsername = async () => {
-      if (username.length < 3) {
-        setUsernameStatus('idle')
-        return
-      }
-
-      if (username === profile?.username) {
-        setUsernameStatus('available')
-        return
-      }
-
-      setUsernameStatus('checking')
-
-      try {
-        const response = await fetch('/api/check-username', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username })
-        })
-
-        const data = await response.json()
-        setUsernameStatus(data.available ? 'available' : 'taken')
-      } catch (error) {
-        setUsernameStatus('idle')
-      }
+  const checkUsername = useCallback(async () => {
+    if (username.length < 3) {
+      setUsernameStatus('idle')
+      return
     }
 
+    if (username === profile?.username) {
+      setUsernameStatus('available')
+      return
+    }
+
+    setUsernameStatus('checking')
+
+    try {
+      const response = await fetch('/api/check-username', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username })
+      })
+
+      const data = await response.json()
+      setUsernameStatus(data.available ? 'available' : 'taken')
+    } catch (error) {
+      setUsernameStatus('idle')
+    }
+  }, [username, profile?.username])
+
+  useEffect(() => {
     const timeoutId = setTimeout(checkUsername, 500)
     return () => clearTimeout(timeoutId)
-  }, [username, profile?.username])
+  }, [checkUsername])
 
   const handleSubmit = async (formData: FormData) => {
     setError('')

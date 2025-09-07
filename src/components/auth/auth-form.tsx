@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -49,7 +49,7 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
   }, [isLogin, isResetPassword])
 
   // Real-time validation
-  const validateField = (name: string, value: string) => {
+  const validateField = useCallback((name: string, value: string) => {
     const errors: Record<string, string> = { ...fieldErrors }
 
     switch (name) {
@@ -86,9 +86,9 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
     }
 
     setFieldErrors(errors)
-  }
+  }, [fieldErrors, isLogin])
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setTouched(prev => ({ ...prev, [name]: true }))
     validateField(name, value)
@@ -97,13 +97,13 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
     if (error) {
       setError('')
     }
-  }
+  }, [validateField, error])
 
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+  const handleBlur = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setTouched(prev => ({ ...prev, [name]: true }))
     validateField(name, value)
-  }
+  }, [validateField])
 
   const handleSubmit = async (formData: FormData) => {
     setIsLoading(true)
@@ -362,6 +362,41 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
         </>
       )}
 
+      {/* Toggle section above submit button */}
+      {!isResetPassword && (
+        <div className="text-center py-3 border-t border-slate-200 dark:border-slate-700">
+          {isLogin ? (
+            <div className="space-y-2">
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                Don't have an account?
+              </p>
+              <button
+                type="button"
+                onClick={onToggleMode}
+                className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 rounded-sm"
+                aria-label="Switch to create account mode"
+              >
+                Sign up
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                Already have an account?
+              </p>
+              <button
+                type="button"
+                onClick={onToggleMode}
+                className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 rounded-sm"
+                aria-label="Switch to sign in mode"
+              >
+                Sign in
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
       <Button
         type="submit"
         className="w-full h-10 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
@@ -382,10 +417,13 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
         )}
       </Button>
 
-      <div className="text-center text-xs space-y-1">
-        {isResetPassword ? (
-          <>
-            <span className="text-slate-600 dark:text-slate-400">Remember your password? </span>
+      {/* Reset password back to login link */}
+      {isResetPassword && (
+        <div className="text-center pt-4 border-t border-slate-200 dark:border-slate-700">
+          <div className="space-y-2">
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              Remember your password?
+            </p>
             <button
               type="button"
               onClick={onBackToLogin}
@@ -394,33 +432,9 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
             >
               Sign in
             </button>
-          </>
-        ) : isLogin ? (
-          <>
-            <span className="text-slate-600 dark:text-slate-400">Don't have an account? </span>
-            <button
-              type="button"
-              onClick={onToggleMode}
-              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 rounded-sm"
-              aria-label="Switch to create account mode"
-            >
-              Sign up
-            </button>
-          </>
-        ) : (
-          <>
-            <span className="text-slate-600 dark:text-slate-400">Already have an account? </span>
-            <button
-              type="button"
-              onClick={onToggleMode}
-              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 rounded-sm"
-              aria-label="Switch to sign in mode"
-            >
-              Sign in
-            </button>
-          </>
-        )}
-      </div>
+          </div>
+        </div>
+      )}
     </form>
   )
 }
