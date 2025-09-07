@@ -135,7 +135,7 @@ export async function updatePassword(formData: FormData) {
   const data = {
     password: formData.get('password') as string,
     confirmPassword: formData.get('confirmPassword') as string,
-    token: formData.get('token') as string,
+    token: formData.get('token') as string | null,
   }
 
   logger.debug('Form data extracted for password update', {

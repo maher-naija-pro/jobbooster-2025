@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { updatePassword } from '../reset-password/actions'
 import { createClient } from '@/lib/supabase/client'
 import { logger } from '@/lib/logger'
+import { getHumanReadableError, ErrorInfo } from '@/lib/auth/error-messages'
 
 interface UpdatePasswordPageProps {
   searchParams: Promise<{
@@ -19,7 +20,7 @@ interface UpdatePasswordPageProps {
 export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState<string>('')
-  const [error, setError] = useState<string>('')
+  const [errorInfo, setErrorInfo] = useState<ErrorInfo | null>(null)
   const [token, setToken] = useState<string>('')
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
 
@@ -44,7 +45,8 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
             error: error.message,
             duration: `${Date.now() - startTime}ms`
           })
-          setError('Authentication check failed. Please try the password reset link again.')
+          const errorInfo = getHumanReadableError(error)
+          setErrorInfo(errorInfo)
           setIsAuthenticated(false)
           return
         }
@@ -57,7 +59,12 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
             step: 'no_user_found',
             duration: `${Date.now() - startTime}ms`
           })
-          setError('You must be authenticated to update your password. Please use the password reset link from your email.')
+          const errorInfo: ErrorInfo = {
+            title: 'Authentication Required',
+            message: 'You must be authenticated to update your password. Please use the password reset link from your email.',
+            details: 'No authenticated user found'
+          }
+          setErrorInfo(errorInfo)
         } else {
           logger.info('User authenticated successfully for password update', {
             action: 'checkPasswordUpdateAuth',
@@ -75,7 +82,8 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
           stack: err instanceof Error ? err.stack : undefined,
           duration: `${Date.now() - startTime}ms`
         })
-        setError('Authentication check failed. Please try the password reset link again.')
+        const errorInfo = getHumanReadableError(err)
+        setErrorInfo(errorInfo)
         setIsAuthenticated(false)
       }
     }
@@ -97,15 +105,15 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
 
   const handleSubmit = async (formData: FormData) => {
     setIsLoading(true)
-    setError('')
     setMessage('')
+    setErrorInfo(null)
 
     try {
       await updatePassword(formData)
       setMessage('Password updated successfully! You can now use your new password.')
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update password'
-      setError(errorMessage)
+      const errorInfo = getHumanReadableError(err)
+      setErrorInfo(errorInfo)
     } finally {
       setIsLoading(false)
     }
@@ -143,11 +151,31 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
             </div>
           )}
 
-          {error && (
-            <div className="mb-4 p-3 text-sm text-red-600 bg-red-50 rounded-md">
-              {error}
+          {errorInfo && (
+            <div className="mb-4 p-4 text-sm bg-red-50 border border-red-200 rounded-md">
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-red-800">
+                    {errorInfo.title}
+                  </h3>
+                  <div className="mt-1 text-sm text-red-700">
+                    {errorInfo.message}
+                  </div>
+                  {errorInfo.details && (
+                    <div className="mt-2 text-xs text-red-600 bg-red-100 p-2 rounded font-mono">
+                      {errorInfo.details}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           )}
+
 
           {isAuthenticated ? (
             <form action={handleSubmit} className="space-y-4">
