@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { updateProfile } from '@/app/user/profile/actions'
 import { ResetPasswordModal } from '@/components/auth/reset-password-modal'
+import { AvatarUpload } from '@/components/user/avatar-upload'
 import { toast } from 'sonner'
 import { Icons } from '@/components/icons'
 
@@ -38,105 +39,124 @@ function FormInputs({ username, setUsername, fullName, setFullName, usernameStat
   const { pending } = useFormStatus()
 
   return (
-    <>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <Label htmlFor="fullName">Full Name</Label>
-          <Input
-            id="fullName"
-            name="fullName"
-            type="text"
-            placeholder="Enter your full name"
-            autoComplete="name"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            disabled={pending}
-          />
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* Profile Picture Section - 1/3 width */}
+      <div className="lg:col-span-1">
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <h4 className="text-lg font-medium flex items-center gap-2">
+              <Icons.user className="h-5 w-5" />
+              Profile Picture
+            </h4>
+            <p className="text-sm text-muted-foreground">
+              Upload and manage your profile picture
+            </p>
+          </div>
+          <AvatarUpload profile={profile} />
         </div>
+      </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="username">Username</Label>
-          <div className="relative">
+      {/* Profile Information Section - 2/3 width */}
+      <div className="lg:col-span-2 space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label htmlFor="fullName">Full Name</Label>
             <Input
-              id="username"
-              name="username"
+              id="fullName"
+              name="fullName"
               type="text"
-              placeholder="Enter your username"
-              autoComplete="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter your full name"
+              autoComplete="name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
               disabled={pending}
-              className={usernameStatus === 'taken' ? 'border-red-500' : usernameStatus === 'available' ? 'border-green-500' : ''}
             />
-            {usernameStatus === 'checking' && (
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900"></div>
-              </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="username">Username</Label>
+            <div className="relative">
+              <Input
+                id="username"
+                name="username"
+                type="text"
+                placeholder="Enter your username"
+                autoComplete="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                disabled={pending}
+                className={usernameStatus === 'taken' ? 'border-red-500' : usernameStatus === 'available' ? 'border-green-500' : ''}
+              />
+              {usernameStatus === 'checking' && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900"></div>
+                </div>
+              )}
+              {usernameStatus === 'available' && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500">
+                  ✓
+                </div>
+              )}
+              {usernameStatus === 'taken' && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-red-500">
+                  ✗
+                </div>
+              )}
+            </div>
+            {usernameStatus === 'taken' && (
+              <p className="text-sm text-red-600">Username is already taken</p>
             )}
             {usernameStatus === 'available' && (
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500">
-                ✓
-              </div>
-            )}
-            {usernameStatus === 'taken' && (
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-red-500">
-                ✗
-              </div>
+              <p className="text-sm text-green-600">Username is available</p>
             )}
           </div>
-          {usernameStatus === 'taken' && (
-            <p className="text-sm text-red-600">Username is already taken</p>
-          )}
-          {usernameStatus === 'available' && (
-            <p className="text-sm text-green-600">Username is available</p>
-          )}
         </div>
-      </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="email">Email Address</Label>
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          value={profile?.email || ''}
-          disabled
-          className="bg-gray-50"
-        />
-        <p className="text-sm text-muted-foreground">
-          Email address cannot be changed. Contact support if you need to update it.
-        </p>
-      </div>
-
-      {/* Security Settings Section */}
-      <div className="space-y-4 pt-6 border-t">
         <div className="space-y-2">
-          <h4 className="text-lg font-medium flex items-center gap-2">
-            <Icons.shield className="h-5 w-5" />
-            Security Settings
-          </h4>
+          <Label htmlFor="email">Email Address</Label>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            value={profile?.email || ''}
+            disabled
+            className="bg-gray-50"
+          />
           <p className="text-sm text-muted-foreground">
-            Manage your account security and password settings
+            Email address cannot be changed. Contact support if you need to update it.
           </p>
         </div>
 
-        <div className="flex items-center justify-between p-4 border rounded-lg">
-          <div className="space-y-1">
-            <h4 className="font-medium">Password</h4>
+        {/* Security Settings Section */}
+        <div className="space-y-4 pt-6 border-t">
+          <div className="space-y-2">
+            <h4 className="text-lg font-medium flex items-center gap-2">
+              <Icons.shield className="h-5 w-5" />
+              Security Settings
+            </h4>
             <p className="text-sm text-muted-foreground">
-              Update your password to keep your account secure
+              Manage your account security and password settings
             </p>
           </div>
-          <ResetPasswordModal>
-            <Button variant="outline" size="sm">
-              <Icons.lock className="mr-2 h-4 w-4" />
-              Reset Password
-            </Button>
-          </ResetPasswordModal>
+
+          <div className="flex items-center justify-between p-4 border rounded-lg">
+            <div className="space-y-1">
+              <h4 className="font-medium">Password</h4>
+              <p className="text-sm text-muted-foreground">
+                Update your password to keep your account secure
+              </p>
+            </div>
+            <ResetPasswordModal>
+              <Button variant="outline" size="sm">
+                <Icons.lock className="mr-2 h-4 w-4" />
+                Reset Password
+              </Button>
+            </ResetPasswordModal>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 

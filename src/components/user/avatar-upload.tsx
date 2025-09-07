@@ -179,15 +179,14 @@ export function AvatarUpload({ profile }: AvatarUploadProps) {
 
   return (
     <>
-      <div className="space-y-6">
-        <div className="flex items-center space-x-6">
-          <Avatar className="h-24 w-24">
+      <div className="space-y-4">
+        <div className="flex flex-col items-center space-y-4">
+          <Avatar className="h-32 w-32">
             <AvatarImage src={profile?.avatarUrl} alt={profile?.fullName || profile?.email} />
-            <AvatarFallback className="text-lg">{initials}</AvatarFallback>
+            <AvatarFallback className="text-2xl">{initials}</AvatarFallback>
           </Avatar>
 
-          <div className="space-y-2">
-            <h3 className="text-lg font-medium">Profile Picture</h3>
+          <div className="text-center space-y-2">
             <p className="text-sm text-muted-foreground">
               Upload a new profile picture. Maximum file size is 5MB.
               Supported formats: JPEG, PNG, WebP.
@@ -195,7 +194,7 @@ export function AvatarUpload({ profile }: AvatarUploadProps) {
           </div>
         </div>
 
-        <form action={handleFormSubmit} className="space-y-4">
+        <form action={handleFormSubmit} className="space-y-3">
           <div className="space-y-2">
             <SingleUploadButton onError={handleUploadError} />
           </div>

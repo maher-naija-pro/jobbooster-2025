@@ -2,7 +2,6 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getProfile } from '@/app/user/profile/actions'
 import { ProfileForm } from '@/components/user/profile-form'
-import { AvatarUpload } from '@/components/user/avatar-upload'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { prisma } from '@/lib/prisma'
 
@@ -116,33 +115,18 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                 )}
 
                 <div className="space-y-8">
-                    {/* Profile Information Section */}
+                    {/* Profile Information and Picture Section */}
                     <Card>
                         <CardHeader>
                             <CardTitle>Profile Information</CardTitle>
                             <CardDescription>
-                                Update your personal information and account details
+                                Update your personal information, account details, and profile picture
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
                             <ProfileForm profile={finalProfile} />
                         </CardContent>
                     </Card>
-
-                    {/* Avatar Section */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Profile Picture</CardTitle>
-                            <CardDescription>
-                                Upload and manage your profile picture
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <AvatarUpload profile={finalProfile} />
-                        </CardContent>
-                    </Card>
-
-
                 </div>
             </div>
         </div>
