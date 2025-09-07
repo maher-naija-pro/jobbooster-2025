@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
+import { MetaButton } from '@/components/buttons/meta-button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { login } from '@/app/auth/login/actions'
@@ -362,25 +362,18 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
         </>
       )}
 
-      <Button
+      <MetaButton
         type="submit"
-        className="w-full h-10 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+        variant="primary"
+        size="md"
+        width="full"
+        text={isResetPassword ? 'Send Reset Link' : isLogin ? 'Sign In' : 'Create Account'}
+        isLoading={isLoading}
+        loadingText="Processing..."
         disabled={isLoading || Object.keys(fieldErrors).length > 0}
-        aria-describedby={isLoading ? 'loading-text' : undefined}
-      >
-        {isLoading ? (
-          <div className="flex items-center space-x-2">
-            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-            <span id="loading-text">Processing...</span>
-          </div>
-        ) : (
-          isResetPassword
-            ? 'Send Reset Link'
-            : isLogin
-              ? 'Sign In'
-              : 'Create Account'
-        )}
-      </Button>
+        className=" font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+        showIcon={false}
+      />
 
       <div className="text-center text-xs space-y-1">
         {isResetPassword ? (
