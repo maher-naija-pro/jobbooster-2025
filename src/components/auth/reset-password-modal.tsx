@@ -3,9 +3,10 @@
 import { useState, useCallback } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Icons } from '@/components/icons'
+import { EmailInput } from '@/components/auth/email-input'
+import { DEFAULT_EMAIL_CONSTRAINTS } from '@/components/auth/email-constraints'
 import { requestPasswordReset } from '@/app/auth/reset-password/actions'
 import { logger } from '@/lib/logger'
 import { toast } from 'sonner'
@@ -131,8 +132,9 @@ export function ResetPasswordModal({ children }: ResetPasswordModalProps) {
 
                     <div className="space-y-2">
                         <Label htmlFor="email">Email Address</Label>
-                        <Input
+                        <EmailInput
                             id="email"
+                            name="email"
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -140,6 +142,7 @@ export function ResetPasswordModal({ children }: ResetPasswordModalProps) {
                             required
                             disabled={isLoading}
                             autoComplete="email"
+                            constraints={DEFAULT_EMAIL_CONSTRAINTS}
                         />
                     </div>
 
