@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { User } from '@supabase/supabase-js'
+import { createClient } from '@/lib/supabase/server'
+import { logger } from '@/lib/logger'
 
 export interface CreateProfileOptions {
     user: User
@@ -106,5 +108,81 @@ export async function ensureUserProfile(userId: string, email: string) {
     } catch (error) {
         console.error('Error ensuring user profile:', error)
         return { success: false, error }
+    }
+}
+
+/**
+ * Checks if a user already exists by email address
+ * This function checks both Supabase auth and our database profile
+ */
+export async function checkUserExists(email: string) {
+    try {
+        logger.debug('Checking if user exists by email', {
+            action: 'check_user_exists',
+            step: 'initiated',
+            email: email ? `${email.substring(0, 3)}***@${email.split('@')[1]}` : 'null'
+        })
+
+        // First check if user exists in our database profile
+        const existingProfile = await prisma.profile.findUnique({
+            where: { email: email.toLowerCase() }
+        })
+
+        if (existingProfile) {
+            logger.info('User exists in database profile', {
+                action: 'check_user_exists',
+                step: 'profile_found',
+                email: email ? `${email.substring(0, 3)}***@${email.split('@')[1]}` : 'null',
+                userId: existingProfile.userId ? `${existingProfile.userId.substring(0, 8)}...` : 'null'
+            })
+            return { exists: true, source: 'database', profile: existingProfile }
+        }
+
+        // Also check Supabase auth to be thorough
+        const supabase = await createClient()
+        const { data: authUsers, error } = await supabase.auth.admin.listUsers()
+
+        if (error) {
+            logger.warn('Error checking Supabase auth users', {
+                action: 'check_user_exists',
+                step: 'supabase_check_failed',
+                error: error.message,
+                email: email ? `${email.substring(0, 3)}***@${email.split('@')[1]}` : 'null'
+            })
+            // If we can't check Supabase, but user doesn't exist in our DB, assume they don't exist
+            return { exists: false, source: 'database_only' }
+        }
+
+        const existingAuthUser = authUsers.users.find(user =>
+            user.email?.toLowerCase() === email.toLowerCase()
+        )
+
+        if (existingAuthUser) {
+            logger.info('User exists in Supabase auth', {
+                action: 'check_user_exists',
+                step: 'auth_found',
+                email: email ? `${email.substring(0, 3)}***@${email.split('@')[1]}` : 'null',
+                userId: existingAuthUser.id ? `${existingAuthUser.id.substring(0, 8)}...` : 'null'
+            })
+            return { exists: true, source: 'auth', user: existingAuthUser }
+        }
+
+        logger.debug('User does not exist', {
+            action: 'check_user_exists',
+            step: 'not_found',
+            email: email ? `${email.substring(0, 3)}***@${email.split('@')[1]}` : 'null'
+        })
+
+        return { exists: false, source: 'both' }
+    } catch (error) {
+        logger.error('Error checking if user exists', {
+            action: 'check_user_exists',
+            step: 'error',
+            error: error instanceof Error ? error.message : 'Unknown error',
+            stack: error instanceof Error ? error.stack : undefined,
+            email: email ? `${email.substring(0, 3)}***@${email.split('@')[1]}` : 'null'
+        })
+        // If there's an error checking, assume user doesn't exist to avoid blocking registration
+        return { exists: false, source: 'error', error }
     }
 }

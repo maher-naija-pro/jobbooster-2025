@@ -11,6 +11,8 @@ import { createClient } from '@/lib/supabase/client'
 import { logger } from '@/lib/logger'
 import { getHumanReadableError, ErrorInfo } from '@/lib/auth/error-messages'
 import { updatePasswordSchema } from '@/lib/auth/validation'
+import { PasswordInput } from '@/components/auth/password-input'
+import { validatePassword, validatePasswordConfirmation, DEFAULT_PASSWORD_CONSTRAINTS } from '@/components/auth/password-constraints'
 
 interface UpdatePasswordPageProps {
   searchParams: Promise<{
@@ -130,43 +132,42 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
   // Real-time validation
   const validateField = useCallback((fieldName: string, value: string) => {
     try {
-      const data = {
-        password: formValues.password || '',
-        confirmPassword: formValues.confirmPassword || '',
-        token: token || null
-      }
+      const errors: Record<string, string> = { ...fieldErrors }
 
-      // Update the field being validated
       if (fieldName === 'password') {
-        data.password = value
+        if (!value) {
+          errors.password = 'Password is required'
+        } else {
+          // Use centralized password validation
+          const passwordResult = validatePassword(value, DEFAULT_PASSWORD_CONSTRAINTS)
+          if (!passwordResult.isValid) {
+            errors.password = passwordResult.errors[0] // Show first error
+          } else {
+            delete errors.password
+          }
+        }
       } else if (fieldName === 'confirmPassword') {
-        data.confirmPassword = value
-      }
-
-      // Validate using the schema
-      updatePasswordSchema.parse(data)
-
-      // Clear error if validation passes
-      setFieldErrors(prev => {
-        const newErrors = { ...prev }
-        delete newErrors[fieldName]
-        return newErrors
-      })
-
-      return true
-    } catch (error: any) {
-      if (error.errors && error.errors.length > 0) {
-        const fieldError = error.errors.find((e: any) => e.path.includes(fieldName))
-        if (fieldError) {
-          setFieldErrors(prev => ({
-            ...prev,
-            [fieldName]: fieldError.message
-          }))
+        const password = formValues.password || ''
+        if (!value) {
+          errors.confirmPassword = 'Please confirm your password'
+        } else {
+          // Use centralized password confirmation validation
+          const confirmationResult = validatePasswordConfirmation(password, value, DEFAULT_PASSWORD_CONSTRAINTS)
+          if (!confirmationResult.isValid) {
+            errors.confirmPassword = confirmationResult.errors.find(e => e.includes('match')) || confirmationResult.errors[0]
+          } else {
+            delete errors.confirmPassword
+          }
         }
       }
+
+      setFieldErrors(errors)
+      return Object.keys(errors).length === 0
+    } catch (error) {
+      logger.error('Validation error in update password', { error, fieldName, value })
       return false
     }
-  }, [formValues, token])
+  }, [fieldErrors, formValues.password])
 
   // Handle input changes
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -225,8 +226,9 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
       return false
     }
 
-    // Check minimum length
-    if (password.length < 6) {
+    // Check minimum length using centralized validation
+    const passwordResult = validatePassword(password, DEFAULT_PASSWORD_CONSTRAINTS)
+    if (!passwordResult.isValid) {
       return false
     }
 
@@ -265,8 +267,9 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
           throw new Error('Passwords do not match')
         }
 
-        if (password.length < 6) {
-          throw new Error('Password must be at least 6 characters long')
+        const passwordResult = validatePassword(password, DEFAULT_PASSWORD_CONSTRAINTS)
+        if (!passwordResult.isValid) {
+          throw new Error(passwordResult.errors[0] || 'Password does not meet requirements')
         }
 
         setMessage('Test mode: Password updated successfully! (This is a simulation)')
@@ -400,23 +403,34 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
               )}
               <div className="space-y-2">
                 <Label htmlFor="password">New password</Label>
-                <Input
-                  ref={passwordRef}
+                <PasswordInput
                   id="password"
                   name="password"
-                  type="password"
+                  value={formValues.password || ''}
+                  onChange={(value) => {
+                    setFormValues(prev => ({ ...prev, password: value }))
+                    setTouched(prev => ({ ...prev, password: true }))
+                    if (value.length > 0) {
+                      validateField('password', value)
+                    }
+                    if (message) {
+                      setMessage('')
+                    }
+                    if (errorInfo) {
+                      setErrorInfo(null)
+                    }
+                  }}
+                  onBlur={() => {
+                    setTouched(prev => ({ ...prev, password: true }))
+                    if (formValues.password && formValues.password.length > 0) {
+                      validateField('password', formValues.password)
+                    }
+                  }}
                   placeholder="Enter your new password"
                   autoComplete="new-password"
-                  required
                   disabled={isLoading}
-                  onChange={handleInputChange}
-                  onBlur={handleBlur}
-                  aria-invalid={isFieldInvalid('password') ? 'true' : 'false'}
-                  aria-describedby={isFieldInvalid('password') ? 'password-error' : undefined}
-                  className={`transition-all duration-200 ${isFieldInvalid('password')
-                    ? 'border-red-300 dark:border-red-600 focus-visible:ring-red-500/20'
-                    : 'border-slate-300 dark:border-slate-600 focus-visible:ring-blue-500/20'
-                    }`}
+                  required
+                  constraints={DEFAULT_PASSWORD_CONSTRAINTS}
                 />
                 {isFieldInvalid('password') && (
                   <p id="password-error" className="text-sm text-red-600 dark:text-red-400 mt-1" role="alert">
@@ -432,23 +446,34 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
 
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">Confirm new password</Label>
-                <Input
-                  ref={confirmPasswordRef}
+                <PasswordInput
                   id="confirmPassword"
                   name="confirmPassword"
-                  type="password"
+                  value={formValues.confirmPassword || ''}
+                  onChange={(value) => {
+                    setFormValues(prev => ({ ...prev, confirmPassword: value }))
+                    setTouched(prev => ({ ...prev, confirmPassword: true }))
+                    if (value.length > 0) {
+                      validateField('confirmPassword', value)
+                    }
+                    if (message) {
+                      setMessage('')
+                    }
+                    if (errorInfo) {
+                      setErrorInfo(null)
+                    }
+                  }}
+                  onBlur={() => {
+                    setTouched(prev => ({ ...prev, confirmPassword: true }))
+                    if (formValues.confirmPassword && formValues.confirmPassword.length > 0) {
+                      validateField('confirmPassword', formValues.confirmPassword)
+                    }
+                  }}
                   placeholder="Confirm your new password"
                   autoComplete="new-password"
-                  required
                   disabled={isLoading}
-                  onChange={handleInputChange}
-                  onBlur={handleBlur}
-                  aria-invalid={isFieldInvalid('confirmPassword') ? 'true' : 'false'}
-                  aria-describedby={isFieldInvalid('confirmPassword') ? 'confirmPassword-error' : undefined}
-                  className={`transition-all duration-200 ${isFieldInvalid('confirmPassword')
-                    ? 'border-red-300 dark:border-red-600 focus-visible:ring-red-500/20'
-                    : 'border-slate-300 dark:border-slate-600 focus-visible:ring-blue-500/20'
-                    }`}
+                  required
+                  constraints={DEFAULT_PASSWORD_CONSTRAINTS}
                 />
                 {isFieldInvalid('confirmPassword') && (
                   <p id="confirmPassword-error" className="text-sm text-red-600 dark:text-red-400 mt-1" role="alert">

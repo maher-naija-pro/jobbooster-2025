@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { registerSchema } from '@/lib/auth/validation'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
+import { checkUserExists } from '@/lib/auth/profile-utils'
 
 export async function register(formData: FormData) {
     const startTime = Date.now()
@@ -60,6 +61,31 @@ export async function register(formData: FormData) {
     }
 
     const validatedData = registerSchema.parse(data)
+
+    // Check if user already exists before attempting registration
+    logger.debug('Checking if user already exists', {
+        action: 'register',
+        step: 'user_existence_check',
+        email: validatedData.email ? `${validatedData.email.substring(0, 3)}***@${validatedData.email.split('@')[1]}` : 'null'
+    })
+
+    const userExistsResult = await checkUserExists(validatedData.email)
+
+    if (userExistsResult.exists) {
+        logger.warn('Registration attempt with existing email', {
+            action: 'register',
+            step: 'user_already_exists',
+            email: validatedData.email ? `${validatedData.email.substring(0, 3)}***@${validatedData.email.split('@')[1]}` : 'null',
+            source: userExistsResult.source
+        })
+        throw new Error('An account with this email address already exists. Please try signing in instead.')
+    }
+
+    logger.debug('User does not exist, proceeding with registration', {
+        action: 'register',
+        step: 'user_existence_check_passed',
+        email: validatedData.email ? `${validatedData.email.substring(0, 3)}***@${validatedData.email.split('@')[1]}` : 'null'
+    })
 
     logger.debug('Initiating Supabase user signup', {
         action: 'register',

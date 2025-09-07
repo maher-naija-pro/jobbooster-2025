@@ -1,13 +1,19 @@
 import { z } from 'zod'
+import { DEFAULT_PASSWORD_CONSTRAINTS } from '@/components/auth/password-constraints'
+
+// Create a reusable password validation schema
+const passwordSchema = z.string()
+  .min(DEFAULT_PASSWORD_CONSTRAINTS.minLength, `Password must be at least ${DEFAULT_PASSWORD_CONSTRAINTS.minLength} characters`)
+  .max(DEFAULT_PASSWORD_CONSTRAINTS.maxLength || 128, `Password must be no more than ${DEFAULT_PASSWORD_CONSTRAINTS.maxLength || 128} characters`)
 
 export const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  password: passwordSchema,
 })
 
 export const registerSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  password: passwordSchema,
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
@@ -19,7 +25,7 @@ export const resetPasswordSchema = z.object({
 })
 
 export const updatePasswordSchema = z.object({
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  password: passwordSchema,
   confirmPassword: z.string(),
   token: z.string().nullable().optional(),
 }).refine((data) => data.password === data.confirmPassword, {

@@ -8,6 +8,8 @@ import { Icons } from '@/components/icons'
 import { login } from '@/app/auth/login/actions'
 import { register } from '@/app/auth/register/actions'
 import { requestPasswordReset } from '@/app/auth/reset-password/actions'
+import { PasswordInput } from './password-input'
+import { validatePassword, validatePasswordConfirmation, DEFAULT_PASSWORD_CONSTRAINTS } from './password-constraints'
 
 interface AuthFormProps {
   isLogin: boolean
@@ -40,9 +42,12 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
     }
   }, [isLogin, isResetPassword])
 
-  // Clear success message when switching modes
+  // Clear success message when switching modes (but preserve registration success message)
   useEffect(() => {
-    setSuccess('')
+    // Don't clear success message if it's a registration success message and we're switching to login
+    if (!(success.includes('Registration successful') && isLogin)) {
+      setSuccess('')
+    }
     setError('')
     setFormValues({})
     setFieldErrors({})
@@ -51,7 +56,7 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
     if (!isLogin) {
       setResetSuccess('')
     }
-  }, [isLogin, isResetPassword])
+  }, [isLogin, isResetPassword, success])
 
   // Real-time validation
   const validateField = useCallback((name: string, value: string, isSubmit = false) => {
@@ -70,22 +75,28 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
       case 'password':
         if (!value) {
           errors.password = isSubmit ? 'Password is required' : ''
-        } else if (value.length < 8) {
-          errors.password = 'Password must be at least 8 characters'
-        } else if (!isLogin && !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(value)) {
-          errors.password = 'Password must contain uppercase, lowercase, and number'
         } else {
-          delete errors.password
+          // Use centralized password validation
+          const passwordResult = validatePassword(value, DEFAULT_PASSWORD_CONSTRAINTS)
+          if (!passwordResult.isValid) {
+            errors.password = passwordResult.errors[0] // Show first error
+          } else {
+            delete errors.password
+          }
         }
         break
       case 'confirmPassword':
         const password = formRef.current?.password?.value || ''
         if (!value) {
           errors.confirmPassword = isSubmit ? 'Please confirm your password' : ''
-        } else if (value !== password) {
-          errors.confirmPassword = 'Passwords do not match'
         } else {
-          delete errors.confirmPassword
+          // Use centralized password confirmation validation
+          const confirmationResult = validatePasswordConfirmation(password, value, DEFAULT_PASSWORD_CONSTRAINTS)
+          if (!confirmationResult.isValid) {
+            errors.confirmPassword = confirmationResult.errors.find(e => e.includes('match')) || confirmationResult.errors[0]
+          } else {
+            delete errors.confirmPassword
+          }
         }
         break
     }
@@ -167,10 +178,10 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
       } else {
         await register(formData)
         setSuccess('Registration successful! Please check your email for confirmation.')
-        // Close modal after a short delay to show success message
-        setTimeout(() => {
-          onSuccess()
-        }, 2000)
+        // Switch to login mode and show confirmation message instead of closing modal
+        if (onSwitchToLogin) {
+          onSwitchToLogin()
+        }
       }
     } catch (err) {
       // Check if it's a NEXT_REDIRECT error (which is expected behavior for redirects)
@@ -250,10 +261,10 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
   }
 
   return (
-    <form ref={formRef} action={handleSubmit} className="space-y-4" noValidate>
+    <form ref={formRef} action={handleSubmit} className="space-y-3" noValidate>
       {error && (
         <div
-          className="text-sm text-red-700 dark:text-red-300 bg-gradient-to-r from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 p-3 rounded-lg border border-red-200 dark:border-red-800/30 shadow-sm"
+          className="text-sm text-red-700 dark:text-red-300 bg-gradient-to-r from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 p-2 rounded-lg border border-red-200 dark:border-red-800/30 shadow-sm"
           role="alert"
           aria-live="polite"
         >
@@ -284,9 +295,9 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
         </div>
       )}
 
-      {success && isResetPassword && (
+      {success && (isResetPassword || (isLogin && success.includes('Registration successful'))) && (
         <div
-          className="text-sm text-green-700 dark:text-green-300 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 p-3 rounded-lg border border-green-200 dark:border-green-800/30 shadow-sm"
+          className="text-sm text-green-700 dark:text-green-300 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 p-2 rounded-lg border border-green-200 dark:border-green-800/30 shadow-sm"
           role="alert"
           aria-live="polite"
         >
@@ -310,7 +321,7 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
         </div>
       )}
 
-      <div className="space-y-1">
+      <div className="space-y-0.5">
         <Label
           htmlFor="email"
           className="text-sm font-medium text-slate-700 dark:text-slate-300"
@@ -344,39 +355,42 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
 
       {!isResetPassword && (
         <>
-          <div className="space-y-1">
+          <div className="space-y-0.5">
             <Label
               htmlFor="password"
               className="text-sm font-medium text-slate-700 dark:text-slate-300"
             >
               Password
             </Label>
-            <Input
-              ref={passwordRef}
+            <PasswordInput
               id="password"
               name="password"
-              type="password"
+              value={formValues.password || ''}
+              onChange={(value) => {
+                setFormValues(prev => ({ ...prev, password: value }))
+                setTouched(prev => ({ ...prev, password: true }))
+                if (value.length > 0) {
+                  validateField('password', value)
+                }
+                if (error) {
+                  setError('')
+                }
+              }}
+              onBlur={() => {
+                setTouched(prev => ({ ...prev, password: true }))
+                if (formValues.password && formValues.password.length > 0) {
+                  validateField('password', formValues.password)
+                }
+              }}
               placeholder="Enter your password"
               autoComplete={isLogin ? "current-password" : "new-password"}
-              required
               disabled={isLoading}
-              onChange={handleInputChange}
-              onBlur={handleBlur}
-              aria-invalid={isFieldInvalid('password') ? 'true' : 'false'}
-              aria-describedby={isFieldInvalid('password') ? 'password-error' : undefined}
-              className={`transition-all duration-200 ${isFieldInvalid('password')
-                ? 'border-red-300 dark:border-red-600 focus-visible:ring-red-500/20'
-                : 'border-slate-300 dark:border-slate-600 focus-visible:ring-blue-500/20'
-                }`}
+              required
+              constraints={DEFAULT_PASSWORD_CONSTRAINTS}
             />
             {isFieldInvalid('password') && (
               <p id="password-error" className="text-sm text-red-600 dark:text-red-400 mt-1" role="alert">
                 {getFieldError('password')}
-              </p>
-            )}
-            {!isLogin && !isFieldInvalid('password') && (
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                Must contain uppercase, lowercase, and number
               </p>
             )}
             {isLogin && (
@@ -394,30 +408,38 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
           </div>
 
           {!isLogin && (
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               <Label
                 htmlFor="confirmPassword"
                 className="text-sm font-medium text-slate-700 dark:text-slate-300"
               >
                 Confirm Password
               </Label>
-              <Input
-                ref={confirmPasswordRef}
+              <PasswordInput
                 id="confirmPassword"
                 name="confirmPassword"
-                type="password"
+                value={formValues.confirmPassword || ''}
+                onChange={(value) => {
+                  setFormValues(prev => ({ ...prev, confirmPassword: value }))
+                  setTouched(prev => ({ ...prev, confirmPassword: true }))
+                  if (value.length > 0) {
+                    validateField('confirmPassword', value)
+                  }
+                  if (error) {
+                    setError('')
+                  }
+                }}
+                onBlur={() => {
+                  setTouched(prev => ({ ...prev, confirmPassword: true }))
+                  if (formValues.confirmPassword && formValues.confirmPassword.length > 0) {
+                    validateField('confirmPassword', formValues.confirmPassword)
+                  }
+                }}
                 placeholder="Confirm your password"
                 autoComplete="new-password"
-                required
                 disabled={isLoading}
-                onChange={handleInputChange}
-                onBlur={handleBlur}
-                aria-invalid={isFieldInvalid('confirmPassword') ? 'true' : 'false'}
-                aria-describedby={isFieldInvalid('confirmPassword') ? 'confirmPassword-error' : undefined}
-                className={`transition-all duration-200 ${isFieldInvalid('confirmPassword')
-                  ? 'border-red-300 dark:border-red-600 focus-visible:ring-red-500/20'
-                  : 'border-slate-300 dark:border-slate-600 focus-visible:ring-blue-500/20'
-                  }`}
+                required
+                constraints={DEFAULT_PASSWORD_CONSTRAINTS}
               />
               {isFieldInvalid('confirmPassword') && (
                 <p id="confirmPassword-error" className="text-sm text-red-600 dark:text-red-400 mt-1" role="alert">
@@ -431,7 +453,7 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
 
       {/* Toggle section above submit button */}
       {!isResetPassword && (
-        <div className="text-center py-3 border-t border-slate-200 dark:border-slate-700">
+        <div className="text-center py-2 border-t border-slate-200 dark:border-slate-700">
           {isLogin ? (
             <div className="space-y-2">
               <p className="text-sm text-slate-600 dark:text-slate-400">
@@ -531,7 +553,7 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
 
       {/* Reset password back to login link */}
       {isResetPassword && (
-        <div className="text-center pt-4 border-t border-slate-200 dark:border-slate-700">
+        <div className="text-center pt-3 border-t border-slate-200 dark:border-slate-700">
           <div className="space-y-2">
             <p className="text-sm text-slate-600 dark:text-slate-400">
               Remember your password?

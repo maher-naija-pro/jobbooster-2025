@@ -101,7 +101,7 @@ export function AuthModal({ isOpen, onClose, feature, onTestModeToggle }: AuthMo
 
         {/* Content container with proper z-index */}
         <div className="relative z-10">
-          <DialogHeader className="space-y-2">
+          <DialogHeader className="space-y-1">
             <DialogTitle
               id="auth-modal-title"
               className="text-xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 dark:from-slate-100 dark:via-blue-100 dark:to-slate-100 bg-clip-text text-transparent"
@@ -128,14 +128,14 @@ export function AuthModal({ isOpen, onClose, feature, onTestModeToggle }: AuthMo
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 mt-4">
+          <div className="space-y-3 mt-3">
             {!isResetPassword && (
               <>
                 <OAuthButtons onError={handleOAuthError} />
 
                 {oauthError && (
                   <div
-                    className="text-sm text-red-700 dark:text-red-300 bg-gradient-to-r from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 p-4 rounded-xl border border-red-200 dark:border-red-800/30 shadow-sm"
+                    className="text-sm text-red-700 dark:text-red-300 bg-gradient-to-r from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 p-2 rounded-xl border border-red-200 dark:border-red-800/30 shadow-sm"
                     role="alert"
                     aria-live="polite"
                   >
