@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
-import { MetaButton } from "@/components/buttons/meta-button"
+import { MetaButton } from "@/components/ui/meta-button"
 import { Icons } from "@/components/icons"
 
 // Mock icons for demonstration
@@ -126,8 +126,8 @@ export default function ButtonDemoPage() {
                             <button
                                 onClick={() => setAnimationsEnabled(!animationsEnabled)}
                                 className={`px-3 py-1 rounded text-sm ${animationsEnabled
-                                    ? 'bg-green-100 text-green-800 border border-green-300'
-                                    : 'bg-red-100 text-red-800 border border-red-300'
+                                        ? 'bg-green-100 text-green-800 border border-green-300'
+                                        : 'bg-red-100 text-red-800 border border-red-300'
                                     }`}
                             >
                                 {animationsEnabled ? 'Enabled' : 'Disabled'}
