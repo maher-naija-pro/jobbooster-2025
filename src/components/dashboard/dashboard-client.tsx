@@ -7,9 +7,12 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { CVDisplay } from './cv-display'
 import { CVUpload } from '../cv-upload'
+import { JobOfferInputForm } from './job-offer-input-form'
+import { JobOffersDisplay } from './job-offers-display'
 import { CVData } from '@/lib/types'
 import { validateFile } from '@/lib/utils'
 import { Icons } from '@/components/icons'
+import { useJobData } from '@/hooks/useJobData'
 
 interface DashboardClientProps {
     profile: any;
@@ -20,11 +23,14 @@ interface DashboardClientProps {
 }
 
 export function DashboardClient({ profile, user, subscription, preferences, initials }: DashboardClientProps) {
-    const [cvData, setCvData] = useState<CVData | null>(null);
+    const [cvDataList, setCvDataList] = useState<CVData[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [isUploading, setIsUploading] = useState(false);
+
+    // Get job data for stats
+    const { jobData: savedJobOffers } = useJobData({ limit: 1 });
 
     const handleFileUpload = useCallback(async (file: File) => {
         try {
@@ -77,13 +83,19 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                 status: 'processing' as const,
             };
 
-            setCvData(newCvData);
+            setCvDataList(prev => [...prev, newCvData]);
             setIsUploading(false);
 
             // Simulate processing
             setIsProcessing(true);
             setTimeout(() => {
-                setCvData(prev => prev ? { ...prev, status: 'completed' as const } : null);
+                setCvDataList(prev =>
+                    prev.map(cv =>
+                        cv.id === newCvData.id
+                            ? { ...cv, status: 'completed' as const }
+                            : cv
+                    )
+                );
                 setIsProcessing(false);
             }, 2000);
 
@@ -95,8 +107,8 @@ export function DashboardClient({ profile, user, subscription, preferences, init
         }
     }, []);
 
-    const handleFileRemove = useCallback(() => {
-        setCvData(null);
+    const handleFileRemove = useCallback((cvId: string) => {
+        setCvDataList(prev => prev.filter(cv => cv.id !== cvId));
         setError(null);
         setUploadProgress(0);
         setIsUploading(false);
@@ -141,7 +153,7 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                             <Icons.fileText className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{profile?.cvData?.length || 0}</div>
+                            <div className="text-2xl font-bold">{cvDataList.length}</div>
                             <p className="text-xs text-muted-foreground">
                                 +2 from last month
                             </p>
@@ -168,17 +180,32 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">
-                                0
+                                {savedJobOffers.length}
                             </div>
                             <p className="text-xs text-muted-foreground">
                                 Job offers saved
                             </p>
                         </CardContent>
                     </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Account Status</CardTitle>
+                            <Icons.user className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">
+                                {user.email_confirmed_at ? 'Verified' : 'Pending'}
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                {subscription.plan} plan
+                            </p>
+                        </CardContent>
+                    </Card>
                 </div>
 
                 {/* Main Content */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                     {/* CV Upload Card */}
                     <div>
                         <Card>
@@ -194,13 +221,14 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                             <CardContent>
                                 <CVUpload
                                     onFileUpload={handleFileUpload}
-                                    onFileRemove={handleFileRemove}
-                                    cvData={cvData}
+                                    onFileRemove={() => { }} // Not used for individual CV removal
+                                    cvData={cvDataList.find(cv => cv.status === 'processing') || null}
                                     isProcessing={isProcessing}
                                     error={error}
                                     uploadProgress={uploadProgress}
                                     isUploading={isUploading}
                                     className="w-full"
+                                    cvDataList={cvDataList}
                                 />
                             </CardContent>
                         </Card>
@@ -208,69 +236,15 @@ export function DashboardClient({ profile, user, subscription, preferences, init
 
                     {/* CV Display Form */}
                     <CVDisplay
-                        cvData={cvData}
                         onFileRemove={handleFileRemove}
+                        refreshTrigger={Date.now()}
                     />
 
-                    {/* Offers Display Form */}
-                    <div>
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <Icons.briefcase className="h-5 w-5" />
-                                    Job Offers
-                                </CardTitle>
-                                <CardDescription>
-                                    Browse and manage job opportunities
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-4">
-                                    <div className="space-y-3">
-                                        <div className="flex items-center justify-between p-3 border rounded-lg">
-                                            <div className="flex items-center space-x-3">
-                                                <Icons.briefcase className="h-4 w-4 text-muted-foreground" />
-                                                <div>
-                                                    <p className="text-sm font-medium">Frontend Developer</p>
-                                                    <p className="text-xs text-muted-foreground">Tech Corp • Remote</p>
-                                                </div>
-                                            </div>
-                                            <Button size="sm" variant="outline">
-                                                View
-                                            </Button>
-                                        </div>
-                                        <div className="flex items-center justify-between p-3 border rounded-lg">
-                                            <div className="flex items-center space-x-3">
-                                                <Icons.briefcase className="h-4 w-4 text-muted-foreground" />
-                                                <div>
-                                                    <p className="text-sm font-medium">Full Stack Engineer</p>
-                                                    <p className="text-xs text-muted-foreground">StartupXYZ • Hybrid</p>
-                                                </div>
-                                            </div>
-                                            <Button size="sm" variant="outline">
-                                                View
-                                            </Button>
-                                        </div>
-                                        <div className="flex items-center justify-between p-3 border rounded-lg">
-                                            <div className="flex items-center space-x-3">
-                                                <Icons.briefcase className="h-4 w-4 text-muted-foreground" />
-                                                <div>
-                                                    <p className="text-sm font-medium">React Developer</p>
-                                                    <p className="text-xs text-muted-foreground">BigTech Inc • On-site</p>
-                                                </div>
-                                            </div>
-                                            <Button size="sm" variant="outline">
-                                                View
-                                            </Button>
-                                        </div>
-                                    </div>
-                                    <Button className="w-full" variant="outline">
-                                        Browse More Offers
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </div>
+                    {/* Add Job Offer */}
+                    <JobOfferInputForm />
+
+                    {/* Saved Job Offers */}
+                    <JobOffersDisplay />
                 </div>
 
                 {/* Quick Actions */}
@@ -315,34 +289,6 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                     </Card>
                 </div>
 
-                {/* Account Status */}
-                <div className="mt-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Account Status</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <span className="text-sm">Email Verified</span>
-                                <Badge variant={user.email_confirmed_at ? 'default' : 'destructive'}>
-                                    {user.email_confirmed_at ? 'Verified' : 'Pending'}
-                                </Badge>
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <span className="text-sm">Plan</span>
-                                <Badge variant={subscription.plan === 'free' ? 'secondary' : 'default'}>
-                                    {subscription.plan}
-                                </Badge>
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <span className="text-sm">Language</span>
-                                <span className="text-sm text-muted-foreground">
-                                    {preferences.language || 'English'}
-                                </span>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
             </div>
         </div>
     );

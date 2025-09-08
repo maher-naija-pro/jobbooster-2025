@@ -18,6 +18,7 @@ interface CVUploadProps {
     className?: string;
     uploadProgress: number;
     isUploading: boolean;
+    cvDataList?: CVData[];
 }
 
 export function CVUpload({
@@ -28,7 +29,8 @@ export function CVUpload({
     error,
     className,
     uploadProgress,
-    isUploading
+    isUploading,
+    cvDataList = []
 }: CVUploadProps) {
     const [isDragOver, setIsDragOver] = useState(false);
     const [currentFile, setCurrentFile] = useState<File | null>(null);
@@ -98,8 +100,8 @@ export function CVUpload({
 
     return (
         <div className={cn("space-y-2", className)}>
-            {/* Ultra Compact Upload Area - Show when not uploading, processing, or has CV data */}
-            {!cvData && !isProcessing && !isUploading && (
+            {/* Ultra Compact Upload Area - Show when not uploading or processing */}
+            {!isProcessing && !isUploading && (
                 <Card className="overflow-hidden border-0 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02]">
                     <CardContent className="p-4 ">
                         <div
@@ -139,7 +141,7 @@ export function CVUpload({
                                         "text-sm font-medium transition-colors duration-300",
                                         isDragOver ? "text-blue-600" : "text-gray-900 group-hover:text-blue-600"
                                     )}>
-                                        {isDragOver ? "Drop to Upload" : "Drop to Upload CV/Resume"}
+                                        {isDragOver ? "Drop to Upload" : cvDataList.length > 0 ? "Upload Another CV" : "Drop to Upload CV/Resume"}
                                     </h4>
                                     <p className="text-xs text-gray-600 group-hover:text-gray-700">
                                         or <span className="text-blue-600 hover:text-blue-700 font-medium cursor-pointer transition-colors">click to browse</span>

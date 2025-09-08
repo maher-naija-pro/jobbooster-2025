@@ -14,6 +14,9 @@ interface JobOfferInputProps {
     onClear: () => void;
     error: string | null;
     className?: string;
+    onSave?: () => void;
+    isSaving?: boolean;
+    showSaveButton?: boolean;
 }
 
 const MIN_LENGTH = 100;
@@ -23,7 +26,10 @@ export function JobOfferInput({
     onChange,
     onClear,
     error,
-    className
+    className,
+    onSave,
+    isSaving = false,
+    showSaveButton = false
 }: JobOfferInputProps) {
     const [characterCount, setCharacterCount] = useState(0);
     const [isTooltipOpen, setIsTooltipOpen] = useState(false);
@@ -111,6 +117,30 @@ export function JobOfferInput({
                 </div>
 
 
+
+                {/* Save Button */}
+                {showSaveButton && onSave && (
+                    <div className="flex justify-end">
+                        <Button
+                            onClick={onSave}
+                            disabled={!isValidLength || isSaving}
+                            size="sm"
+                            className="min-w-[120px]"
+                        >
+                            {isSaving ? (
+                                <>
+                                    <Sparkles className="w-4 h-4 mr-2 animate-spin" />
+                                    Saving...
+                                </>
+                            ) : (
+                                <>
+                                    <Sparkles className="w-4 h-4 mr-2" />
+                                    Save Job Offer
+                                </>
+                            )}
+                        </Button>
+                    </div>
+                )}
 
                 {/* Error message */}
                 {error && (

@@ -67,6 +67,7 @@ export interface JobData {
   content: string;
   title?: string;
   company?: string;
+  jobLink?: string;
   status: string;
 
   // Processing & Analysis Fields
