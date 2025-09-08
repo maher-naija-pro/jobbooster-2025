@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { FileText, Trash2, Upload, Sparkles } from 'lucide-react';
-import { Button } from './ui/button';
+import { MetaButton } from './buttons/meta-button';
 import { Alert, AlertDescription } from './ui/alert';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -69,14 +69,14 @@ export function JobOfferInput({
                     <h3 className="text-xs font-semibold text-gray-900">Job Offer Input</h3>
                 </div>
                 {value && (
-                    <Button
+                    <MetaButton
                         onClick={onClear}
-                        variant="ghost"
+                        variant="danger-ghost"
                         size="sm"
+                        width="fit"
+                        showIcon={false}
                         className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50"
-                    >
-                        <Trash2 className="w-4 h-4" />
-                    </Button>
+                    />
                 )}
             </div>
 
@@ -121,24 +121,18 @@ export function JobOfferInput({
                 {/* Save Button */}
                 {showSaveButton && onSave && (
                     <div className="flex justify-end">
-                        <Button
+                        <MetaButton
                             onClick={onSave}
                             disabled={!isValidLength || isSaving}
+                            isLoading={isSaving}
+                            loadingText="Saving..."
                             size="sm"
+                            width="fit"
+                            variant="primary"
+                            showIcon={false}
+                            text="Save Job Offer"
                             className="min-w-[120px]"
-                        >
-                            {isSaving ? (
-                                <>
-                                    <Sparkles className="w-4 h-4 mr-2 animate-spin" />
-                                    Saving...
-                                </>
-                            ) : (
-                                <>
-                                    <Sparkles className="w-4 h-4 mr-2" />
-                                    Save Job Offer
-                                </>
-                            )}
-                        </Button>
+                        />
                     </div>
                 )}
 
