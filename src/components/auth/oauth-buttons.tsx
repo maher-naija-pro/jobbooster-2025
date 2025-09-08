@@ -26,20 +26,53 @@ export function OAuthButtons({ onError, onClose }: OAuthButtonsProps) {
             }
 
             if (result.url) {
-                // Open Google OAuth in a minimal, modern popup window centered on screen
-                const width = 480
-                const height = 640
-                const left = (screen.width) / 2 - width / 2
-                const top = (screen.height - height) / 2
+                // Open Google OAuth in an optimized popup window centered on screen
+                const width = 520
+                const height = 750
+                const left = Math.max(0, (screen.width - width) / 2)
+                const top = Math.max(0, (screen.height - height) / 2)
 
                 const popup = window.open(
                     result.url,
                     'google-oauth',
-                    `width=${width},height=${height},left=${left},top=${top},scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,directories=no`
+                    `width=${width},height=${height},left=${left},top=${top},scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,directories=no,personalbar=no,titlebar=no,alwaysRaised=yes,chrome=no,popup=yes`
                 )
 
                 if (!popup) {
                     throw new Error('Popup blocked. Please allow popups for this site.')
+                }
+
+                // Ensure popup is focused and properly positioned
+                popup.focus()
+
+                // Force window size and position after a short delay
+                setTimeout(() => {
+                    try {
+                        popup.resizeTo(width, height)
+                        popup.moveTo(left, top)
+                        popup.focus()
+                    } catch (e) {
+                        // Ignore errors if popup is closed or cross-origin restrictions
+                        console.log('Could not resize popup:', e)
+                    }
+                }, 100)
+
+                // Adjust popup size if needed for smaller screens
+                const maxWidth = Math.min(width, screen.width - 40)
+                const maxHeight = Math.min(height, screen.height - 40)
+
+                if (maxWidth !== width || maxHeight !== height) {
+                    setTimeout(() => {
+                        try {
+                            popup.resizeTo(maxWidth, maxHeight)
+                            popup.moveTo(
+                                Math.max(0, (screen.width - maxWidth) / 2),
+                                Math.max(0, (screen.height - maxHeight) / 2)
+                            )
+                        } catch (e) {
+                            console.log('Could not resize popup for smaller screen:', e)
+                        }
+                    }, 200)
                 }
 
                 // Close the login modal when popup opens successfully

@@ -514,13 +514,9 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
               ? Icons.login
               : Icons.user
         }
-        disabled={(() => {
-          const disabled = isLoading || !isFormValid()
-          console.log('MetaButton disabled state:', { isLoading, isFormValid: isFormValid(), disabled })
-          return disabled
-        })()}
+        disabled={isLoading}
         onClick={() => {
-          if (formRef.current && !isLoading && isFormValid()) {
+          if (formRef.current && !isLoading) {
             setIsLoading(true)
             formRef.current.requestSubmit()
           }
