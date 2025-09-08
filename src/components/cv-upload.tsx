@@ -4,8 +4,7 @@ import React, { useState, useCallback, useRef } from 'react';
 import { Upload, FileText, Trash2, CheckCircle, AlertCircle, Loader, Eye, Target, Shield, FileCheck } from 'lucide-react';
 import { cn, validateFile, formatFileSize } from '../lib/utils';
 import { CVData } from '../lib/types';
-import { UploadProgress } from './upload-progress';
-import { UploadHeader } from './upload-header';
+
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader } from './ui/card';
 import { Alert, AlertDescription } from './ui/alert';
@@ -99,8 +98,6 @@ export function CVUpload({
 
     return (
         <div className={cn("space-y-2", className)}>
-            {/* Main Header with Title and Description */}
-            <UploadHeader />
             {/* Ultra Compact Upload Area - Show when not uploading, processing, or has CV data */}
             {!cvData && !isProcessing && !isUploading && (
                 <Card className="overflow-hidden border-0 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02]">

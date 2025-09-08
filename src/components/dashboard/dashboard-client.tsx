@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { CVDisplay } from './cv-display'
+import { CVUpload } from '../cv-upload'
 import { CVData } from '@/lib/types'
 import { validateFile } from '@/lib/utils'
 import { Icons } from '@/components/icons'
@@ -177,16 +178,38 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                 </div>
 
                 {/* Main Content */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* CV Upload Card */}
+                    <div>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Icons.fileText className="h-5 w-5" />
+                                    Upload CV
+                                </CardTitle>
+                                <CardDescription>
+                                    Upload a new CV or resume
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <CVUpload
+                                    onFileUpload={handleFileUpload}
+                                    onFileRemove={handleFileRemove}
+                                    cvData={cvData}
+                                    isProcessing={isProcessing}
+                                    error={error}
+                                    uploadProgress={uploadProgress}
+                                    isUploading={isUploading}
+                                    className="w-full"
+                                />
+                            </CardContent>
+                        </Card>
+                    </div>
+
                     {/* CV Display Form */}
                     <CVDisplay
                         cvData={cvData}
-                        onFileUpload={handleFileUpload}
                         onFileRemove={handleFileRemove}
-                        isProcessing={isProcessing}
-                        error={error}
-                        uploadProgress={uploadProgress}
-                        isUploading={isUploading}
                     />
 
                     {/* Offers Display Form */}

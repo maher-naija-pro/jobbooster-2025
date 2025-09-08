@@ -6,6 +6,7 @@ import { LanguageSelector } from '../components/language-selector';
 import { JobOfferInput } from '../components/job-offer-input';
 import { ActionButtons } from '../components/action-buttons';
 import { ContentGenerator } from '../components/content-generator';
+import { UploadHeader } from '../components/upload-header';
 import { useUserLanguage } from '../hooks/use-user-language';
 
 import { ErrorBoundary } from '../components/error-boundary';
@@ -462,6 +463,9 @@ export default function Home() {
             <div className="w-full max-w-md">
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mt-5">
                 <div className="space-y-2">
+                  {/* Main Header with Title and Description */}
+                  <UploadHeader />
+
                   {/* CV Upload - Centered */}
                   <CVUpload
                     onFileUpload={handleFileUpload}
