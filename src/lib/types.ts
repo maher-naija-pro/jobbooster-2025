@@ -8,7 +8,7 @@ export interface CVData {
   fileUrl?: string;
 
   // Processing & Analysis Fields
-  processingStatus?: 'uploaded' | 'extracting' | 'analyzing' | 'completed' | 'failed' | 'archived';
+  processingStatus?: 'UPLOADED' | 'PROCESSING' | 'COMPLETED' | 'FAILED' | 'ARCHIVED';
   processingStartedAt?: Date;
   processingCompletedAt?: Date;
   processingError?: string;
@@ -71,7 +71,7 @@ export interface JobData {
   status: string;
 
   // Processing & Analysis Fields
-  processingStatus: 'uploaded' | 'extracting' | 'analyzing' | 'completed' | 'failed';
+  processingStatus: 'UPLOADED' | 'PROCESSING' | 'COMPLETED' | 'FAILED' | 'ARCHIVED';
   processingStartedAt?: Date;
   processingCompletedAt?: Date;
   processingError?: string;

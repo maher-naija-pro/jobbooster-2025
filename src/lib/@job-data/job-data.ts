@@ -7,6 +7,7 @@ export interface CreateJobDataInput {
     content: string;
     title?: string;
     company?: string;
+    jobLink?: string; // Note: This field is filtered out before Prisma operations
     jobType?: 'full-time' | 'part-time' | 'contract' | 'internship';
     location?: string;
     remoteType?: 'remote' | 'hybrid' | 'onsite';
@@ -22,6 +23,7 @@ export interface UpdateJobDataInput {
     content?: string;
     title?: string;
     company?: string;
+    jobLink?: string; // Note: This field is filtered out before Prisma operations
     jobType?: 'full-time' | 'part-time' | 'contract' | 'internship';
     location?: string;
     remoteType?: 'remote' | 'hybrid' | 'onsite';
@@ -39,11 +41,12 @@ export interface UpdateJobDataInput {
 export class JobDataService {
     // Create new job data
     static async create(input: CreateJobDataInput) {
-        return await prisma.jobData.create({
+        const { company, jobLink, ...restInput } = input;
+        const job = await prisma.jobData.create({
             data: {
-                ...input,
-                processingStatus: 'uploaded',
-                status: 'uploaded',
+                ...restInput,
+                companyName: company,
+                processingStatus: 'UPLOADED',
                 viewCount: 0,
                 analysisCount: 0,
                 isPublic: false,
@@ -52,16 +55,32 @@ export class JobDataService {
                 isArchived: false,
             },
         });
+
+        // Map database fields to frontend expected fields
+        return {
+            ...job,
+            company: job.companyName, // Map companyName to company for frontend
+        };
     }
 
     // Get job data by ID
     static async getById(id: string, userId: string) {
-        return await prisma.jobData.findFirst({
+        const job = await prisma.jobData.findFirst({
             where: {
                 id,
                 userId,
             },
         });
+
+        if (!job) {
+            return null;
+        }
+
+        // Map database fields to frontend expected fields
+        return {
+            ...job,
+            company: job.companyName, // Map companyName to company for frontend
+        };
     }
 
     // Get all job data for a user
@@ -93,8 +112,14 @@ export class JobDataService {
             prisma.jobData.count({ where }),
         ]);
 
+        // Map database fields to frontend expected fields
+        const mappedData = data.map(job => ({
+            ...job,
+            company: job.companyName, // Map companyName to company for frontend
+        }));
+
         return {
-            data,
+            data: mappedData,
             pagination: {
                 page,
                 limit,
@@ -118,17 +143,29 @@ export class JobDataService {
             throw new Error('Job data not found');
         }
 
-        const updateData: any = { ...input };
+        const { company, jobLink, ...restInput } = input;
+        const updateData: any = { ...restInput };
+
+        // Map company field to companyName
+        if (company !== undefined) {
+            updateData.companyName = company;
+        }
 
         // Handle archive date
         if (input.isArchived && !existingJobData.isArchived) {
             updateData.archiveDate = new Date();
         }
 
-        return await prisma.jobData.update({
+        const updatedJob = await prisma.jobData.update({
             where: { id },
             data: updateData,
         });
+
+        // Map database fields to frontend expected fields
+        return {
+            ...updatedJob,
+            company: updatedJob.companyName, // Map companyName to company for frontend
+        };
     }
 
     // Delete job data
@@ -167,7 +204,7 @@ export class JobDataService {
             extractedSkills?: string[];
             requiredQualifications?: string[];
             preferredQualifications?: string[];
-            processingStatus?: 'uploaded' | 'extracting' | 'analyzing' | 'completed' | 'failed';
+            processingStatus?: 'UPLOADED' | 'PROCESSING' | 'COMPLETED' | 'FAILED' | 'ARCHIVED';
             processingStartedAt?: Date;
             processingCompletedAt?: Date;
             processingError?: string;
@@ -180,7 +217,7 @@ export class JobDataService {
         const updateData: any = { ...analysisData };
 
         // Update analysis count and last analyzed date
-        if (analysisData.processingStatus === 'completed') {
+        if (analysisData.processingStatus === 'COMPLETED') {
             updateData.analysisCount = { increment: 1 };
             updateData.lastAnalyzedAt = new Date();
         }
@@ -220,8 +257,8 @@ export class JobDataService {
             prisma.jobData.count({ where: { userId } }),
             prisma.jobData.count({ where: { userId, isActive: true, isArchived: false } }),
             prisma.jobData.count({ where: { userId, isArchived: true } }),
-            prisma.jobData.count({ where: { userId, processingStatus: 'completed' } }),
-            prisma.jobData.count({ where: { userId, processingStatus: 'failed' } }),
+            prisma.jobData.count({ where: { userId, processingStatus: 'COMPLETED' } }),
+            prisma.jobData.count({ where: { userId, processingStatus: 'FAILED' } }),
             prisma.jobData.aggregate({
                 where: { userId },
                 _sum: { viewCount: true },

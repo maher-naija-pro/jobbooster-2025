@@ -14,6 +14,7 @@ import { validateFile } from '@/lib/utils'
 import { Icons } from '@/components/icons'
 import { useJobData } from '@/hooks/useJobData'
 import { useCvData } from '@/hooks/useCvData'
+import { useGeneratedContent } from '@/hooks/useGeneratedContent'
 
 interface DashboardClientProps {
     profile: any;
@@ -43,6 +44,18 @@ export function DashboardClient({ profile, user, subscription, preferences, init
         error: cvError,
         refresh: refreshCvData
     } = useCvData();
+
+    // Get generated content data for stats
+    const {
+        totalContent,
+        contentThisMonth,
+        contentLastMonth,
+        monthlyChange: contentMonthlyChange,
+        contentByType,
+        loading: contentLoading,
+        error: contentError,
+        refresh: refreshContent
+    } = useGeneratedContent();
 
     const handleFileUpload = useCallback(async (file: File) => {
         try {
@@ -98,6 +111,8 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                 setIsProcessing(false);
                 // Refresh again after processing simulation
                 refreshCvData();
+                // Also refresh content data in case new content was generated
+                refreshContent();
             }, 2000);
 
         } catch (err) {
@@ -178,10 +193,20 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                             <Icons.mail className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{profile?.generatedContent?.length || 0}</div>
+                            <div className="text-2xl font-bold">
+                                {contentLoading ? '...' : totalContent}
+                            </div>
                             <p className="text-xs text-muted-foreground">
-                                +12 from last month
+                                {contentLoading ? 'Loading...' :
+                                    contentMonthlyChange > 0 ? `+${contentMonthlyChange}% from last month` :
+                                        contentMonthlyChange < 0 ? `${contentMonthlyChange}% from last month` :
+                                            'No change from last month'}
                             </p>
+                            {contentError && (
+                                <p className="text-xs text-red-500 mt-1">
+                                    Error loading data
+                                </p>
+                            )}
                         </CardContent>
                     </Card>
 
