@@ -7,6 +7,7 @@ import { CVData } from '@/lib/types';
 import { Icons } from '@/components/icons';
 import { logger } from '@/lib/logger';
 import { RefreshButton } from '@/components/buttons/refresh-button';
+import { CVDisplaySkeleton } from './cv-skeleton';
 
 interface CVDisplayProps {
   onFileRemove?: (cvId: string) => void;
@@ -182,12 +183,7 @@ export function CVDisplay({
       <CardContent>
         <div className="space-y-4">
           {/* Loading state */}
-          {loading && (
-            <div className="text-center py-8">
-              <Icons.Loader2 className="h-8 w-8 text-muted-foreground mx-auto mb-4 animate-spin" />
-              <p className="text-muted-foreground">Loading CVs...</p>
-            </div>
-          )}
+          {loading && <CVDisplaySkeleton />}
 
           {/* Error state */}
           {error && (

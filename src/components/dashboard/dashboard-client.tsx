@@ -154,9 +154,9 @@ export function DashboardClient({ profile, user, subscription, preferences, init
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20">
             {/* Screen reader announcements */}
-            <div 
-                aria-live="polite" 
-                aria-atomic="true" 
+            <div
+                aria-live="polite"
+                aria-atomic="true"
                 className="sr-only"
             >
                 {announcement}
@@ -168,9 +168,9 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                     <header className="mb-12">
                         <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6 mb-6">
                             <Avatar className="h-20 w-20 ring-4 ring-white shadow-lg">
-                                <AvatarImage 
-                                    src={profile?.avatarUrl} 
-                                    alt={`Profile picture of ${profile?.fullName || user.email}`} 
+                                <AvatarImage
+                                    src={profile?.avatarUrl}
+                                    alt={`Profile picture of ${profile?.fullName || user.email}`}
                                 />
                                 <AvatarFallback className="text-2xl font-semibold bg-gradient-to-br from-blue-500 to-purple-600 text-white">
                                     {initials}
@@ -187,7 +187,7 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                         </div>
 
                         <div className="flex flex-wrap items-center gap-3">
-                            <Badge 
+                            <Badge
                                 variant={subscription.plan === 'free' ? 'secondary' : 'default'}
                                 className="px-4 py-2 text-sm font-medium"
                             >
@@ -201,7 +201,7 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                     </header>
 
                     {/* Stats Grid */}
-                    <section 
+                    <section
                         ref={statsRef}
                         aria-labelledby="stats-heading"
                         className="mb-12"
@@ -340,8 +340,8 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                             </CardHeader>
                             <CardContent>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    <Button 
-                                        className="w-full justify-start h-12 text-left group hover:shadow-md transition-all duration-200" 
+                                    <Button
+                                        className="w-full justify-start h-12 text-left group hover:shadow-md transition-all duration-200"
                                         variant="outline"
                                         aria-label="Generate a cover letter for job applications"
                                     >
@@ -353,8 +353,8 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                                             <div className="text-sm text-slate-500">Create personalized cover letters</div>
                                         </div>
                                     </Button>
-                                    <Button 
-                                        className="w-full justify-start h-12 text-left group hover:shadow-md transition-all duration-200" 
+                                    <Button
+                                        className="w-full justify-start h-12 text-left group hover:shadow-md transition-all duration-200"
                                         variant="outline"
                                         aria-label="Generate professional emails"
                                     >
@@ -366,8 +366,8 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                                             <div className="text-sm text-slate-500">Professional email templates</div>
                                         </div>
                                     </Button>
-                                    <Button 
-                                        className="w-full justify-start h-12 text-left group hover:shadow-md transition-all duration-200" 
+                                    <Button
+                                        className="w-full justify-start h-12 text-left group hover:shadow-md transition-all duration-200"
                                         variant="outline"
                                         aria-label="Analyze your CV for improvements"
                                     >
@@ -385,7 +385,7 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                     </section>
 
                     {/* Main Content */}
-                    <main 
+                    <main
                         ref={mainContentRef}
                         tabIndex={-1}
                         aria-label="Main dashboard content"

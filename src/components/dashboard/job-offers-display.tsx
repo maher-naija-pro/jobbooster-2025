@@ -9,6 +9,7 @@ import { useJobData } from '@/hooks/useJobData';
 import { Icons } from '../icons';
 import { RefreshButton } from '../buttons/refresh-button';
 import { Trash2, Archive, ArchiveRestore, Calendar, MapPin, Building2, ExternalLink } from 'lucide-react';
+import { JobOffersDisplaySkeleton } from './job-offer-skeleton';
 
 interface JobOffersDisplayProps {
     className?: string;
@@ -132,13 +133,7 @@ export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
                     <CardDescription className="text-slate-600 text-base">Loading your saved job offers...</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="space-y-3">
-                        {[1, 2, 3].map((i) => (
-                            <div key={i} className="animate-pulse">
-                                <div className="h-16 bg-gray-200 rounded-lg"></div>
-                            </div>
-                        ))}
-                    </div>
+                    <JobOffersDisplaySkeleton />
                 </CardContent>
             </Card>
         );
