@@ -325,19 +325,20 @@ export function CVDisplay({
                             <span>Processing</span>
                           </span>
                         )}
-                   
-                      
+
+
                       </div>
-                
+
                     </div>
                   </div>
-                  {/* Right: Actions */}
+                  {/* Right section: Action buttons */}
                   <div className="flex items-center gap-2 self-end sm:self-auto">
+                    {/* View CV button */}
                     <Button
                       size="sm"
                       variant="outline"
                       onClick={() => {
-                        // Handle view CV action
+                        // TODO: Implement view CV functionality
                         console.log('Viewing CV:', cv);
                       }}
                       className="h-8 px-3 flex items-center gap-2"
@@ -346,6 +347,7 @@ export function CVDisplay({
                       <Icons.eye className="h-4 w-4" />
                       <span>View</span>
                     </Button>
+                    {/* Delete CV button */}
                     <Button
                       size="sm"
                       variant="ghost"
@@ -366,7 +368,7 @@ export function CVDisplay({
             </div>
           )}
 
-          {/* Empty state */}
+          {/* Empty state - shown when no CVs are uploaded */}
           {!loading && !error && cvDataList.length === 0 && (
             <div className="text-center py-8">
               <Icons.fileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
