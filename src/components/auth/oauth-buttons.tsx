@@ -6,9 +6,10 @@ import { signInWithGoogle } from '@/app/auth/oauth/actions'
 
 interface OAuthButtonsProps {
     onError?: (error: string) => void
+    onClose?: () => void
 }
 
-export function OAuthButtons({ onError }: OAuthButtonsProps) {
+export function OAuthButtons({ onError, onClose }: OAuthButtonsProps) {
     const [isLoading, setIsLoading] = useState<string | null>(null)
 
     const handleOAuthSignIn = async () => {
@@ -28,7 +29,7 @@ export function OAuthButtons({ onError }: OAuthButtonsProps) {
                 // Open Google OAuth in a popup window centered on screen
                 const width = 500
                 const height = 600
-                const left = (screen.width ) / 2 - width / 2
+                const left = (screen.width) / 2 - width / 2
                 const top = (screen.height - height) / 2
 
                 const popup = window.open(
@@ -40,6 +41,9 @@ export function OAuthButtons({ onError }: OAuthButtonsProps) {
                 if (!popup) {
                     throw new Error('Popup blocked. Please allow popups for this site.')
                 }
+
+                // Close the login modal when popup opens successfully
+                onClose?.()
 
                 // Listen for the popup to close or receive a message
                 const checkClosed = setInterval(() => {
