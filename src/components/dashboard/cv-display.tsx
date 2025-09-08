@@ -156,18 +156,18 @@ export function CVDisplay({
   }, [fetchCVs, refreshTrigger]);
 
   return (
-    <Card className={className}>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <Icons.eye className="h-5 w-5" />
-              CV Display
-            </CardTitle>
-            <CardDescription>
-              View and manage your uploaded CVs
-            </CardDescription>
+    <Card className={`h-full border-0 shadow-lg bg-white/90 backdrop-blur-sm ${className}`}>
+      <CardHeader className="pb-4">
+        <CardTitle className="flex items-center gap-3 text-xl font-bold text-slate-900">
+          <div className="p-2 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500">
+            <Icons.eye className="h-6 w-6 text-white" aria-hidden="true" />
           </div>
+          CV Display
+        </CardTitle>
+        <CardDescription className="text-slate-600 text-base">
+          View and manage your uploaded CVs
+        </CardDescription>
+        <div className="flex justify-end">
           <Button
             size="sm"
             variant="outline"

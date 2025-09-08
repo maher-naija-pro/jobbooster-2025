@@ -52,13 +52,15 @@ export function JobOfferInputForm({ className }: JobOfferInputFormProps) {
     };
 
     return (
-        <Card className={className}>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <Icons.briefcase className="h-5 w-5" />
+        <Card className={`h-full border-0 shadow-lg bg-white/90 backdrop-blur-sm ${className}`}>
+            <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-3 text-xl font-bold text-slate-900">
+                    <div className="p-2 rounded-lg bg-gradient-to-br from-orange-500 to-amber-500">
+                        <Icons.briefcase className="h-6 w-6 text-white" aria-hidden="true" />
+                    </div>
                     Add Job Offer
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-slate-600 text-base">
                     Save a new job offer for analysis
                 </CardDescription>
             </CardHeader>

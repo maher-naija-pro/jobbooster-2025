@@ -106,13 +106,15 @@ export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
 
     if (loading) {
         return (
-            <Card className={className}>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Icons.briefcase className="h-5 w-5" />
+            <Card className={`h-full border-0 shadow-lg bg-white/90 backdrop-blur-sm ${className}`}>
+                <CardHeader className="pb-4">
+                    <CardTitle className="flex items-center gap-3 text-xl font-bold text-slate-900">
+                        <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-violet-500">
+                            <Icons.briefcase className="h-6 w-6 text-white" aria-hidden="true" />
+                        </div>
                         Saved Job Offers
                     </CardTitle>
-                    <CardDescription>Loading your saved job offers...</CardDescription>
+                    <CardDescription className="text-slate-600 text-base">Loading your saved job offers...</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-3">
@@ -128,13 +130,15 @@ export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
     }
 
     return (
-        <Card className={className}>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <Icons.briefcase className="h-5 w-5" />
+        <Card className={`h-full border-0 shadow-lg bg-white/90 backdrop-blur-sm ${className}`}>
+            <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-3 text-xl font-bold text-slate-900">
+                    <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-violet-500">
+                        <Icons.briefcase className="h-6 w-6 text-white" aria-hidden="true" />
+                    </div>
                     Saved Job Offers
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-slate-600 text-base">
                     {jobData.length} saved job offers
                 </CardDescription>
             </CardHeader>
