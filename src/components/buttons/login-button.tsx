@@ -20,6 +20,9 @@ export const LoginButton = () => {
     console.log('handleAuthModalClose called');
     setIsAuthModalOpen(false);
 
+    // Reset scroll position to top when modal closes
+    window.scrollTo({ top: 0, behavior: 'instant' });
+
     // Reset button state when modal closes
     setResetButton(true);
     setTimeout(() => setResetButton(false), 100);

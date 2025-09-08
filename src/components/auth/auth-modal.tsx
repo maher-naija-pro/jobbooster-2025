@@ -50,6 +50,10 @@ export function AuthModal({ isOpen, onClose, feature, onTestModeToggle }: AuthMo
     setIsLogin(true)
     setIsResetPassword(false)
     setOauthError('')
+
+    // Reset scroll position to top when modal closes
+    window.scrollTo({ top: 0, behavior: 'instant' })
+
     onClose()
   }
 
