@@ -25,13 +25,68 @@ export function OAuthButtons({ onError }: OAuthButtonsProps) {
             }
 
             if (result.url) {
-                window.location.href = result.url
+                // Open Google OAuth in a popup window centered on screen
+                const width = 500
+                const height = 600
+                const left = (screen.width ) / 2 - width / 2
+                const top = (screen.height - height) / 2
+
+                const popup = window.open(
+                    result.url,
+                    'google-oauth',
+                    `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes,status=yes,location=yes,toolbar=no,menubar=no`
+                )
+
+                if (!popup) {
+                    throw new Error('Popup blocked. Please allow popups for this site.')
+                }
+
+                // Listen for the popup to close or receive a message
+                const checkClosed = setInterval(() => {
+                    if (popup.closed) {
+                        clearInterval(checkClosed)
+                        setIsLoading(null)
+                        // Refresh the page to update auth state
+                        window.location.reload()
+                    }
+                }, 1000)
+
+                // Listen for messages from the popup (if using postMessage)
+                const messageHandler = (event: MessageEvent) => {
+                    if (event.origin !== window.location.origin) return
+
+                    if (event.data.type === 'GOOGLE_OAUTH_SUCCESS') {
+                        clearInterval(checkClosed)
+                        popup.close()
+                        window.removeEventListener('message', messageHandler)
+                        setIsLoading(null)
+                        window.location.reload()
+                    } else if (event.data.type === 'GOOGLE_OAUTH_ERROR') {
+                        clearInterval(checkClosed)
+                        popup.close()
+                        window.removeEventListener('message', messageHandler)
+                        setIsLoading(null)
+                        onError?.(event.data.error || 'OAuth sign in failed')
+                    }
+                }
+
+                window.addEventListener('message', messageHandler)
+
+                // Cleanup after 5 minutes
+                setTimeout(() => {
+                    if (!popup.closed) {
+                        popup.close()
+                        clearInterval(checkClosed)
+                        window.removeEventListener('message', messageHandler)
+                        setIsLoading(null)
+                        onError?.('OAuth sign in timed out. Please try again.')
+                    }
+                }, 300000) // 5 minutes
             }
         } catch (error) {
             console.error('OAuth sign in failed:', error)
             const errorMessage = error instanceof Error ? error.message : 'OAuth sign in failed. Please try again.'
             onError?.(errorMessage)
-        } finally {
             setIsLoading(null)
         }
     }

@@ -10,6 +10,8 @@ export async function GET(request: Request) {
   const code = searchParams.get('code')
   // if "next" is in param, use it as the redirect URL
   const next = searchParams.get('next') ?? '/'
+  // Check if this is a popup OAuth flow
+  const isPopup = searchParams.get('popup') === 'true'
 
   logger.info('Auth callback initiated', {
     action: 'auth_callback',
@@ -160,8 +162,80 @@ export async function GET(request: Request) {
         redirectUrl: redirectUrl,
         isLocalEnv: isLocalEnv,
         hasForwardedHost: !!forwardedHost,
+        isPopup: isPopup,
         duration: `${Date.now() - startTime}ms`
       })
+
+      // If this is a popup, return HTML that communicates with parent window
+      if (isPopup) {
+        const html = `
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>Authentication Complete</title>
+              <style>
+                body {
+                  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  height: 100vh;
+                  margin: 0;
+                  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                  color: white;
+                }
+                .container {
+                  text-align: center;
+                  padding: 2rem;
+                  background: rgba(255, 255, 255, 0.1);
+                  border-radius: 12px;
+                  backdrop-filter: blur(10px);
+                }
+                .spinner {
+                  border: 3px solid rgba(255, 255, 255, 0.3);
+                  border-radius: 50%;
+                  border-top: 3px solid white;
+                  width: 40px;
+                  height: 40px;
+                  animation: spin 1s linear infinite;
+                  margin: 0 auto 1rem;
+                }
+                @keyframes spin {
+                  0% { transform: rotate(0deg); }
+                  100% { transform: rotate(360deg); }
+                }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <div class="spinner"></div>
+                <h2>Authentication Successful!</h2>
+                <p>You can close this window now.</p>
+              </div>
+              <script>
+                // Notify parent window of successful authentication
+                if (window.opener) {
+                  window.opener.postMessage({
+                    type: 'GOOGLE_OAUTH_SUCCESS',
+                    data: { success: true }
+                  }, window.location.origin);
+                  
+                  // Close the popup after a short delay
+                  setTimeout(() => {
+                    window.close();
+                  }, 1000);
+                } else {
+                  // If no opener, redirect to the main app
+                  window.location.href = '${redirectUrl}';
+                }
+              </script>
+            </body>
+          </html>
+        `
+        return new NextResponse(html, {
+          headers: { 'Content-Type': 'text/html' },
+        })
+      }
 
       if (isLocalEnv) {
         // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
@@ -177,21 +251,148 @@ export async function GET(request: Request) {
         step: 'session_exchange_failed',
         error: error.message,
         errorCode: error.status,
+        isPopup: isPopup,
         duration: `${Date.now() - startTime}ms`
       })
+
+      // If this is a popup, return HTML that communicates error to parent window
+      if (isPopup) {
+        const html = `
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <title>Authentication Error</title>
+              <style>
+                body {
+                  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  height: 100vh;
+                  margin: 0;
+                  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+                  color: white;
+                }
+                .container {
+                  text-align: center;
+                  padding: 2rem;
+                  background: rgba(255, 255, 255, 0.1);
+                  border-radius: 12px;
+                  backdrop-filter: blur(10px);
+                }
+                .error-icon {
+                  font-size: 3rem;
+                  margin-bottom: 1rem;
+                }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <div class="error-icon">⚠️</div>
+                <h2>Authentication Failed</h2>
+                <p>There was an error during authentication. Please try again.</p>
+              </div>
+              <script>
+                // Notify parent window of authentication error
+                if (window.opener) {
+                  window.opener.postMessage({
+                    type: 'GOOGLE_OAUTH_ERROR',
+                    error: 'Authentication failed. Please try again.'
+                  }, window.location.origin);
+                  
+                  // Close the popup after a short delay
+                  setTimeout(() => {
+                    window.close();
+                  }, 2000);
+                } else {
+                  // If no opener, redirect to the main app
+                  window.location.href = '${origin}';
+                }
+              </script>
+            </body>
+          </html>
+        `
+        return new NextResponse(html, {
+          headers: { 'Content-Type': 'text/html' },
+        })
+      }
     }
   } else {
     logger.warn('Auth callback received without code', {
       action: 'auth_callback',
       step: 'no_code_received',
+      isPopup: isPopup,
       duration: `${Date.now() - startTime}ms`
     })
+
+    // If this is a popup, return HTML that communicates error to parent window
+    if (isPopup) {
+      const html = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Authentication Error</title>
+            <style>
+              body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+                background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+                color: white;
+              }
+              .container {
+                text-align: center;
+                padding: 2rem;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 12px;
+                backdrop-filter: blur(10px);
+              }
+              .error-icon {
+                font-size: 3rem;
+                margin-bottom: 1rem;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="error-icon">⚠️</div>
+              <h2>Authentication Error</h2>
+              <p>No authentication code received. Please try again.</p>
+            </div>
+            <script>
+              // Notify parent window of authentication error
+              if (window.opener) {
+                window.opener.postMessage({
+                  type: 'GOOGLE_OAUTH_ERROR',
+                  error: 'No authentication code received. Please try again.'
+                }, window.location.origin);
+                
+                // Close the popup after a short delay
+                setTimeout(() => {
+                  window.close();
+                }, 2000);
+              } else {
+                // If no opener, redirect to the main app
+                window.location.href = '${origin}';
+              }
+            </script>
+          </body>
+        </html>
+      `
+      return new NextResponse(html, {
+        headers: { 'Content-Type': 'text/html' },
+      })
+    }
   }
 
   // return the user to an error page with instructions
   logger.warn('Redirecting to auth error page', {
     action: 'auth_callback',
     step: 'redirect_to_error',
+    isPopup: isPopup,
     duration: `${Date.now() - startTime}ms`
   })
   return NextResponse.redirect(`${origin}/auth/auth-code-error`)

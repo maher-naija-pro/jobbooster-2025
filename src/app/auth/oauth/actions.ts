@@ -19,7 +19,7 @@ export async function signInWithGoogle(redirectTo?: string) {
     step: 'supabase_client_created'
   })
 
-  const redirectUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=${encodeURIComponent(redirectTo || '/')}`
+  const redirectUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=${encodeURIComponent(redirectTo || '/')}&popup=true`
 
   logger.debug('Initiating Google OAuth with Supabase', {
     action: 'oauth_google',
