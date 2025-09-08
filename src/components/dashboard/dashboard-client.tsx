@@ -13,6 +13,7 @@ import { CVData } from '@/lib/types'
 import { validateFile } from '@/lib/utils'
 import { Icons } from '@/components/icons'
 import { useJobData } from '@/hooks/useJobData'
+import { useCvData } from '@/hooks/useCvData'
 
 interface DashboardClientProps {
     profile: any;
@@ -23,7 +24,6 @@ interface DashboardClientProps {
 }
 
 export function DashboardClient({ profile, user, subscription, preferences, initials }: DashboardClientProps) {
-    const [cvDataList, setCvDataList] = useState<CVData[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [uploadProgress, setUploadProgress] = useState(0);
@@ -31,6 +31,18 @@ export function DashboardClient({ profile, user, subscription, preferences, init
 
     // Get job data for stats
     const { jobData: savedJobOffers } = useJobData({ limit: 1 });
+
+    // Get CV data for stats
+    const {
+        totalCvs,
+        cvsThisMonth,
+        cvsLastMonth,
+        monthlyChange,
+        cvsData: cvDataList,
+        loading: cvLoading,
+        error: cvError,
+        refresh: refreshCvData
+    } = useCvData();
 
     const handleFileUpload = useCallback(async (file: File) => {
         try {
@@ -76,27 +88,16 @@ export function DashboardClient({ profile, user, subscription, preferences, init
 
             const result = await response.json();
 
-            // Create CVData object
-            const newCvData: CVData = {
-                ...result.cvData,
-                uploadDate: new Date(result.cvData.uploadDate),
-                status: 'processing' as const,
-            };
-
-            setCvDataList(prev => [...prev, newCvData]);
+            // Refresh CV data from database
+            refreshCvData();
             setIsUploading(false);
 
             // Simulate processing
             setIsProcessing(true);
             setTimeout(() => {
-                setCvDataList(prev =>
-                    prev.map(cv =>
-                        cv.id === newCvData.id
-                            ? { ...cv, status: 'completed' as const }
-                            : cv
-                    )
-                );
                 setIsProcessing(false);
+                // Refresh again after processing simulation
+                refreshCvData();
             }, 2000);
 
         } catch (err) {
@@ -108,12 +109,13 @@ export function DashboardClient({ profile, user, subscription, preferences, init
     }, []);
 
     const handleFileRemove = useCallback((cvId: string) => {
-        setCvDataList(prev => prev.filter(cv => cv.id !== cvId));
+        // Refresh CV data from database after removal
+        refreshCvData();
         setError(null);
         setUploadProgress(0);
         setIsUploading(false);
         setIsProcessing(false);
-    }, []);
+    }, [refreshCvData]);
 
     return (
         <div className="container mx-auto py-8 px-4">
@@ -153,10 +155,20 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                             <Icons.fileText className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{cvDataList.length}</div>
+                            <div className="text-2xl font-bold">
+                                {cvLoading ? '...' : totalCvs}
+                            </div>
                             <p className="text-xs text-muted-foreground">
-                                +2 from last month
+                                {cvLoading ? 'Loading...' :
+                                    monthlyChange > 0 ? `+${monthlyChange}% from last month` :
+                                        monthlyChange < 0 ? `${monthlyChange}% from last month` :
+                                            'No change from last month'}
                             </p>
+                            {cvError && (
+                                <p className="text-xs text-red-500 mt-1">
+                                    Error loading data
+                                </p>
+                            )}
                         </CardContent>
                     </Card>
 
