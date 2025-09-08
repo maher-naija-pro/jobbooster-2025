@@ -6,7 +6,6 @@ import { LanguageSelector } from '../components/language-selector';
 import { JobOfferInput } from '../components/job-offer-input';
 import { ActionButtons } from '../components/action-buttons';
 import { ContentGenerator } from '../components/content-generator';
-import { CoverLetterGeneratorModal } from '../components/cover-letter-generator-modal';
 import { UploadHeader } from '../components/upload-header';
 import { useUserLanguage } from '../hooks/use-user-language';
 
@@ -23,7 +22,6 @@ export default function Home() {
   const { state, dispatch } = useApp();
   const [streamingContent, setStreamingContent] = useState('');
   const [debugApiResponse, setDebugApiResponse] = useState<any>(null);
-  const [isCoverLetterModalOpen, setIsCoverLetterModalOpen] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -274,14 +272,6 @@ export default function Home() {
     handleStreamingGeneration('cover-letter');
   };
 
-  const handleOpenCoverLetterModal = () => {
-    setIsCoverLetterModalOpen(true);
-  };
-
-  const handleCloseCoverLetterModal = () => {
-    setIsCoverLetterModalOpen(false);
-  };
-
   const handleGenerateMail = () => {
     // Clear any existing generated content before starting new generation
     dispatch({ type: 'CLEAR_GENERATED_CONTENT' });
@@ -506,7 +496,6 @@ export default function Home() {
                     isCVUploaded={!!state.cvData}
                     isJobOfferProvided={state.jobOffer.length >= 100}
                     onGenerateLetter={handleGenerateLetter}
-                    onOpenCoverLetterModal={handleOpenCoverLetterModal}
                     onGenerateMail={handleGenerateMail}
                     onAnalyzeCV={handleAnalyzeCV}
                     onStopGeneration={handleStopGeneration}
@@ -554,7 +543,6 @@ export default function Home() {
                     isCVUploaded={!!state.cvData}
                     isJobOfferProvided={state.jobOffer.length >= 100}
                     onGenerateLetter={handleGenerateLetter}
-                    onOpenCoverLetterModal={handleOpenCoverLetterModal}
                     onGenerateMail={handleGenerateMail}
                     onAnalyzeCV={handleAnalyzeCV}
                     onStopGeneration={handleStopGeneration}
@@ -584,23 +572,6 @@ export default function Home() {
             </div>
           </div>
         )}
-
-        {/* Cover Letter Generator Modal */}
-        <CoverLetterGeneratorModal
-          isOpen={isCoverLetterModalOpen}
-          onClose={handleCloseCoverLetterModal}
-          cvData={state.cvData}
-          jobOffer={state.jobOffer}
-          language={state.language}
-          onGenerate={handleGenerateLetter}
-          onEdit={handleEdit}
-          onRegenerate={handleRegenerate}
-          onDownload={handleDownload}
-          content={state.generatedContent}
-          isGenerating={state.isGenerating}
-          generationProgress={state.generationProgress}
-          streamingContent={streamingContent}
-        />
       </div>
     </div>
   );

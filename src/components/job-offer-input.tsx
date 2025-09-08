@@ -155,7 +155,7 @@ export function JobOfferInput({
 
     return (
         <div className={className}>
-            {/* Header with Label and Clear Button */}
+gs             {/* Header with Label and Clear Button */}
             <div className="flex items-center justify-between mb-3">
                 <Label
                     htmlFor="job-content"

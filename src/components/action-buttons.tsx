@@ -9,7 +9,6 @@ interface ActionButtonsProps {
     isCVUploaded: boolean;
     isJobOfferProvided: boolean;
     onGenerateLetter: () => void;
-    onOpenCoverLetterModal: () => void;
     onGenerateMail: () => void;
     onAnalyzeCV: () => void;
     onStopGeneration: () => void;
@@ -22,7 +21,6 @@ export function ActionButtons({
     isCVUploaded,
     isJobOfferProvided,
     onGenerateLetter,
-    onOpenCoverLetterModal,
     onGenerateMail,
     onAnalyzeCV,
     onStopGeneration,
@@ -40,8 +38,8 @@ export function ActionButtons({
             // If currently generating letter, stop it
             onStopGeneration();
         } else {
-            // Open the cover letter modal instead of directly generating
-            onOpenCoverLetterModal();
+            // Clear any existing content immediately before starting generation
+            onGenerateLetter();
         }
     };
 
