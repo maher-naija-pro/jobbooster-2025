@@ -34,7 +34,7 @@ export function DashboardClient({ profile, user, subscription, preferences, init
     const statsRef = useRef<HTMLDivElement>(null);
 
     // Get job data for stats
-    const { jobData: savedJobOffers } = useJobData({ limit: 1 });
+    const { jobData: savedJobOffers, loading: jobOffersLoading, error: jobOffersError } = useJobData({ limit: 1000 });
 
     // Get CV data for stats
     const {
@@ -285,11 +285,21 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                                 </CardHeader>
                                 <CardContent>
                                     <div className="text-3xl font-bold text-slate-900 mb-1">
-                                        {savedJobOffers.length}
+                                        {jobOffersLoading ? (
+                                            <span className="animate-pulse">...</span>
+                                        ) : (
+                                            savedJobOffers.length
+                                        )}
                                     </div>
                                     <p className="text-sm text-slate-600">
-                                        Job offers saved
+                                        {jobOffersLoading ? 'Loading...' : 'Job offers saved'}
                                     </p>
+                                    {jobOffersError && (
+                                        <p className="text-sm text-red-600 mt-2 flex items-center gap-1">
+                                            <Icons.alertCircle className="h-4 w-4" aria-hidden="true" />
+                                            Error loading data
+                                        </p>
+                                    )}
                                 </CardContent>
                             </Card>
 

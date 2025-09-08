@@ -1,12 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Alert, AlertDescription } from '../ui/alert';
 import { useJobData } from '@/hooks/useJobData';
 import { Icons } from '../icons';
+import { RefreshButton } from '../buttons/refresh-button';
 import { Trash2, Archive, ArchiveRestore, Calendar, MapPin, Building2, ExternalLink } from 'lucide-react';
 
 interface JobOffersDisplayProps {
@@ -18,6 +19,7 @@ export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
         jobData,
         loading,
         error,
+        refetch,
         deleteJobData,
         archiveJobData,
         unarchiveJobData,
@@ -27,6 +29,19 @@ export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
     console.log('JobOffersDisplay - jobData:', jobData);
     console.log('JobOffersDisplay - loading:', loading);
     console.log('JobOffersDisplay - error:', error);
+
+    // Listen for job offer creation events to refresh data
+    useEffect(() => {
+        const handleJobOfferCreated = () => {
+            refetch();
+        };
+
+        window.addEventListener('jobOfferCreated', handleJobOfferCreated);
+
+        return () => {
+            window.removeEventListener('jobOfferCreated', handleJobOfferCreated);
+        };
+    }, [refetch]);
 
     const handleDeleteJob = async (id: string) => {
         if (confirm('Are you sure you want to delete this job offer?')) {
@@ -141,6 +156,16 @@ export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
                 <CardDescription className="text-slate-600 text-base">
                     {jobData.length} saved job offers
                 </CardDescription>
+                <div className="flex justify-end mt-3">
+                    <RefreshButton
+                        onRefresh={refetch}
+                        isLoading={loading}
+                        text="Refresh"
+                        size="sm"
+                        variant="primary-outline"
+                        tooltip="Refresh job offers list"
+                    />
+                </div>
             </CardHeader>
             <CardContent className="space-y-4">
                 {/* Error Display */}

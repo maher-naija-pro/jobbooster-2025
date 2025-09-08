@@ -9,6 +9,7 @@ import { JobOfferInput } from '../job-offer-input';
 import { useJobData } from '@/hooks/useJobData';
 import { JobData } from '@/lib/types';
 import { Icons } from '../icons';
+import { RefreshButton } from '../buttons/refresh-button';
 import { Trash2, Eye, Archive, ArchiveRestore, Calendar, MapPin, Building2 } from 'lucide-react';
 
 interface JobOfferManagerProps {
@@ -172,6 +173,16 @@ export function JobOfferManager({ className }: JobOfferManagerProps) {
                 <CardDescription>
                     {jobData.length} saved job offers
                 </CardDescription>
+                <div className="flex justify-end mt-3">
+                    <RefreshButton
+                        onRefresh={refetch}
+                        isLoading={loading}
+                        text="Refresh"
+                        size="sm"
+                        variant="primary-outline"
+                        tooltip="Refresh job offers list"
+                    />
+                </div>
             </CardHeader>
             <CardContent className="space-y-4">
                 {/* Job Offer Input Form - Always Visible */}

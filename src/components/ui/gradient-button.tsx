@@ -47,23 +47,23 @@ const GradientButton = React.forwardRef<HTMLButtonElement, GradientButtonProps>(
           "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg font-semibold transition-all duration-200",
           "outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2",
           "active:scale-[0.98] transform select-none",
-          
+
           // Size styles
           sizeStyles[size],
-          
+
           // Gradient background
           variantStyles[variant],
           "text-white shadow-sm",
-          
+
           // Hover effects (only when not disabled)
           !isDisabled && "hover:shadow-md hover:shadow-blue-500/25",
-          
+
           // Disabled styles
           isDisabled && "opacity-50 cursor-not-allowed pointer-events-none",
-          
+
           // Loading state
           isLoading && "cursor-wait",
-          
+
           className
         )}
         disabled={isDisabled}

@@ -44,6 +44,9 @@ export function JobOfferInputForm({ className }: JobOfferInputFormProps) {
             setNewJobTitle('');
             setNewJobCompany('');
             setNewJobLink('');
+
+            // Trigger refresh of job offers display
+            window.dispatchEvent(new CustomEvent('jobOfferCreated'));
         } catch (err) {
             setSaveError(err instanceof Error ? err.message : 'Failed to save job offer');
         } finally {

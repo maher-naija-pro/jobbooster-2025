@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { CVData } from '@/lib/types';
 import { Icons } from '@/components/icons';
 import { logger } from '@/lib/logger';
+import { RefreshButton } from '@/components/buttons/refresh-button';
 
 interface CVDisplayProps {
   onFileRemove?: (cvId: string) => void;
@@ -168,16 +169,14 @@ export function CVDisplay({
           View and manage your uploaded CVs
         </CardDescription>
         <div className="flex justify-end">
-          <Button
+          <RefreshButton
+            onRefresh={fetchCVs}
+            isLoading={loading}
+            text="Refresh"
             size="sm"
-            variant="outline"
-            onClick={fetchCVs}
-            disabled={loading}
-            className="text-blue-600 hover:text-blue-700"
-          >
-            <Icons.arrowRight className="h-4 w-4 mr-1" />
-            Refresh
-          </Button>
+            variant="primary-outline"
+            tooltip="Refresh CV list"
+          />
         </div>
       </CardHeader>
       <CardContent>
