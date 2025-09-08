@@ -8,6 +8,7 @@ import { prisma } from '../../../lib/prisma';
 import { nanoid } from 'nanoid';
 import { generateDateFolder } from '../../../lib/supabase/upload_supa';
 import { generateAnonymousSessionId, getAnonymousSessionId } from '../../../lib/anonymous-session';
+import { ProcessingStatus } from '@prisma/client';
 
 export async function POST(request: NextRequest) {
     const startTime = Date.now();
@@ -265,6 +266,17 @@ export async function POST(request: NextRequest) {
                 filename: file.name
             });
 
+            // Validate required fields before database insert
+            if (!userId || !file.name || !urlData.publicUrl) {
+                logger.error('Missing required fields for CV data creation', {
+                    userId: !!userId,
+                    fileName: !!file.name,
+                    fileUrl: !!urlData.publicUrl,
+                    filename: file.name
+                });
+                throw new Error('Missing required fields for CV data creation');
+            }
+
             const fileRecord = await prisma.cvData.create({
                 data: {
                     userId: userId,
@@ -273,15 +285,19 @@ export async function POST(request: NextRequest) {
                     fileSize: file.size,
                     mimeType: file.type,
                     extractedText: extractedText,
-                    processingStatus: 'UPLOADED' as const,
+                    processingStatus: ProcessingStatus.UPLOADED,
                     processingStartedAt: new Date(),
                     processingCompletedAt: new Date(),
                     viewCount: 0,
                     analysisCount: 0,
                     isPublic: true,
+                    isActive: true,
+                    isLatest: true,
+                    isArchived: false,
+                    version: 1,
+                    retryCount: 0,
                     gdprConsent: isAuthenticated, // Only authenticated users can give consent
                     dataClassification: 'internal',
-                    isArchived: false,
                     metadata: {
                         uploadTimestamp: new Date().toISOString(),
                         processingTime: Date.now() - startTime,
@@ -298,8 +314,8 @@ export async function POST(request: NextRequest) {
                             uploadSource: isAuthenticated ? 'authenticated' : 'anonymous'
                         }
                     }
-                } as any
-            }) as any;
+                }
+            });
 
             logger.cvUpload('File upload saved to database successfully', {
                 fileId: fileRecord.id,
@@ -309,8 +325,8 @@ export async function POST(request: NextRequest) {
             // Create CVData object for response
             const cvData: CVData = {
                 id: fileRecord.id,
-                filename: fileRecord.fileName,
-                size: fileRecord.fileSize,
+                filename: fileRecord.fileName || '',
+                size: fileRecord.fileSize || 0,
                 uploadDate: fileRecord.createdAt,
                 processedContent: fileRecord.extractedText || '',
                 status: 'completed',
@@ -319,15 +335,15 @@ export async function POST(request: NextRequest) {
                 processingStartedAt: fileRecord.processingStartedAt || undefined,
                 processingCompletedAt: fileRecord.processingCompletedAt || undefined,
                 processingError: fileRecord.processingError || undefined,
-                originalFilename: fileRecord.fileName,
+                originalFilename: fileRecord.fileName || '',
                 viewCount: fileRecord.viewCount,
                 lastAnalyzedAt: fileRecord.lastAnalyzedAt || undefined,
                 analysisCount: fileRecord.analysisCount,
-                isPublic: fileRecord.isPublic,
+                isPublic: fileRecord.isPublic || false,
                 retentionDate: fileRecord.retentionDate || undefined,
                 gdprConsent: fileRecord.gdprConsent,
                 dataClassification: fileRecord.dataClassification as 'public' | 'internal' | 'confidential' || undefined,
-                isArchived: fileRecord.isArchived,
+                isArchived: fileRecord.isArchived || false,
                 archiveDate: fileRecord.archiveDate || undefined
             };
 
@@ -346,11 +362,52 @@ export async function POST(request: NextRequest) {
                 processingTime
             });
 
-        } catch (dbError) {
+        } catch (dbError: any) {
             logger.error('Database save failed', {
                 filename: file.name,
-                error: dbError
+                error: dbError,
+                errorCode: dbError?.code,
+                errorMessage: dbError?.message
             });
+
+            // Handle specific database constraint violations
+            if (dbError?.code === 'P2002') {
+                // Unique constraint violation
+                logger.error('Duplicate CV data detected', {
+                    userId,
+                    filename: file.name,
+                    constraint: dbError.meta?.target
+                });
+
+                // Try to clean up uploaded file from storage
+                await supabase.storage
+                    .from('pdfs')
+                    .remove([uploadData.path]);
+
+                return NextResponse.json(
+                    { error: 'CV already exists for this user' },
+                    { status: 409 }
+                );
+            }
+
+            if (dbError?.code === 'P2003') {
+                // Foreign key constraint violation
+                logger.error('Foreign key constraint violation', {
+                    userId,
+                    filename: file.name,
+                    field: dbError.meta?.field_name
+                });
+
+                // Try to clean up uploaded file from storage
+                await supabase.storage
+                    .from('pdfs')
+                    .remove([uploadData.path]);
+
+                return NextResponse.json(
+                    { error: 'Invalid user reference' },
+                    { status: 400 }
+                );
+            }
 
             // Try to clean up uploaded file from storage
             await supabase.storage
