@@ -26,16 +26,16 @@ export function OAuthButtons({ onError, onClose }: OAuthButtonsProps) {
             }
 
             if (result.url) {
-                // Open Google OAuth in a popup window centered on screen
-                const width = 500
-                const height = 600
+                // Open Google OAuth in a minimal, modern popup window centered on screen
+                const width = 480
+                const height = 640
                 const left = (screen.width) / 2 - width / 2
                 const top = (screen.height - height) / 2
 
                 const popup = window.open(
                     result.url,
                     'google-oauth',
-                    `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes,status=yes,location=yes,toolbar=no,menubar=no`
+                    `width=${width},height=${height},left=${left},top=${top},scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,directories=no`
                 )
 
                 if (!popup) {
