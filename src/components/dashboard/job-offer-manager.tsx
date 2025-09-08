@@ -32,7 +32,7 @@ export function JobOfferManager({ className }: JobOfferManagerProps) {
         archiveJobData,
         unarchiveJobData,
         refetch
-    } = useJobData({ limit: 20 });
+    } = useJobData({ limit: 1000 });
 
     const handleSaveJobOffer = async () => {
         if (!newJobContent.trim() || newJobContent.length < 100) {
@@ -312,12 +312,6 @@ export function JobOfferManager({ className }: JobOfferManagerProps) {
                     )}
                 </div>
 
-                {/* View All Button */}
-                {jobData.length > 0 && (
-                    <Button className="w-full" variant="outline" size="sm">
-                        View All Job Offers
-                    </Button>
-                )}
             </CardContent>
         </Card>
     );

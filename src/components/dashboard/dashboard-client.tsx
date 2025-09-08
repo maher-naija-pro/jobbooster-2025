@@ -241,6 +241,34 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                     </Card>
                 </div>
 
+                {/* Quick Actions */}
+                <div className="mt-8">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Quick Actions</CardTitle>
+                            <CardDescription>
+                                Common tasks and shortcuts
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <Button className="w-full justify-start" variant="outline">
+                                    <Icons.mail className="mr-2 h-4 w-4" />
+                                    Generate Cover Letter
+                                </Button>
+                                <Button className="w-full justify-start" variant="outline">
+                                    <Icons.mail className="mr-2 h-4 w-4" />
+                                    Generate Email
+                                </Button>
+                                <Button className="w-full justify-start" variant="outline">
+                                    <Icons.search className="mr-2 h-4 w-4" />
+                                    Analyze CV
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
                 {/* Main Content */}
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                     {/* CV Upload Card */}
@@ -282,48 +310,6 @@ export function DashboardClient({ profile, user, subscription, preferences, init
 
                     {/* Saved Job Offers */}
                     <JobOffersDisplay />
-                </div>
-
-                {/* Quick Actions */}
-                <div className="mt-8">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Quick Actions</CardTitle>
-                            <CardDescription>
-                                Common tasks and shortcuts
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                <Button className="w-full justify-start" variant="outline">
-                                    <Icons.fileText className="mr-2 h-4 w-4" />
-                                    Upload New CV
-                                </Button>
-                                <Button className="w-full justify-start" variant="outline">
-                                    <Icons.mail className="mr-2 h-4 w-4" />
-                                    Generate Cover Letter
-                                </Button>
-                                <Button className="w-full justify-start" variant="outline">
-                                    <Icons.mail className="mr-2 h-4 w-4" />
-                                    Generate Email
-                                </Button>
-                                <Button className="w-full justify-start" variant="outline">
-                                    <Icons.search className="mr-2 h-4 w-4" />
-                                    Analyze CV
-                                </Button>
-                                <Button className="w-full justify-start" variant="outline">
-                                    <Icons.user className="mr-2 h-4 w-4" />
-                                    Update Profile
-                                </Button>
-                                <Button className="w-full justify-start" variant="outline" asChild>
-                                    <a href="/user/sessions">
-                                        <Icons.bookmark className="mr-2 h-4 w-4" />
-                                        View Saved Offers
-                                    </a>
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
                 </div>
 
             </div>

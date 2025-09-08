@@ -57,6 +57,11 @@ export async function GET(request: NextRequest) {
             isArchived: archived,
         });
 
+        // Debug logging
+        console.log('API - user.id:', user.id);
+        console.log('API - result.data.length:', result.data?.length);
+        console.log('API - result.pagination:', result.pagination);
+
         const duration = Date.now() - startTime;
         logger.info('Job data GET request completed successfully', {
             action: 'get_job_data',

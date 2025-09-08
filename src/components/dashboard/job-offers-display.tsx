@@ -21,7 +21,12 @@ export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
         deleteJobData,
         archiveJobData,
         unarchiveJobData,
-    } = useJobData({ limit: 20 });
+    } = useJobData({ limit: 1000 });
+
+    // Debug logging
+    console.log('JobOffersDisplay - jobData:', jobData);
+    console.log('JobOffersDisplay - loading:', loading);
+    console.log('JobOffersDisplay - error:', error);
 
     const handleDeleteJob = async (id: string) => {
         if (confirm('Are you sure you want to delete this job offer?')) {
@@ -232,12 +237,6 @@ export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
                     )}
                 </div>
 
-                {/* View All Button */}
-                {jobData.length > 0 && (
-                    <Button className="w-full" variant="outline" size="sm">
-                        View All Job Offers
-                    </Button>
-                )}
             </CardContent>
         </Card>
     );
