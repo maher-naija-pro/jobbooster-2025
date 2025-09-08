@@ -1,4 +1,4 @@
-import { ArrowRight, LogIn, Settings, User, User2Icon, UserX2Icon, X, Shield, Lock, Mail, Loader2 as Spinner, FileText, Bookmark, Briefcase, Search, Eye } from "lucide-react"
+import { ArrowRight, LogIn, Settings, User, User2Icon, UserX2Icon, X, Shield, Lock, Mail, Loader2 as Spinner, FileText, Bookmark, Briefcase, Search, Eye, Calendar, AlertCircle, Zap } from "lucide-react"
 import { HiOutlineTrash } from "react-icons/hi2";
 import { FileUp, Plus, Loader2 } from "lucide-react";
 import { MdContentCopy } from "react-icons/md";
@@ -36,6 +36,9 @@ export const Icons = {
   briefcase: Briefcase,
   search: Search,
   eye: Eye,
+  calendar: Calendar,
+  alertCircle: AlertCircle,
+  zap: Zap,
   // Social Media
   github: FaGithub,
   discord: FaDiscord,
