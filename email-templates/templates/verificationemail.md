@@ -17,7 +17,7 @@
       border: 1px solid #eaeaea;
     }
     .header {
-      background-color: #0f172a; /* Tailwind bg-slate-900 */
+      background: linear-gradient(to right, #2563eb, #4f46e5); /* Blue to indigo gradient */
       color: #ffffff;
       padding: 20px;
       text-align: center;
@@ -41,7 +41,7 @@
       display: inline-block;
       margin: 20px 0;
       padding: 10px 20px;
-      background-color: #0f172a; /* Tailwind bg-slate-900 */
+      background: linear-gradient(to right, #2563eb, #4f46e5); /* Blue to indigo gradient */
       color: #ffffff;
       text-decoration: none;
       font-weight: bold;
