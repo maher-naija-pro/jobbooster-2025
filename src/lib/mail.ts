@@ -120,7 +120,7 @@ export const sendVerificationEmail = async (
   token: string
 ) => {
   console.log("🚀 ~ VerificationEmail sent to:", email);
-  const confirmLink = `${Site_name.domain}/new-verification?token=${token}`;
+  const confirmLink = `${Site_name.domain}/auth/confirm?token=${token}`;
 
   const htmlTemplate = `
   <!DOCTYPE html>

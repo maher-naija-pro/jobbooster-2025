@@ -69,14 +69,14 @@
   <div class="email-container">
     <div class="header">
       <img src="{{ .SiteURL }}/logo.png" alt="Logo">
-      <h1>Password Reset Request</h1>
+      <h1>Reset Your Password</h1>
     </div>
     <div class="content">
       <p>Hi there,</p>
       <p>We received a request to reset your password. If you made this request, click the button below to reset your password:</p>
       <a href="{{ .ConfirmationURL }}" class="button">Reset Password</a>
       <p>If you didn't request a password reset, you can safely ignore this message.</p>
-      <p>If you have any questions, feel free to contact support.</p>
+      <p>If you have any questions, feel free to contact our support team.</p>
     </div>
     <div class="footer">
       <p>© {{ .SiteURL }}. All rights reserved.</p>

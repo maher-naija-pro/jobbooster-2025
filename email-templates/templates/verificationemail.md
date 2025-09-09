@@ -71,11 +71,12 @@
       <p>Hi there,</p>
       <p>We noticed you signed up for our service. To complete the process, please confirm your email address by clicking the button below:</p>
       <a href="{{ .ConfirmationURL }}" class="button">Confirm Email</a>
+
       <p>If you didn't sign up for this account, please ignore this message.</p>
       <p>If you have any questions, feel free to contact support.</p>
     </div>
     <div class="footer">
-      <p>© {{ .SiteURL }}. All rights reserved.</p>
+      <p>© thejobbooster.com. All rights reserved.</p>
     </div>
   </div>
 </body>
