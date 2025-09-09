@@ -1,11 +1,4 @@
-# Email Verification Template
 
-## Subject
-Confirm Your Email
-
-## HTML Template
-
-```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -28,7 +21,7 @@ Confirm Your Email
       border: 1px solid #eaeaea;
     }
     .header {
-      background-color: #0f172a; /* Tailwind bg-slate-900 */
+      background: linear-gradient(to right, #2563eb, #4f46e5); /* Blue to indigo gradient */
       color: #ffffff;
       padding: 20px;
       text-align: center;
@@ -52,7 +45,7 @@ Confirm Your Email
       display: inline-block;
       margin: 20px 0;
       padding: 10px 20px;
-      background-color: #0f172a; /* Tailwind bg-slate-900 */
+      background: linear-gradient(to right, #2563eb, #4f46e5); /* Blue to indigo gradient */
       color: #ffffff;
       text-decoration: none;
       font-weight: bold;
@@ -77,13 +70,13 @@ Confirm Your Email
     <div class="header">
       <img src="{{SITE_DOMAIN}}/logo.png" alt="Logo">
       <h1>{{SITE_URL}}</h1>
-      <h1>Action Required: Confirm Your Email</h1>
+      <h1>Password Reset Request</h1>
     </div>
     <div class="content">
       <p>Hi there,</p>
-      <p>We noticed you signed up for {{SITE_URL}}. To complete the process, please confirm your email address by clicking the button below: </p>
-      <a href="{{CONFIRM_LINK}}" class="button">Confirm Email</a>
-      <p>If you didn't sign up for this account, please ignore this message.</p>
+      <p>We received a request to reset your password. If you made this request, click the button below to reset your password:</p>
+      <a href="{{RESET_LINK}}" class="button">Reset Password</a>
+      <p>If you didn't request a password reset, you can safely ignore this message.</p>
       <p>@ {{CURRENT_YEAR}} {{SITE_URL}}. All rights reserved.</p>
       <p>
         If you have any questions, feel free to <a href="mailto:{{SUPPORT_EMAIL}}">contact support</a>.
@@ -92,14 +85,3 @@ Confirm Your Email
   </div>
 </body>
 </html>
-```
-
-## Template Variables
-- `{{SITE_DOMAIN}}` - The site domain URL
-- `{{SITE_URL}}` - The site name/URL
-- `{{CONFIRM_LINK}}` - The email confirmation link with token
-- `{{CURRENT_YEAR}}` - Current year
-- `{{SUPPORT_EMAIL}}` - Support email address
-
-## Usage
-This template is used for sending email verification emails to users who have just signed up and need to confirm their email address.
