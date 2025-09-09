@@ -187,26 +187,28 @@
         <div class="content">
             <h2>Confirm Your Email Address</h2>
             <p>Hi there,</p>
-            <p>Welcome to {{ .SiteName }}! We're excited to have you on board. To complete your account setup and start
-                using our platform, please confirm your email address by clicking the button below:</p>
+            <p>Welcome to {{ .SiteName }}! We're excited to have you on board. To complete your account
+                setup and start using our platform, please confirm your email address by clicking the
+                button below:</p>
 
             <div style="text-align: center;">
                 <a href="{{ .ConfirmationURL }}" class="button">Confirm Email Address</a>
             </div>
 
             <div class="security-note">
-                <p><strong>Security Note:</strong> If you didn't sign up for this account, please ignore this message.
-                    Your email address will not be verified and the account will remain inactive.</p>
+                <p><strong>Security Note:</strong> If you didn't sign up for this account, please ignore
+                    this message. Your email address will not be verified and the account will remain
+                    inactive.</p>
             </div>
 
             <p>This confirmation link will expire in 24 hours for security reasons.</p>
 
-            <p>Once confirmed, you'll have access to all our features including CV analysis, job matching, and career
-                insights.</p>
+            <p>Once confirmed, you'll have access to all our features including CV analysis, job
+                matching, and career insights.</p>
         </div>
         <div class="footer">
             <p>&copy; {{ .CurrentYear }} {{ .SiteName }}. All rights reserved.</p>
-            <p>This email was sent to {{ .Email }}. If you didn't request this, please ignore this message.</p>
+            <p>If you didn't request this, please ignore this message.</p>
             <p>If you have any questions, feel free to <a href="mailto:{{ .SupportEmail }}">contact support</a>.</p>
         </div>
     </div>
