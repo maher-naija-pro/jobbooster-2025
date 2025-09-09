@@ -8,6 +8,10 @@ export async function GET(request: Request) {
   const startTime = Date.now()
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
+  const type = searchParams.get('type')
+  const error = searchParams.get('error')
+  const errorCode = searchParams.get('error_code')
+  const errorDescription = searchParams.get('error_description')
   // if "next" is in param, use it as the redirect URL
   const next = searchParams.get('next') ?? '/'
   // Check if this is a popup OAuth flow
@@ -17,10 +21,14 @@ export async function GET(request: Request) {
     action: 'auth_callback',
     step: 'callback_received',
     hasCode: !!code,
+    type: type,
+    error: error,
+    errorCode: errorCode,
     next: next,
     origin: origin,
     timestamp: new Date().toISOString()
   })
+
 
   if (code) {
     const supabase = await createClient()
@@ -41,6 +49,24 @@ export async function GET(request: Request) {
         action: 'auth_callback',
         step: 'session_exchange_success'
       })
+
+      // Handle password reset callbacks - redirect to dedicated handler after successful session exchange
+      if (type === 'recovery') {
+        logger.info('Password reset callback with successful session exchange, redirecting to dedicated handler', {
+          action: 'auth_callback',
+          step: 'password_reset_success_redirect',
+          type: type,
+          duration: `${Date.now() - startTime}ms`
+        })
+
+        // Construct the password reset callback URL with all parameters
+        const passwordResetUrl = new URL('/auth/reset-password/callback', origin)
+        searchParams.forEach((value, key) => {
+          passwordResetUrl.searchParams.set(key, value)
+        })
+
+        return NextResponse.redirect(passwordResetUrl.toString())
+      }
 
       // Get the user after successful session exchange
       const { data: { user } } = await supabase.auth.getUser()
