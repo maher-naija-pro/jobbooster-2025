@@ -30,6 +30,96 @@ export async function GET(request: Request) {
   })
 
 
+  // Handle error cases first
+  if (error) {
+    logger.error('OAuth callback received with error', {
+      action: 'auth_callback',
+      step: 'oauth_error_received',
+      error: error,
+      errorCode: errorCode,
+      errorDescription: errorDescription,
+      isPopup: isPopup,
+      duration: `${Date.now() - startTime}ms`
+    })
+
+    // If this is a popup, return HTML that communicates error to parent window
+    if (isPopup) {
+      const html = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Authentication Error</title>
+            <style>
+              body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+                background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+                color: white;
+              }
+              .container {
+                text-align: center;
+                padding: 2rem;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 12px;
+                backdrop-filter: blur(10px);
+              }
+              .error-icon {
+                font-size: 3rem;
+                margin-bottom: 1rem;
+              }
+              .error-details {
+                margin-top: 1rem;
+                font-size: 0.9rem;
+                opacity: 0.8;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="error-icon">⚠️</div>
+              <h2>Authentication Failed</h2>
+              <p>There was an error during authentication. Please try again.</p>
+              <div class="error-details">
+                <p><strong>Error:</strong> ${error}</p>
+                ${errorCode ? `<p><strong>Code:</strong> ${errorCode}</p>` : ''}
+                ${errorDescription ? `<p><strong>Description:</strong> ${errorDescription}</p>` : ''}
+              </div>
+            </div>
+            <script>
+              // Notify parent window of authentication error
+              if (window.opener) {
+                window.opener.postMessage({
+                  type: 'GOOGLE_OAUTH_ERROR',
+                  error: '${error}',
+                  errorCode: '${errorCode || ''}',
+                  errorDescription: '${errorDescription || ''}'
+                }, window.location.origin);
+                
+                // Close the popup after a short delay
+                setTimeout(() => {
+                  window.close();
+                }, 3000);
+              } else {
+                // If no opener, redirect to the main app
+                window.location.href = '${origin}';
+              }
+            </script>
+          </body>
+        </html>
+      `
+      return new NextResponse(html, {
+        headers: { 'Content-Type': 'text/html' },
+      })
+    }
+
+    // For non-popup flows, redirect to error page
+    return NextResponse.redirect(`${origin}/auth/auth-code-error?error=${encodeURIComponent(error)}&error_code=${encodeURIComponent(errorCode || '')}&error_description=${encodeURIComponent(errorDescription || '')}`)
+  }
+
   if (code) {
     const supabase = await createClient()
     logger.debug('Supabase client created for auth callback', {
@@ -43,8 +133,8 @@ export async function GET(request: Request) {
       codeLength: code.length
     })
 
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
-    if (!error) {
+    const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
+    if (!exchangeError) {
       logger.info('Code exchanged for session successfully', {
         action: 'auth_callback',
         step: 'session_exchange_success'
@@ -275,8 +365,8 @@ export async function GET(request: Request) {
       logger.error('Code exchange for session failed', {
         action: 'auth_callback',
         step: 'session_exchange_failed',
-        error: error.message,
-        errorCode: error.status,
+        error: exchangeError.message,
+        errorCode: exchangeError.status,
         isPopup: isPopup,
         duration: `${Date.now() - startTime}ms`
       })
