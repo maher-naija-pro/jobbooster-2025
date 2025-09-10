@@ -13,9 +13,6 @@ import { ErrorBoundary } from '../components/error-boundary';
 import { Language } from '../lib/types';
 import { useState, useEffect } from 'react';
 import { FeatureGate } from '../components/auth/feature-gate';
-import Link from 'next/link';
-import { Button } from '../components/ui/button';
-import { Database } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function Home() {
@@ -431,10 +428,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen px-4 sm:px-6 lg:px-8">
-      {/* Demo Link and Test Mode Indicator */}
-      <div className="flex justify-between items-center pt-4">
-        {/* Test Mode Indicator */}
-        {state.isTestMode && isTestModeEnabled && (
+      {/* Test Mode Indicator */}
+      {state.isTestMode && isTestModeEnabled && (
+        <div className="flex justify-start items-center pt-4">
           <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/30 rounded-lg">
             <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
             <span className="text-sm font-medium text-blue-800 dark:text-blue-200">Test Mode Active</span>
@@ -445,16 +441,8 @@ export default function Home() {
               Disable
             </button>
           </div>
-        )}
-
-        {/* Demo Link */}
-        <Link href="/demo-llm-process">
-          <Button variant="outline" className="flex items-center gap-2">
-            <Database className="w-4 h-4" />
-            LLM Processing Demo
-          </Button>
-        </Link>
-      </div>
+        </div>
+      )}
 
       <div className="w-full">
         {/* Conditional Layout - Centered when no content, two-column when generating or has results */}
