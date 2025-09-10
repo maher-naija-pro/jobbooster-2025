@@ -31,7 +31,7 @@ export default function Home() {
   // Load user's language preference
   useUserLanguage();
 
-  // Handle password reset errors from URL parameters
+  // TEMPORARILY DISABLED: Handle password reset errors from URL parameters
   useEffect(() => {
     const error = searchParams.get('error');
     const errorCode = searchParams.get('error_code');
@@ -48,8 +48,9 @@ export default function Home() {
         errorMessage = decodeURIComponent(errorDescription.replace(/\+/g, ' '));
       }
 
-      // Redirect to password reset page with error message
-      router.replace(`/auth/reset-password?message=${encodeURIComponent(errorMessage)}`);
+      // TEMPORARILY DISABLED: Redirect to password reset page with error message
+      // router.replace(`/auth/reset-password?message=${encodeURIComponent(errorMessage)}`);
+      console.log('Password reset error (fallback disabled):', { error, errorCode, errorDescription, errorMessage });
     }
   }, [searchParams, router]);
 

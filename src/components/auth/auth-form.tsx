@@ -192,11 +192,15 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
       }
 
       const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred'
-      setError(errorMessage)
+
+      // TEMPORARILY DISABLED: Error fallback display
+      // setError(errorMessage)
+      console.log('Auth form error (fallback disabled):', { errorMessage, err })
 
       // If it's a "user not found" error, suggest creating an account
       if (errorMessage.includes('No account found') && isLogin) {
-        setError(errorMessage + ' Would you like to create a new account instead?')
+        // TEMPORARILY DISABLED: setError(errorMessage + ' Would you like to create a new account instead?')
+        console.log('User not found error (fallback disabled):', errorMessage + ' Would you like to create a new account instead?')
       }
     } finally {
       setIsLoading(false)
