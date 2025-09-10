@@ -100,12 +100,12 @@ export function UserProfile() {
                     <div className="hidden sm:block">
                         {profile?.username || profile?.fullName || user.email?.split('@')[0]}
                     </div>
-                    <Avatar className="ml-2 h-10 w-10">
+                    <Avatar className="ml-2 h-12 w-12">
                         <AvatarImage
                             src={profile?.avatarUrl || user.user_metadata?.avatar_url || user.user_metadata?.picture}
                             alt={profile?.fullName || user.user_metadata?.full_name || user.email || "User"}
                         />
-                        <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                        <AvatarFallback className="text-sm bg-gradient-to-br from-blue-500 to-purple-600 text-white">
                             {profile?.fullName?.charAt(0) || user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0).toUpperCase() || "U"}
                         </AvatarFallback>
                     </Avatar>
@@ -119,10 +119,10 @@ export function UserProfile() {
             >
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">
+                        <p className="text-lg font-bold leading-none">
                             {profile?.username || profile?.fullName || user.email?.split('@')[0]}
                         </p>
-                        <p className="text-xs leading-none text-muted-foreground">
+                        <p className="text-sm leading-none text-muted-foreground">
                             {user.email}
                         </p>
                     </div>

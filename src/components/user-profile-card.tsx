@@ -83,12 +83,12 @@ export const UserProfileCard = ({ className }: UserProfileCardProps) => {
                 variant="outline"
                 className="text-sm font-medium mr-3 py-1.5 px-2 w-auto h-auto hover:bg-gray-50 transition-all duration-200"
             >
-                <Avatar className="h-6 w-6 mr-1.5">
+                <Avatar className="h-8 w-8 mr-2">
                     <AvatarImage
                         src={profile?.avatarUrl || user.user_metadata?.avatar_url || user.user_metadata?.picture}
                         alt={profile?.fullName || user.user_metadata?.full_name || user.email || "User"}
                     />
-                    <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                    <AvatarFallback className="text-sm bg-gradient-to-br from-blue-500 to-purple-600 text-white">
                         {profile?.fullName?.charAt(0) || user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0) || "U"}
                     </AvatarFallback>
                 </Avatar>
@@ -118,24 +118,24 @@ export const UserProfileCard = ({ className }: UserProfileCardProps) => {
                 <Card className="border-0 shadow-none">
                     <CardHeader className="pb-2">
                         <div className="flex items-center space-x-2">
-                            <Avatar className="h-8 w-8">
+                            <Avatar className="h-12 w-12">
                                 <AvatarImage
                                     src={profile?.avatarUrl || user.user_metadata?.avatar_url || user.user_metadata?.picture}
                                     alt={profile?.fullName || user.user_metadata?.full_name || user.email || "User"}
                                 />
-                                <AvatarFallback className="text-sm bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                                <AvatarFallback className="text-lg bg-gradient-to-br from-blue-500 to-purple-600 text-white">
                                     {profile?.fullName?.charAt(0) || user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0) || "U"}
                                 </AvatarFallback>
                             </Avatar>
                             <div className="flex-1 min-w-0">
-                                <h3 className="font-medium text-gray-900 truncate text-sm">
+                                <h3 className="font-bold text-gray-900 truncate text-lg">
                                     {profile?.username || profile?.fullName || user.user_metadata?.full_name || "User"}
                                 </h3>
-                                <p className="text-xs text-gray-500 truncate">
+                                <p className="text-sm text-gray-500 truncate">
                                     {user.email}
                                 </p>
-                                <Badge variant="secondary" className="mt-0.5 text-xs px-1.5 py-0.5">
-                                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1"></div>
+                                <Badge variant="secondary" className="mt-1 text-sm px-2 py-1">
+                                    <div className="w-2 h-2 bg-green-500 rounded-full mr-1.5"></div>
                                     Online
                                 </Badge>
                             </div>
@@ -148,27 +148,27 @@ export const UserProfileCard = ({ className }: UserProfileCardProps) => {
                             <Button
                                 variant="ghost"
                                 onClick={handleDashboard}
-                                className="w-full justify-start h-8 text-gray-700 hover:bg-gray-100 hover:text-gray-900 text-sm"
+                                className="w-full justify-start h-10 text-gray-700 hover:bg-gray-100 hover:text-gray-900 text-base"
                             >
-                                <Icons.user className="mr-2 h-3.5 w-3.5" />
+                                <Icons.user className="mr-3 h-5 w-5" />
                                 Dashboard
                             </Button>
 
                             <Button
                                 variant="ghost"
                                 onClick={handleProfile}
-                                className="w-full justify-start h-8 text-gray-700 hover:bg-gray-100 hover:text-gray-900 text-sm"
+                                className="w-full justify-start h-10 text-gray-700 hover:bg-gray-100 hover:text-gray-900 text-base"
                             >
-                                <Icons.profile className="mr-2 h-3.5 w-3.5" />
+                                <Icons.profile className="mr-3 h-5 w-5" />
                                 Profile
                             </Button>
 
                             <Button
                                 variant="ghost"
                                 onClick={handleSettings}
-                                className="w-full justify-start h-8 text-gray-700 hover:bg-gray-100 hover:text-gray-900 text-sm"
+                                className="w-full justify-start h-10 text-gray-700 hover:bg-gray-100 hover:text-gray-900 text-base"
                             >
-                                <Icons.settings className="mr-2 h-3.5 w-3.5" />
+                                <Icons.settings className="mr-3 h-5 w-5" />
                                 Preferences
                             </Button>
 
@@ -189,9 +189,9 @@ export const UserProfileCard = ({ className }: UserProfileCardProps) => {
                             <Button
                                 variant="ghost"
                                 onClick={handleLogout}
-                                className="w-full justify-start h-8 text-red-600 hover:bg-red-50 hover:text-red-700 text-sm"
+                                className="w-full justify-start h-10 text-red-600 hover:bg-red-50 hover:text-red-700 text-base"
                             >
-                                <Icons.login className="mr-2 h-3.5 w-3.5" />
+                                <Icons.login className="mr-3 h-5 w-5" />
                                 Sign Out
                             </Button>
                         </div>
