@@ -159,10 +159,10 @@ export function JobOfferInput({
             <div className="flex items-center justify-between mb-4">
                 <Label
                     htmlFor="job-content"
-                    className="text-base font-semibold text-gray-900 flex items-center gap-3"
+                    className="text-sm font-semibold text-gray-900 flex items-center gap-2"
                 >
-                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <FileText className="w-4 h-4 text-blue-600" aria-hidden="true" />
+                    <div className="w-6 h-6 bg-blue-100 rounded-md flex items-center justify-center">
+                        <FileText className="w-3 h-3 text-blue-600" aria-hidden="true" />
                     </div>
                     Job Offer Content
                 </Label>
@@ -194,9 +194,9 @@ export function JobOfferInput({
                                 onMouseLeave={() => setIsTooltipOpen(false)}
                                 placeholder="Paste your job offer here...&#10;&#10;Include job title, company name, requirements, responsibilities, and any other relevant details from the job posting."
                                 className={cn(
-                                    "w-full min-h-[320px] p-5 border-2 rounded-xl resize-vertical transition-all duration-300",
-                                    "focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none",
-                                    "hover:shadow-lg hover:border-gray-400",
+                                    "w-full min-h-[200px] p-4 border-2 rounded-lg resize-vertical transition-all duration-300",
+                                    "focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none",
+                                    "hover:shadow-md hover:border-gray-400",
                                     "text-sm leading-relaxed font-medium",
                                     "placeholder:text-gray-400 placeholder:font-normal",
                                     // Validation states
@@ -205,7 +205,7 @@ export function JobOfferInput({
                                     validationState.isValid && !validationState.isWarning && "border-green-400 focus:ring-green-500/20 focus:border-green-500",
                                     !validationState.isError && !validationState.isWarning && !validationState.isValid && "border-gray-300 focus:border-blue-500"
                                 )}
-                                style={{ minHeight: '320px', maxHeight: '600px' }}
+                                style={{ minHeight: '200px', maxHeight: '400px' }}
                                 aria-invalid={validationState.isError ? 'true' : 'false'}
                                 aria-describedby={validationMessage ? 'job-content-validation' : undefined}
                             />

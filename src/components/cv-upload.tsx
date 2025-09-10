@@ -103,10 +103,10 @@ export function CVUpload({
             {/* Modern Upload Area - Show when not uploading or processing */}
             {!isProcessing && !isUploading && (
                 <Card className="overflow-hidden border-0 shadow-sm hover:shadow-lg transition-all duration-300">
-                    <CardContent className="p-6">
+                    <CardContent className="p-4">
                         <div
                             className={cn(
-                                "relative border-2 border-dashed rounded-xl text-center transition-all duration-300 cursor-pointer min-h-[140px] flex flex-col items-center justify-center group hover:scale-[1.02] hover:shadow-lg focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2",
+                                "relative border-2 border-dashed rounded-xl text-center transition-all duration-300 cursor-pointer min-h-[80px] flex flex-col items-center justify-center group hover:scale-[1.02] hover:shadow-lg focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2",
                                 isDragOver
                                     ? "border-blue-500 bg-blue-50 scale-[1.02] shadow-lg"
                                     : "border-gray-300 hover:border-blue-400 hover:bg-blue-50/30",
@@ -135,34 +135,34 @@ export function CVUpload({
                                 aria-label="File input for CV upload"
                             />
 
-                            <div className="flex flex-col items-center gap-3">
+                            <div className="flex flex-col items-center gap-2">
                                 <div className={cn(
-                                    "w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:scale-110",
+                                    "w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110",
                                     isDragOver
                                         ? "bg-blue-100 scale-110 shadow-lg"
                                         : "bg-gray-100 group-hover:bg-blue-100"
                                 )}>
                                     <Target className={cn(
-                                        "w-6 h-6 transition-all duration-300",
+                                        "w-4 h-4 transition-all duration-300",
                                         isDragOver ? "text-blue-600 scale-110" : "text-gray-600 group-hover:text-blue-600"
                                     )} />
                                 </div>
 
-                                <div className="space-y-2">
+                                <div className="space-y-1">
                                     <h3 className={cn(
-                                        "text-base font-semibold transition-colors duration-300",
+                                        "text-sm font-semibold transition-colors duration-300",
                                         isDragOver ? "text-blue-700" : "text-gray-900 group-hover:text-blue-700"
                                     )}>
                                         {isDragOver ? "Drop to Upload" : cvDataList.length > 0 ? "Upload Another CV" : "Drop to Upload CV/Resume"}
                                     </h3>
-                                    <p className="text-sm text-gray-600 group-hover:text-gray-700">
+                                    <p className="text-xs text-gray-600 group-hover:text-gray-700">
                                         or <span className="text-blue-600 hover:text-blue-700 font-medium cursor-pointer transition-colors underline decoration-2 underline-offset-2">click to browse</span>
                                     </p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="mt-4 flex items-center justify-center gap-6 text-sm text-gray-600">
+                        <div className="mt-3 flex items-center justify-center gap-4 text-xs text-gray-600">
                             <div className="flex items-center gap-2">
                                 <FileCheck className="w-4 h-4 text-green-600" />
                                 <span className="font-medium">PDF, DOC, DOCX (Max 10MB)</span>
