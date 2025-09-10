@@ -4,6 +4,7 @@ import "./globals.css";
 import { AppProvider } from "../lib/app-context";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { ProfileProvider } from "@/components/auth/profile-provider";
+import { GDPRProvider } from "@/components/gdpr/GDPRProvider";
 import Navbar from "./layout/Navbar";
 import Footer from "./layout/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -37,13 +38,15 @@ export default function RootLayout({
         <AppProvider>
           <AuthProvider>
             <ProfileProvider>
-              <Navbar />
-              <main className="flex-1">
-                {children}
-              </main>
-              <Footer />
-              <ScrollToTop />
-              <Toaster position="top-right" richColors />
+              <GDPRProvider>
+                <Navbar />
+                <main className="flex-1">
+                  {children}
+                </main>
+                <Footer />
+                <ScrollToTop />
+                <Toaster position="top-right" richColors />
+              </GDPRProvider>
             </ProfileProvider>
           </AuthProvider>
         </AppProvider>
