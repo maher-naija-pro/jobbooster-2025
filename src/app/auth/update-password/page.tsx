@@ -305,35 +305,28 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
           step: 'update_password_success',
           timestamp: new Date().toISOString()
         })
+
+        // Immediate response - show success message and redirect directly
         setMessage(result.message || 'Password updated successfully! You can now use your new password.')
+        setFormValues({})
+        setFieldErrors({})
+        setTouched({})
+        // Reset the initial message processed flag so new messages can be processed
+        initialMessageProcessed.current = false
 
-        // Clear form fields after successful password update with a small delay
-        // to ensure the success message is visible to the user
-        // Use React's automatic batching to minimize rerenders
-        setTimeout(() => {
-          // React 18+ automatically batches these state updates in a single render
-          setFormValues({})
-          setFieldErrors({})
-          setTouched({})
-          // Reset the initial message processed flag so new messages can be processed
-          initialMessageProcessed.current = false
+        logger.debug('Form cleared immediately after successful password update', {
+          action: 'handleSubmit',
+          step: 'form_cleared_immediate',
+          timestamp: new Date().toISOString()
+        })
 
-          logger.debug('Form cleared after successful password update', {
-            action: 'handleSubmit',
-            step: 'form_cleared',
-            timestamp: new Date().toISOString()
-          })
-
-          // Redirect to home page after clearing form (reduced delay)
-          setTimeout(() => {
-            logger.info('Redirecting to home page after successful password update', {
-              action: 'handleSubmit',
-              step: 'redirect_to_home',
-              timestamp: new Date().toISOString()
-            })
-            window.location.href = '/'
-          }, 1500) // 1.5 second delay after form clear
-        }, 1500) // 1.5 second delay to show success message
+        // Redirect to home page immediately after success
+        logger.info('Redirecting to home page immediately after successful password update', {
+          action: 'handleSubmit',
+          step: 'redirect_to_home_immediate',
+          timestamp: new Date().toISOString()
+        })
+        window.location.href = '/'
       } else {
         logger.error('Password update action failed', {
           action: 'handleSubmit',
