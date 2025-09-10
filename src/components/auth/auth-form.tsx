@@ -266,7 +266,7 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
   }
 
   return (
-    <form ref={formRef} action={handleSubmit} className="space-y-3" noValidate>
+    <form ref={formRef} action={handleSubmit} className="space-y-4" noValidate>
       {error && (
         <div
           className="text-sm text-red-700 dark:text-red-300 bg-gradient-to-r from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 p-2 rounded-lg border border-red-200 dark:border-red-800/30 shadow-sm"
@@ -326,10 +326,10 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
         </div>
       )}
 
-      <div className="space-y-0.5">
+      <div className="space-y-1">
         <Label
           htmlFor="email"
-          className="text-sm font-medium text-slate-700 dark:text-slate-300"
+          className="text-base font-semibold text-slate-700 dark:text-slate-300"
         >
           Email
         </Label>
@@ -362,10 +362,10 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
 
       {!isResetPassword && (
         <>
-          <div className="space-y-0.5">
+          <div className="space-y-1">
             <Label
               htmlFor="password"
-              className="text-sm font-medium text-slate-700 dark:text-slate-300"
+              className="text-base font-semibold text-slate-700 dark:text-slate-300"
             >
               Password
             </Label>
@@ -405,7 +405,7 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
                 <button
                   type="button"
                   onClick={onResetPassword}
-                  className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 rounded-sm"
+                  className="text-base text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-semibold hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 rounded-sm "
                   aria-label="Reset password"
                 >
                   Forgot password?
@@ -415,10 +415,10 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
           </div>
 
           {!isLogin && (
-            <div className="space-y-0.5">
+            <div className="space-y-1">
               <Label
                 htmlFor="confirmPassword"
-                className="text-sm font-medium text-slate-700 dark:text-slate-300"
+                className="text-base font-semibold text-slate-700 dark:text-slate-300"
               >
                 Confirm Password
               </Label>
@@ -460,30 +460,30 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
 
       {/* Toggle section above submit button */}
       {!isResetPassword && (
-        <div className="text-center py-2 border-t border-slate-200 dark:border-slate-700">
+        <div className="text-center py-1 border-t border-slate-200 dark:border-slate-700">
           {isLogin ? (
-            <div className="space-y-2">
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+            <div className="space-y-1">
+              <p className="text-base text-slate-600 dark:text-slate-400 font-medium">
                 Don't have an account?
               </p>
               <button
                 type="button"
                 onClick={onToggleMode}
-                className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 rounded-sm"
+                className="text-base font-semibold text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 rounded-sm "
                 aria-label="Switch to create account mode"
               >
                 Sign up
               </button>
             </div>
           ) : (
-            <div className="space-y-2">
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+            <div className="space-y-1">
+              <p className="text-base text-slate-600 dark:text-slate-400 font-medium">
                 Already have an account?
               </p>
               <button
                 type="button"
                 onClick={onToggleMode}
-                className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 rounded-sm"
+                className="text-base font-semibold text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 rounded-sm"
                 aria-label="Switch to sign in mode"
               >
                 Sign in
@@ -556,15 +556,15 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
 
       {/* Reset password back to login link */}
       {isResetPassword && (
-        <div className="text-center pt-3 border-t border-slate-200 dark:border-slate-700">
-          <div className="space-y-2">
-            <p className="text-sm text-slate-600 dark:text-slate-400">
+        <div className="text-center pt-4 border-t border-slate-200 dark:border-slate-700">
+          <div className="space-y-1">
+            <p className="text-base text-slate-600 dark:text-slate-400 font-medium">
               Remember your password?
             </p>
             <button
               type="button"
               onClick={onBackToLogin}
-              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 rounded-sm"
+              className="text-base text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-semibold hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 rounded-sm"
               aria-label="Back to sign in"
             >
               Sign in
