@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
+import { ChevronDown } from 'lucide-react'
 import { Icons } from '@/components/icons'
 
 interface PrivacyCardSelectorProps {
@@ -65,9 +66,11 @@ export function PrivacyCardSelector({
                             "transition-transform duration-200",
                             isOpen && "rotate-180"
                         )}>
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <polyline points="6,9 12,15 18,9"></polyline>
-                            </svg>
+                            <ChevronDown
+                                className="w-3 h-3"
+                                aria-hidden="true"
+                                strokeWidth={2}
+                            />
                         </div>
                     </div>
                 </CardContent>
