@@ -461,9 +461,9 @@ export default function Home() {
         {!state.isGenerating && !state.generatedContent && !state.cvAnalysis ? (
           // Centered layout for initial state
           <div className="flex justify-center">
-            <div className="w-full max-w-md">
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mt-5">
-                <div className="space-y-2">
+            <div className="w-full max-w-2xl">
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 mt-6">
+                <div className="space-y-6">
                   {/* Main Header with Title and Description */}
                   <UploadHeader />
 
@@ -509,11 +509,11 @@ export default function Home() {
           </div>
         ) : (
           // Two Column Layout when generating content
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Column - Input Form (1/3 width) */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mt-5">
-                <div className="space-y-2">
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mt-6">
+                <div className="space-y-4">
                   {/* CV Upload */}
                   <CVUpload
                     onFileUpload={handleFileUpload}
@@ -555,9 +555,9 @@ export default function Home() {
             </div>
 
             {/* Right Column - Content Display (2/3 width) */}
-            <div className="lg:col-span-2 space-y-4">
+            <div className="lg:col-span-2 space-y-6">
               {/* Main Content Generator */}
-              <div className="bg-white mt-5">
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 mt-6">
                 <ContentGenerator
                   content={state.generatedContent}
                   isGenerating={state.isGenerating}

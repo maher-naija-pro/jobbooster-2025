@@ -99,23 +99,32 @@ export function CVUpload({
     };
 
     return (
-        <div className={cn("space-y-2", className)}>
-            {/* Ultra Compact Upload Area - Show when not uploading or processing */}
+        <div className={cn("space-y-3", className)}>
+            {/* Modern Upload Area - Show when not uploading or processing */}
             {!isProcessing && !isUploading && (
-                <Card className="overflow-hidden border-0 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02]">
-                    <CardContent className="p-4 ">
+                <Card className="overflow-hidden border-0 shadow-sm hover:shadow-lg transition-all duration-300">
+                    <CardContent className="p-6">
                         <div
                             className={cn(
-                                "relative border-2 border-dashed rounded-lg  text-center transition-all duration-300 cursor-pointer min-h-[120px] flex flex-col items-center justify-center group hover:scale-[1.05] hover:shadow-lg",
+                                "relative border-2 border-dashed rounded-xl text-center transition-all duration-300 cursor-pointer min-h-[140px] flex flex-col items-center justify-center group hover:scale-[1.02] hover:shadow-lg focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2",
                                 isDragOver
-                                    ? "border-blue-400 bg-blue-50 scale-[1.08] shadow-xl"
-                                    : "border-gray-300 hover:border-blue-300 hover:bg-blue-50/50",
-                                error && "border-red-300 bg-red-50"
+                                    ? "border-blue-500 bg-blue-50 scale-[1.02] shadow-lg"
+                                    : "border-gray-300 hover:border-blue-400 hover:bg-blue-50/30",
+                                error && "border-red-400 bg-red-50"
                             )}
                             onDragOver={handleDragOver}
                             onDragLeave={handleDragLeave}
                             onDrop={handleDrop}
                             onClick={handleClick}
+                            role="button"
+                            tabIndex={0}
+                            aria-label="Upload CV or Resume file"
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    handleClick();
+                                }
+                            }}
                         >
                             <input
                                 ref={fileInputRef}
@@ -123,76 +132,84 @@ export function CVUpload({
                                 accept=".pdf,.doc,.docx"
                                 onChange={handleFileSelect}
                                 className="hidden"
+                                aria-label="File input for CV upload"
                             />
 
-                            <div className="flex flex-col items-center gap-2">
+                            <div className="flex flex-col items-center gap-3">
                                 <div className={cn(
-                                    "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110",
-                                    isDragOver ? "bg-primary/10 scale-125" : "bg-muted group-hover:bg-primary/10"
+                                    "w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:scale-110",
+                                    isDragOver
+                                        ? "bg-blue-100 scale-110 shadow-lg"
+                                        : "bg-gray-100 group-hover:bg-blue-100"
                                 )}>
                                     <Target className={cn(
-                                        "w-5 h-5 transition-all duration-300",
-                                        isDragOver ? "text-primary scale-110" : "text-muted-foreground group-hover:text-primary"
+                                        "w-6 h-6 transition-all duration-300",
+                                        isDragOver ? "text-blue-600 scale-110" : "text-gray-600 group-hover:text-blue-600"
                                     )} />
                                 </div>
 
-                                <div className="space-y-1">
-                                    <h4 className={cn(
-                                        "text-sm font-medium transition-colors duration-300",
-                                        isDragOver ? "text-blue-600" : "text-gray-900 group-hover:text-blue-600"
+                                <div className="space-y-2">
+                                    <h3 className={cn(
+                                        "text-base font-semibold transition-colors duration-300",
+                                        isDragOver ? "text-blue-700" : "text-gray-900 group-hover:text-blue-700"
                                     )}>
                                         {isDragOver ? "Drop to Upload" : cvDataList.length > 0 ? "Upload Another CV" : "Drop to Upload CV/Resume"}
-                                    </h4>
-                                    <p className="text-xs text-gray-600 group-hover:text-gray-700">
-                                        or <span className="text-blue-600 hover:text-blue-700 font-medium cursor-pointer transition-colors">click to browse</span>
+                                    </h3>
+                                    <p className="text-sm text-gray-600 group-hover:text-gray-700">
+                                        or <span className="text-blue-600 hover:text-blue-700 font-medium cursor-pointer transition-colors underline decoration-2 underline-offset-2">click to browse</span>
                                     </p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="mt-2 flex items-center justify-center gap-4 text-xs text-gray-500">
-                            <div className="flex items-center gap-1">
-                                <FileCheck className="w-3 h-3" />
-                                <span>PDF, DOC, DOCX (Max 10MB)</span>
+                        <div className="mt-4 flex items-center justify-center gap-6 text-sm text-gray-600">
+                            <div className="flex items-center gap-2">
+                                <FileCheck className="w-4 h-4 text-green-600" />
+                                <span className="font-medium">PDF, DOC, DOCX (Max 10MB)</span>
                             </div>
-                            <div className="flex items-center gap-1">
-                                <Shield className="w-3 h-3" />
-                                <span>Secure</span>
+                            <div className="flex items-center gap-2">
+                                <Shield className="w-4 h-4 text-blue-600" />
+                                <span className="font-medium">Secure</span>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
             )}
 
-            {/* Ultra Compact Upload Progress - Show when uploading or processing */}
+            {/* Modern Upload Progress - Show when uploading or processing */}
             {(isUploading || (cvData && cvData.status === 'processing')) && currentFile && (
-                <Card className="overflow-hidden border-0 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02]">
-                    <CardContent className="">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Card className="overflow-hidden border-0 shadow-sm hover:shadow-lg transition-all duration-300">
+                    <CardContent className="p-4">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
                                 {isUploading ? (
-                                    <Upload className="w-4 h-4 text-blue-600 animate-pulse" />
+                                    <Upload className="w-5 h-5 text-blue-600 animate-pulse" />
                                 ) : (
-                                    <Loader className="w-4 h-4 text-blue-600 animate-spin" />
+                                    <Loader className="w-5 h-5 text-blue-600 animate-spin" />
                                 )}
                             </div>
                             <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between mb-1">
-                                    <p className="text-sm font-medium text-gray-900 truncate">
+                                <div className="flex items-center justify-between mb-2">
+                                    <p className="text-sm font-semibold text-gray-900 truncate">
                                         {currentFile.name}
                                     </p>
-                                    <span className="text-xs font-medium text-blue-600 ml-2">
+                                    <span className="text-sm font-bold text-blue-600 ml-2">
                                         {Math.round(uploadProgress)}%
                                     </span>
                                 </div>
-                                <div className="flex items-center justify-between text-xs text-gray-600 mb-2">
-                                    <span>{formatFileSize(currentFile.size)} • {getFileExtension(currentFile.name)}</span>
-                                    <span>{isUploading ? "Uploading..." : "Processing..."}</span>
+                                <div className="flex items-center justify-between text-sm text-gray-600 mb-3">
+                                    <span className="font-medium">{formatFileSize(currentFile.size)} • {getFileExtension(currentFile.name)}</span>
+                                    <span className="font-medium text-blue-600">{isUploading ? "Uploading..." : "Processing..."}</span>
                                 </div>
-                                <div className="w-full bg-gray-200 rounded-full h-1.5">
+                                <div className="w-full bg-gray-200 rounded-full h-2">
                                     <div
-                                        className="bg-primary h-1.5 rounded-full transition-all duration-300"
+                                        className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
                                         style={{ width: `${uploadProgress}%` }}
+                                        role="progressbar"
+                                        aria-valuenow={uploadProgress}
+                                        aria-valuemin={0}
+                                        aria-valuemax={100}
+                                        aria-label={`Upload progress: ${Math.round(uploadProgress)}%`}
                                     />
                                 </div>
                             </div>
@@ -201,62 +218,66 @@ export function CVUpload({
                 </Card>
             )}
 
-            {/* Ultra Compact CV Data Display - Show when upload and processing are complete */}
+            {/* Modern CV Data Display - Show when upload and processing are complete */}
             {cvData && cvData.status === 'completed' && !isUploading && (
-                <Card className=" border-0 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02]">
-                    <CardContent className="">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <CheckCircle className="w-4 h-4 text-green-600" />
+                <Card className="border-0 shadow-sm hover:shadow-lg transition-all duration-300">
+                    <CardContent className="p-4">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <CheckCircle className="w-5 h-5 text-green-600" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between mb-1">
-                                    <p className="text-sm font-medium text-gray-900 truncate">
+                                <div className="flex items-center justify-between mb-2">
+                                    <p className="text-sm font-semibold text-gray-900 truncate">
                                         {cvData.filename}
                                     </p>
-                                    <div className="flex items-center gap-1 ml-2">
+                                    <div className="flex items-center gap-2 ml-2">
                                         <Button
                                             variant="ghost"
                                             size="sm"
-                                            className="h-6 w-6 p-0 text-gray-400 hover:text-blue-600 hover:bg-blue-50"
+                                            className="h-8 w-8 p-0 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                                            aria-label="View file details"
                                         >
-                                            <Eye className="w-3 h-3" />
+                                            <Eye className="w-4 h-4" />
                                         </Button>
                                         <Button
                                             onClick={handleRemove}
                                             variant="ghost"
                                             size="sm"
-                                            className="h-6 w-6 p-0 text-gray-400 hover:text-red-600 hover:bg-red-50"
+                                            className="h-8 w-8 p-0 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg"
+                                            aria-label="Remove file"
                                         >
-                                            <Trash2 className="w-3 h-3" />
+                                            <Trash2 className="w-4 h-4" />
                                         </Button>
                                     </div>
                                 </div>
-                                <div className="flex items-center justify-between text-xs text-gray-600 mb-2">
-                                    <span>{formatFileSize(cvData.size)} • {getFileExtension(cvData.filename)}</span>
-                                    <span className="text-green-600 font-medium">✓ Processed</span>
+                                <div className="flex items-center justify-between text-sm text-gray-600">
+                                    <span className="font-medium">{formatFileSize(cvData.size)} • {getFileExtension(cvData.filename)}</span>
+                                    <span className="text-green-600 font-bold flex items-center gap-1">
+                                        <CheckCircle className="w-4 h-4" />
+                                        Processed
+                                    </span>
                                 </div>
-
                             </div>
                         </div>
                     </CardContent>
                 </Card>
             )}
 
-            {/* Ultra Compact Error Display */}
+            {/* Modern Error Display */}
             {error && (
-                <Card className="overflow-hidden border-red-200 bg-red-50 hover:shadow-md transition-all duration-300 hover:scale-[1.02]">
-                    <CardContent className="p-3">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <AlertCircle className="w-4 h-4 text-red-600" />
+                <Card className="overflow-hidden border-red-300 bg-red-50 hover:shadow-lg transition-all duration-300">
+                    <CardContent className="p-4">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <AlertCircle className="w-5 h-5 text-red-600" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <h4 className="text-sm font-semibold text-red-900 mb-1">Upload Failed</h4>
-                                <p className="text-xs text-red-700 mb-2 truncate">{error}</p>
-                                <div className="flex items-center gap-1 text-xs text-red-600">
-                                    <Shield className="w-3 h-3" />
-                                    <span>Try a different file or contact support</span>
+                                <h4 className="text-sm font-bold text-red-900 mb-2">Upload Failed</h4>
+                                <p className="text-sm text-red-700 mb-3 break-words">{error}</p>
+                                <div className="flex items-center gap-2 text-sm text-red-600">
+                                    <Shield className="w-4 h-4" />
+                                    <span className="font-medium">Try a different file or contact support</span>
                                 </div>
                             </div>
                         </div>

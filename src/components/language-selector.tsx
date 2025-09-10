@@ -25,25 +25,29 @@ export function LanguageSelector({
     return (
         <div className={className}>
             <Select value={currentLanguage.code} onValueChange={handleLanguageSelect}>
-                <SelectTrigger className="w-full min-w-[120px] h-8">
+                <SelectTrigger className="w-full h-12 px-4 border-2 border-gray-300 rounded-xl hover:border-gray-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300">
                     <SelectValue>
-                        <div className="flex items-center gap-1">
-                            <span className="text-xs">{currentLanguage.flag}</span>
+                        <div className="flex items-center gap-3">
+                            <span className="text-lg">{currentLanguage.flag}</span>
                             <div className="text-left">
-                                <div className="text-xs font-medium text-gray-900">{currentLanguage.nativeName}</div>
-                                <div className="text-xs text-gray-500">{currentLanguage.name}</div>
+                                <div className="text-sm font-semibold text-gray-900">{currentLanguage.nativeName}</div>
+                                <div className="text-xs text-gray-600">{currentLanguage.name}</div>
                             </div>
                         </div>
                     </SelectValue>
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-xl border-2 shadow-lg">
                     {SUPPORTED_LANGUAGES.map((language) => (
-                        <SelectItem key={language.code} value={language.code}>
-                            <div className="flex items-center gap-1">
-                                <span className="text-xs">{language.flag}</span>
+                        <SelectItem
+                            key={language.code}
+                            value={language.code}
+                            className="px-4 py-3 hover:bg-gray-50 focus:bg-blue-50 transition-colors duration-200"
+                        >
+                            <div className="flex items-center gap-3">
+                                <span className="text-lg">{language.flag}</span>
                                 <div className="text-left">
-                                    <div className="text-xs font-medium text-gray-900">{language.nativeName}</div>
-                                    <div className="text-xs text-gray-500">{language.name}</div>
+                                    <div className="text-sm font-semibold text-gray-900">{language.nativeName}</div>
+                                    <div className="text-xs text-gray-600">{language.name}</div>
                                 </div>
                             </div>
                         </SelectItem>

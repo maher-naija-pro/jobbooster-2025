@@ -65,26 +65,24 @@ export function ActionButtons({
 
     return (
         <div className={className}>
-
-
-            {/* Generate Buttons */}
-            <div className="space-y-2">
+            {/* Modern Action Buttons */}
+            <div className="space-y-3">
                 {/* Generate Cover Letter Button */}
                 <Button
                     onClick={handleGenerateLetterClick}
                     disabled={isDisabled || (isGenerating && !isGeneratingLetter)}
                     variant={isDisabled ? "secondary" : isGeneratingLetter ? "destructive" : "default"}
-                    size="sm"
-                    className="w-full gap-1 text-xs font-semibold"
+                    size="default"
+                    className="w-full gap-3 h-12 text-sm font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:ring-4 focus:ring-blue-500/20"
                 >
                     {isGeneratingLetter ? (
                         <>
-                            <Square className="w-2 h-2" />
+                            <Square className="w-4 h-4" />
                             Stop Generation
                         </>
                     ) : (
                         <>
-                            <FileDown className="w-2 h-2" />
+                            <FileDown className="w-4 h-4" />
                             Generate Cover Letter
                         </>
                     )}
@@ -95,17 +93,17 @@ export function ActionButtons({
                     onClick={handleGenerateMailClick}
                     disabled={isDisabled || (isGenerating && !isGeneratingEmail)}
                     variant={isDisabled ? "secondary" : isGeneratingEmail ? "destructive" : "success"}
-                    size="sm"
-                    className="w-full gap-1 text-xs font-semibold"
+                    size="default"
+                    className="w-full gap-3 h-12 text-sm font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:ring-4 focus:ring-green-500/20"
                 >
                     {isGeneratingEmail ? (
                         <>
-                            <Square className="w-2 h-2" />
+                            <Square className="w-4 h-4" />
                             Stop Generation
                         </>
                     ) : (
                         <>
-                            <Mail className="w-2 h-2" />
+                            <Mail className="w-4 h-4" />
                             Generate Email
                         </>
                     )}
@@ -117,23 +115,22 @@ export function ActionButtons({
                         onClick={handleAnalyzeCVClick}
                         disabled={isDisabled || (isGenerating && !isAnalyzingCV)}
                         variant={isDisabled ? "secondary" : isAnalyzingCV ? "destructive" : "accent"}
-                        size="sm"
-                        className="w-full gap-1 text-xs font-semibold"
+                        size="default"
+                        className="w-full gap-3 h-12 text-sm font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:ring-4 focus:ring-purple-500/20"
                     >
                         {isAnalyzingCV ? (
                             <>
-                                <Square className="w-2 h-2" />
-                                Stop Generation
+                                <Square className="w-4 h-4" />
+                                Stop Analysis
                             </>
                         ) : (
                             <>
-                                <BarChart3 className="w-2 h-2" />
+                                <BarChart3 className="w-4 h-4" />
                                 Analyze CV
                             </>
                         )}
                     </Button>
                 </FeatureGate>
-
             </div>
         </div>
     );
