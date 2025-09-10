@@ -1,10 +1,11 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Button } from '@/components/ui/button'
+import { MetaButton } from '@/components/buttons/meta-button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Icons } from '@/components/icons'
 import { requestPasswordReset } from './actions'
 
 interface ResetPasswordPageProps {
@@ -87,20 +88,29 @@ export default function ResetPasswordPage({ searchParams }: ResetPasswordPagePro
                             />
                         </div>
 
-                        <Button
+                        <MetaButton
                             type="submit"
-                            className="w-full h-10 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                            variant="primary"
+                            size="lg"
+                            width="full"
+                            isLoading={isLoading}
+                            loadingText="Sending reset link..."
+                            showLoadingText={true}
+                            loadingTextAnimation="pulse"
+                            loadingIconType="spinner"
+                            showLoadingIcon={true}
+                            loadingSpeed="normal"
+                            icon={Icons.mail}
                             disabled={isLoading}
-                        >
-                            {isLoading ? (
-                                <div className="flex items-center space-x-2">
-                                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                                    <span>Processing...</span>
-                                </div>
-                            ) : (
-                                'Send reset link'
-                            )}
-                        </Button>
+                            text="Send reset link"
+                            tooltip="Send password reset link to your email"
+                            tooltipPosition="top"
+                            analyticsEvent="password_reset_attempt"
+                            analyticsData={{
+                                formType: 'reset_password',
+                                timestamp: new Date().toISOString()
+                            }}
+                        />
                     </form>
 
                     <div className="mt-4 text-center text-sm">

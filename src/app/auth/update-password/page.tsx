@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { MetaButton } from '@/components/buttons/meta-button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -37,6 +37,7 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
   const formRef = useRef<HTMLFormElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
   const confirmPasswordRef = useRef<HTMLInputElement>(null)
+  const initialMessageProcessed = useRef<boolean>(false)
 
   // Check authentication status
   useEffect(() => {
@@ -113,8 +114,10 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
   // Handle search params on client side
   useEffect(() => {
     searchParams.then(params => {
-      if (params.message) {
+      // Only process initial message from URL once to avoid overriding success messages
+      if (params.message && !initialMessageProcessed.current) {
         setMessage(decodeURIComponent(params.message))
+        initialMessageProcessed.current = true
       }
       if (params.token) {
         setToken(params.token)
@@ -125,6 +128,7 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
         setMessage('Test mode enabled - you can test the password update form')
         // Clear any existing errors in test mode
         setErrorInfo(null)
+        initialMessageProcessed.current = true
       }
     })
   }, [searchParams])
@@ -195,18 +199,18 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
     validateField(name, value)
   }, [validateField])
 
-  // Check if a field is invalid
-  const isFieldInvalid = (fieldName: string) => {
+  // Check if a field is invalid - memoized to prevent unnecessary recalculations
+  const isFieldInvalid = useCallback((fieldName: string) => {
     return touched[fieldName] && fieldErrors[fieldName]
-  }
+  }, [touched, fieldErrors])
 
-  // Get field error message
-  const getFieldError = (fieldName: string) => {
+  // Get field error message - memoized to prevent unnecessary recalculations
+  const getFieldError = useCallback((fieldName: string) => {
     return fieldErrors[fieldName] || ''
-  }
+  }, [fieldErrors])
 
-  // Check if form is valid for submission
-  const isFormValid = () => {
+  // Check if form is valid for submission - memoized to prevent unnecessary recalculations
+  const isFormValid = useCallback(() => {
     // Check if there are any validation errors
     if (Object.keys(fieldErrors).length > 0) {
       return false
@@ -233,7 +237,7 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
     }
 
     return true
-  }
+  }, [fieldErrors, formValues.password, formValues.confirmPassword])
 
   const handleSubmit = async (formData: FormData) => {
     logger.info('Password update form submitted', {
@@ -273,6 +277,17 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
         }
 
         setMessage('Test mode: Password updated successfully! (This is a simulation)')
+
+        // Redirect to home page in test mode as well
+        setTimeout(() => {
+          logger.info('Redirecting to home page after test mode password update', {
+            action: 'handleSubmit',
+            step: 'redirect_to_home_test_mode',
+            timestamp: new Date().toISOString()
+          })
+          window.location.href = '/'
+        }, 3000) // 3 second delay to show success message
+
         return
       }
 
@@ -291,6 +306,34 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
           timestamp: new Date().toISOString()
         })
         setMessage(result.message || 'Password updated successfully! You can now use your new password.')
+
+        // Clear form fields after successful password update with a small delay
+        // to ensure the success message is visible to the user
+        // Use React's automatic batching to minimize rerenders
+        setTimeout(() => {
+          // React 18+ automatically batches these state updates in a single render
+          setFormValues({})
+          setFieldErrors({})
+          setTouched({})
+          // Reset the initial message processed flag so new messages can be processed
+          initialMessageProcessed.current = false
+
+          logger.debug('Form cleared after successful password update', {
+            action: 'handleSubmit',
+            step: 'form_cleared',
+            timestamp: new Date().toISOString()
+          })
+
+          // Redirect to home page after clearing form (reduced delay)
+          setTimeout(() => {
+            logger.info('Redirecting to home page after successful password update', {
+              action: 'handleSubmit',
+              step: 'redirect_to_home',
+              timestamp: new Date().toISOString()
+            })
+            window.location.href = '/'
+          }, 1500) // 1.5 second delay after form clear
+        }, 1500) // 1.5 second delay to show success message
       } else {
         logger.error('Password update action failed', {
           action: 'handleSubmit',
@@ -497,7 +540,7 @@ export default function UpdatePasswordPage({ searchParams }: UpdatePasswordPageP
                 icon={Icons.settings}
                 disabled={isLoading || !isFormValid()}
                 text="Update password"
-                tooltip="Update your account password"
+                tooltip={isLoading ? "Please wait while we update your password..." : "Update your account password"}
                 tooltipPosition="top"
                 analyticsEvent="password_update_attempt"
                 analyticsData={{

@@ -220,13 +220,13 @@ export async function updatePassword(formData: FormData) {
       duration: `${Date.now() - startTime}ms`
     })
 
-    logger.debug('Revalidating paths after password update', {
+    // Note: Removed revalidatePath to prevent unnecessary page rerenders
+    // The password update doesn't require cache invalidation as it only affects auth state
+    logger.debug('Password update completed without path revalidation', {
       action: 'updatePassword',
-      step: 'path_revalidation',
+      step: 'path_revalidation_skipped',
       userId: user.id ? `${user.id.substring(0, 8)}...` : 'null'
     })
-
-    revalidatePath('/', 'layout')
 
     const totalDuration = Date.now() - startTime
     logger.info('Password update completed successfully', {
