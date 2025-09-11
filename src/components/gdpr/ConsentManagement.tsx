@@ -53,31 +53,36 @@ export function ConsentManagement({ onSave, onReset }: ConsentManagementProps) {
     const [hasChanges, setHasChanges] = useState(false)
 
     useEffect(() => {
-        // Load saved preferences from localStorage or API
-        const savedConsent = localStorage.getItem('cookie-consent')
-        const savedPreferences = localStorage.getItem('consent-preferences')
-
-        if (savedConsent) {
-            const consent = JSON.parse(savedConsent)
-            setPreferences(prev => ({
-                ...prev,
-                essential: consent.essential || true,
-                analytics: consent.analytics || false,
-                marketing: consent.marketing || false,
-                preferences: consent.preferences || false
-            }))
-        }
-
-        if (savedPreferences) {
-            const prefs = JSON.parse(savedPreferences)
-            setPreferences(prev => ({ ...prev, ...prefs }))
-        }
-
-        const lastUpdate = localStorage.getItem('consent-last-updated')
-        if (lastUpdate) {
-            setLastUpdated(new Date(lastUpdate))
-        }
+        // Load saved preferences from database
+        loadPreferencesFromDatabase()
     }, [])
+
+    const loadPreferencesFromDatabase = async () => {
+        try {
+            const response = await fetch('/api/gdpr/consent')
+            if (response.ok) {
+                const data = await response.json()
+                if (data.consent && data.gdprConsent) {
+                    const loadedPreferences = {
+                        essential: data.consent.essential ?? true,
+                        analytics: data.consent.analytics ?? false,
+                        marketing: data.consent.marketing ?? false,
+                        preferences: data.consent.preferences ?? false,
+                        emailNotifications: data.consent.emailNotifications ?? false,
+                        pushNotifications: data.consent.pushNotifications ?? false,
+                        dataProcessing: data.consent.dataProcessing ?? false,
+                        dataSharing: data.consent.dataSharing ?? false
+                    }
+                    setPreferences(loadedPreferences)
+                    if (data.consentDate) {
+                        setLastUpdated(new Date(data.consentDate))
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Failed to load preferences from database:', error)
+        }
+    }
 
     const handlePreferenceChange = (key: keyof ConsentPreferences, value: boolean) => {
         if (key === 'essential') return // Essential cannot be disabled
@@ -90,10 +95,6 @@ export function ConsentManagement({ onSave, onReset }: ConsentManagementProps) {
         setIsLoading(true)
         try {
             await onSave(preferences)
-
-            // Save to localStorage
-            localStorage.setItem('consent-preferences', JSON.stringify(preferences))
-            localStorage.setItem('consent-last-updated', new Date().toISOString())
 
             setLastUpdated(new Date())
             setHasChanges(false)
@@ -123,10 +124,6 @@ export function ConsentManagement({ onSave, onReset }: ConsentManagementProps) {
 
             setPreferences(defaults)
             setHasChanges(false)
-
-            // Clear localStorage
-            localStorage.removeItem('consent-preferences')
-            localStorage.removeItem('consent-last-updated')
         } catch (error) {
             console.error('Failed to reset preferences:', error)
         } finally {
@@ -244,8 +241,8 @@ export function ConsentManagement({ onSave, onReset }: ConsentManagementProps) {
                         <div
                             key={category.id}
                             className={`p-4 rounded-lg border ${category.bgColor} ${preferences[category.id as keyof ConsentPreferences]
-                                    ? 'border-primary/20'
-                                    : 'border-slate-200 dark:border-slate-700'
+                                ? 'border-primary/20'
+                                : 'border-slate-200 dark:border-slate-700'
                                 }`}
                         >
                             <div className="flex items-center justify-between">
@@ -294,8 +291,8 @@ export function ConsentManagement({ onSave, onReset }: ConsentManagementProps) {
                         <div
                             key={category.id}
                             className={`p-4 rounded-lg border ${category.bgColor} ${preferences[category.id as keyof ConsentPreferences]
-                                    ? 'border-primary/20'
-                                    : 'border-slate-200 dark:border-slate-700'
+                                ? 'border-primary/20'
+                                : 'border-slate-200 dark:border-slate-700'
                                 }`}
                         >
                             <div className="flex items-center justify-between">
@@ -336,8 +333,8 @@ export function ConsentManagement({ onSave, onReset }: ConsentManagementProps) {
                         <div
                             key={category.id}
                             className={`p-4 rounded-lg border ${category.bgColor} ${preferences[category.id as keyof ConsentPreferences]
-                                    ? 'border-primary/20'
-                                    : 'border-slate-200 dark:border-slate-700'
+                                ? 'border-primary/20'
+                                : 'border-slate-200 dark:border-slate-700'
                                 }`}
                         >
                             <div className="flex items-center justify-between">

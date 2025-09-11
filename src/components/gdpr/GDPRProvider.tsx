@@ -51,10 +51,6 @@ export function GDPRProvider({ children, testMode = process.env.NODE_ENV === 'de
                     setConsent(data.consent)
                     setHasConsent(true)
 
-                    // Sync with localStorage
-                    localStorage.setItem('cookie-consent', JSON.stringify(data.consent))
-                    localStorage.setItem('cookie-consent-date', data.consentDate)
-
                     // Don't show banner if user has existing preferences (unless in test mode)
                     if (!testMode) {
                         setShowConsentBanner(false)
@@ -66,32 +62,14 @@ export function GDPRProvider({ children, testMode = process.env.NODE_ENV === 'de
             console.error('Failed to load consent from database:', error)
         }
 
-        // Fallback to localStorage if database fails or no consent found
-        const savedConsent = localStorage.getItem('cookie-consent')
-        if (savedConsent) {
-            try {
-                const parsedConsent = JSON.parse(savedConsent)
-                setConsent(parsedConsent)
-                setHasConsent(true)
-                if (!testMode) {
-                    setShowConsentBanner(false)
-                }
-            } catch (error) {
-                console.error('Failed to parse saved consent:', error)
-            }
-        } else {
-            setShowConsentBanner(true)
-        }
+        // No fallback to localStorage - show banner for new users
+        setShowConsentBanner(true)
     }
 
     const updateConsent = (preferences: CookiePreferences) => {
         setConsent(preferences)
         setHasConsent(true)
         setShowConsentBanner(false)
-
-        // Save to localStorage
-        localStorage.setItem('cookie-consent', JSON.stringify(preferences))
-        localStorage.setItem('cookie-consent-date', new Date().toISOString())
 
         // Update consent in database via API
         updateConsentInDatabase(preferences)

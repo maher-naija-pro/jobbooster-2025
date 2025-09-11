@@ -48,68 +48,159 @@ export function CookieConsentBanner({ onAccept, onReject, onCustomize, testMode 
     const loadExistingPreferences = async () => {
         try {
             const response = await fetch('/api/gdpr/consent')
+            console.log('API Response status:', response.status)
+
             if (response.ok) {
                 const data = await response.json()
+                console.log('API Response data:', data)
+
                 if (data.consent && data.gdprConsent) {
                     // User has existing preferences in database
-                    setPreferences(data.consent)
-                    setShowBanner(false) // Don't show banner if preferences exist
+                    console.log('Loading preferences from database:', data.consent)
+
+                    // Ensure all required fields are present with defaults
+                    const loadedPreferences = {
+                        essential: data.consent.essential ?? true,
+                        analytics: data.consent.analytics ?? false,
+                        marketing: data.consent.marketing ?? false,
+                        preferences: data.consent.preferences ?? false
+                    }
+
+                    console.log('Processed preferences:', loadedPreferences)
+                    setPreferences(loadedPreferences)
+
+                    // In test mode, always show banner with loaded preferences
+                    // In normal mode, hide banner if preferences exist
+                    if (testMode) {
+                        setShowBanner(true)
+                    } else {
+                        setShowBanner(false)
+                    }
                     setIsLoading(false)
                     return
+                } else {
+                    console.log('No consent data found in database')
                 }
+            } else {
+                console.log('API request failed with status:', response.status)
             }
         } catch (error) {
             console.error('Failed to load existing preferences:', error)
         }
 
-        // Fallback to localStorage check
-        const consent = localStorage.getItem('cookie-consent')
-        if (consent) {
-            try {
-                const parsedConsent = JSON.parse(consent)
-                setPreferences(parsedConsent)
-                setShowBanner(false)
-            } catch (error) {
-                console.error('Failed to parse localStorage consent:', error)
-            }
-        } else {
-            setShowBanner(true)
-        }
-
+        // No fallback to localStorage - show banner for new users
+        setShowBanner(true)
         setIsLoading(false)
     }
 
-    const handleAcceptAll = () => {
+    const handleAcceptAll = async () => {
         const allAccepted = {
             essential: true,
             analytics: true,
             marketing: true,
             preferences: true
         }
-        localStorage.setItem('cookie-consent', JSON.stringify(allAccepted))
-        localStorage.setItem('cookie-consent-date', new Date().toISOString())
-        onAccept(allAccepted)
-        setShowBanner(false)
+
+        try {
+            const response = await fetch('/api/gdpr/consent', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    consent: allAccepted,
+                    consentDate: new Date().toISOString(),
+                    consentVersion: '1.0'
+                })
+            })
+
+            if (response.ok) {
+                console.log('Consent saved to database successfully')
+                onAccept(allAccepted)
+                setShowBanner(false)
+            } else {
+                console.error('Failed to save consent to database')
+                // Still call onAccept for UI consistency, but log the error
+                onAccept(allAccepted)
+                setShowBanner(false)
+            }
+        } catch (error) {
+            console.error('Error saving consent to database:', error)
+            // Still call onAccept for UI consistency, but log the error
+            onAccept(allAccepted)
+            setShowBanner(false)
+        }
     }
 
-    const handleRejectAll = () => {
+    const handleRejectAll = async () => {
         const onlyEssential = {
             essential: true,
             analytics: false,
             marketing: false,
             preferences: false
         }
-        localStorage.setItem('cookie-consent', JSON.stringify(onlyEssential))
-        localStorage.setItem('cookie-consent-date', new Date().toISOString())
-        onReject()
-        setShowBanner(false)
+
+        try {
+            const response = await fetch('/api/gdpr/consent', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    consent: onlyEssential,
+                    consentDate: new Date().toISOString(),
+                    consentVersion: '1.0'
+                })
+            })
+
+            if (response.ok) {
+                console.log('Consent saved to database successfully')
+                onReject()
+                setShowBanner(false)
+            } else {
+                console.error('Failed to save consent to database')
+                // Still call onReject for UI consistency, but log the error
+                onReject()
+                setShowBanner(false)
+            }
+        } catch (error) {
+            console.error('Error saving consent to database:', error)
+            // Still call onReject for UI consistency, but log the error
+            onReject()
+            setShowBanner(false)
+        }
     }
 
-    const handleSavePreferences = () => {
-        localStorage.setItem('cookie-consent', JSON.stringify(preferences))
-        localStorage.setItem('cookie-consent-date', new Date().toISOString())
-        onAccept(preferences)
-        setShowBanner(false)
+    const handleSavePreferences = async () => {
+        try {
+            const response = await fetch('/api/gdpr/consent', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    consent: preferences,
+                    consentDate: new Date().toISOString(),
+                    consentVersion: '1.0'
+                })
+            })
+
+            if (response.ok) {
+                console.log('Consent preferences saved to database successfully')
+                onAccept(preferences)
+                setShowBanner(false)
+            } else {
+                console.error('Failed to save consent preferences to database')
+                // Still call onAccept for UI consistency, but log the error
+                onAccept(preferences)
+                setShowBanner(false)
+            }
+        } catch (error) {
+            console.error('Error saving consent preferences to database:', error)
+            // Still call onAccept for UI consistency, but log the error
+            onAccept(preferences)
+            setShowBanner(false)
+        }
     }
 
     const handlePreferenceChange = (key: keyof CookiePreferences, value: boolean) => {
@@ -172,6 +263,11 @@ export function CookieConsentBanner({ onAccept, onReject, onCustomize, testMode 
                         <p className="text-slate-600 dark:text-slate-400 text-sm mb-6">
                             We use cookies to enhance your experience, analyze site usage, and assist in our marketing efforts.
                             You can customize your preferences below.
+                            {testMode && (
+                                <span className="block mt-2 text-xs text-blue-600 dark:text-blue-400 font-medium">
+                                    🔧 Test Mode: Loading preferences from database...
+                                </span>
+                            )}
                         </p>
 
                         {!showDetails ? (

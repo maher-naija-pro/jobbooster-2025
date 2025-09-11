@@ -108,8 +108,11 @@ export async function GET(request: NextRequest) {
             )
         }
 
+        // Extract only the cookie preferences from the preferences JSON
+        const { lastUpdated, ...cookiePreferences } = profile.preferences as any
+
         return NextResponse.json({
-            consent: profile.preferences,
+            consent: cookiePreferences,
             consentDate: profile.consentDate,
             consentVersion: profile.consentVersion,
             gdprConsent: profile.gdprConsent
