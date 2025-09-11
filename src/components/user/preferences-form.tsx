@@ -13,6 +13,7 @@ import { updatePreferences } from '@/app/user/profile/actions'
 import { toast } from 'sonner'
 import { Icons } from '@/components/icons'
 import { SUPPORTED_LANGUAGES } from '@/lib/types'
+import { Shield, BarChart3, Target, Settings } from 'lucide-react'
 
 interface PreferencesFormProps {
   profile: {
@@ -26,6 +27,12 @@ interface PreferencesFormProps {
       privacy?: {
         profileVisibility?: string
         dataRetention?: number
+      }
+      cookies?: {
+        essential?: boolean
+        analytics?: boolean
+        marketing?: boolean
+        preferences?: boolean
       }
     }
   }
@@ -48,7 +55,7 @@ function SubmitButton() {
   )
 }
 
-function FormInputs({ language, timezone, notifications, privacy }: any) {
+function FormInputs({ language, timezone, notifications, privacy, cookies }: any) {
   const { pending } = useFormStatus()
 
   return (
@@ -153,6 +160,91 @@ function FormInputs({ language, timezone, notifications, privacy }: any) {
           </div>
         </div>
       </div>
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-medium">Cookie Preferences</h3>
+
+        <div className="space-y-4">
+          {/* Essential Cookies */}
+          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg border border-green-200 dark:border-green-800/30">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
+                <Shield className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <Label className="text-sm font-semibold text-slate-900 dark:text-slate-100">Essential Cookies</Label>
+                <p className="text-xs text-slate-600 dark:text-slate-300">
+                  Required for basic site functionality
+                </p>
+              </div>
+            </div>
+            <Switch checked={true} disabled />
+          </div>
+
+          {/* Analytics Cookies */}
+          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-800/30">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                <BarChart3 className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <Label className="text-sm font-semibold text-slate-900 dark:text-slate-100">Analytics Cookies</Label>
+                <p className="text-xs text-slate-600 dark:text-slate-300">
+                  Help us understand how visitors use our site
+                </p>
+              </div>
+            </div>
+            <Switch
+              id="analyticsCookies"
+              name="analyticsCookies"
+              defaultChecked={cookies?.analytics || false}
+              disabled={pending}
+            />
+          </div>
+
+          {/* Marketing Cookies */}
+          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg border border-purple-200 dark:border-purple-800/30">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                <Target className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <Label className="text-sm font-semibold text-slate-900 dark:text-slate-100">Marketing Cookies</Label>
+                <p className="text-xs text-slate-600 dark:text-slate-300">
+                  Used to deliver relevant advertisements
+                </p>
+              </div>
+            </div>
+            <Switch
+              id="marketingCookies"
+              name="marketingCookies"
+              defaultChecked={cookies?.marketing || false}
+              disabled={pending}
+            />
+          </div>
+
+          {/* Preference Cookies */}
+          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 rounded-lg border border-orange-200 dark:border-orange-800/30">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-amber-500 rounded-lg flex items-center justify-center">
+                <Settings className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <Label className="text-sm font-semibold text-slate-900 dark:text-slate-100">Preference Cookies</Label>
+                <p className="text-xs text-slate-600 dark:text-slate-300">
+                  Remember your settings and preferences
+                </p>
+              </div>
+            </div>
+            <Switch
+              id="preferenceCookies"
+              name="preferenceCookies"
+              defaultChecked={cookies?.preferences || false}
+              disabled={pending}
+            />
+          </div>
+        </div>
+      </div>
     </>
   )
 }
@@ -165,6 +257,7 @@ export function PreferencesForm({ profile }: PreferencesFormProps) {
   const timezone = preferences.timezone || 'UTC'
   const notifications = preferences.notifications || {}
   const privacy = preferences.privacy || {}
+  const cookies = preferences.cookies || {}
 
   const handleSubmit = async (formData: FormData) => {
     const result = await updatePreferences(formData)
@@ -189,6 +282,7 @@ export function PreferencesForm({ profile }: PreferencesFormProps) {
         timezone={timezone}
         notifications={notifications}
         privacy={privacy}
+        cookies={cookies}
       />
 
       <div className="flex justify-end">
