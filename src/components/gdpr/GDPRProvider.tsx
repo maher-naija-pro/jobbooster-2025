@@ -37,20 +37,52 @@ export function GDPRProvider({ children, testMode = process.env.NODE_ENV === 'de
             return
         }
 
-        // Load consent from localStorage on mount
+        // Load consent from database first, then localStorage as fallback
+        loadConsentFromDatabase()
+    }, [testMode])
+
+    const loadConsentFromDatabase = async () => {
+        try {
+            const response = await fetch('/api/gdpr/consent')
+            if (response.ok) {
+                const data = await response.json()
+                if (data.consent && data.gdprConsent) {
+                    // Use database preferences
+                    setConsent(data.consent)
+                    setHasConsent(true)
+
+                    // Sync with localStorage
+                    localStorage.setItem('cookie-consent', JSON.stringify(data.consent))
+                    localStorage.setItem('cookie-consent-date', data.consentDate)
+
+                    // Don't show banner if user has existing preferences (unless in test mode)
+                    if (!testMode) {
+                        setShowConsentBanner(false)
+                    }
+                    return
+                }
+            }
+        } catch (error) {
+            console.error('Failed to load consent from database:', error)
+        }
+
+        // Fallback to localStorage if database fails or no consent found
         const savedConsent = localStorage.getItem('cookie-consent')
         if (savedConsent) {
             try {
                 const parsedConsent = JSON.parse(savedConsent)
                 setConsent(parsedConsent)
                 setHasConsent(true)
+                if (!testMode) {
+                    setShowConsentBanner(false)
+                }
             } catch (error) {
                 console.error('Failed to parse saved consent:', error)
             }
         } else {
             setShowConsentBanner(true)
         }
-    }, [testMode])
+    }
 
     const updateConsent = (preferences: CookiePreferences) => {
         setConsent(preferences)

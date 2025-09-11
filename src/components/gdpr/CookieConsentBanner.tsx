@@ -25,6 +25,7 @@ interface CookieConsentBannerProps {
 export function CookieConsentBanner({ onAccept, onReject, onCustomize, testMode = false }: CookieConsentBannerProps) {
     const [showBanner, setShowBanner] = useState(false)
     const [showDetails, setShowDetails] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
     const [preferences, setPreferences] = useState<CookiePreferences>({
         essential: true, // Always true, cannot be disabled
         analytics: false,
@@ -36,15 +37,47 @@ export function CookieConsentBanner({ onAccept, onReject, onCustomize, testMode 
         // In test mode, always show the banner
         if (testMode) {
             setShowBanner(true)
+            setIsLoading(false)
             return
         }
 
-        // Check if user has already made a choice
+        // Load existing preferences from database first
+        loadExistingPreferences()
+    }, [testMode])
+
+    const loadExistingPreferences = async () => {
+        try {
+            const response = await fetch('/api/gdpr/consent')
+            if (response.ok) {
+                const data = await response.json()
+                if (data.consent && data.gdprConsent) {
+                    // User has existing preferences in database
+                    setPreferences(data.consent)
+                    setShowBanner(false) // Don't show banner if preferences exist
+                    setIsLoading(false)
+                    return
+                }
+            }
+        } catch (error) {
+            console.error('Failed to load existing preferences:', error)
+        }
+
+        // Fallback to localStorage check
         const consent = localStorage.getItem('cookie-consent')
-        if (!consent) {
+        if (consent) {
+            try {
+                const parsedConsent = JSON.parse(consent)
+                setPreferences(parsedConsent)
+                setShowBanner(false)
+            } catch (error) {
+                console.error('Failed to parse localStorage consent:', error)
+            }
+        } else {
             setShowBanner(true)
         }
-    }, [testMode])
+
+        setIsLoading(false)
+    }
 
     const handleAcceptAll = () => {
         const allAccepted = {
@@ -82,6 +115,22 @@ export function CookieConsentBanner({ onAccept, onReject, onCustomize, testMode 
     const handlePreferenceChange = (key: keyof CookiePreferences, value: boolean) => {
         if (key === 'essential') return // Essential cookies cannot be disabled
         setPreferences(prev => ({ ...prev, [key]: value }))
+    }
+
+    // Show loading state while checking database
+    if (isLoading) {
+        return (
+            <div className="fixed inset-0 z-50 flex items-end justify-center p-0">
+                <div className="relative w-full bg-white dark:bg-slate-800 shadow-2xl border-t border-slate-200 dark:border-slate-700 overflow-hidden">
+                    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
+                        <div className="flex items-center justify-center py-8">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                            <span className="ml-3 text-slate-600 dark:text-slate-400">Loading preferences...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
     }
 
     if (!showBanner) return null
