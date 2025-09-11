@@ -19,9 +19,10 @@ interface CookieConsentBannerProps {
     onAccept: (preferences: CookiePreferences) => void
     onReject: () => void
     onCustomize: () => void
+    testMode?: boolean // Add test mode prop
 }
 
-export function CookieConsentBanner({ onAccept, onReject, onCustomize }: CookieConsentBannerProps) {
+export function CookieConsentBanner({ onAccept, onReject, onCustomize, testMode = false }: CookieConsentBannerProps) {
     const [showBanner, setShowBanner] = useState(false)
     const [showDetails, setShowDetails] = useState(false)
     const [preferences, setPreferences] = useState<CookiePreferences>({
@@ -32,12 +33,18 @@ export function CookieConsentBanner({ onAccept, onReject, onCustomize }: CookieC
     })
 
     useEffect(() => {
+        // In test mode, always show the banner
+        if (testMode) {
+            setShowBanner(true)
+            return
+        }
+
         // Check if user has already made a choice
         const consent = localStorage.getItem('cookie-consent')
         if (!consent) {
             setShowBanner(true)
         }
-    }, [])
+    }, [testMode])
 
     const handleAcceptAll = () => {
         const allAccepted = {
@@ -80,18 +87,18 @@ export function CookieConsentBanner({ onAccept, onReject, onCustomize }: CookieC
     if (!showBanner) return null
 
     return (
-        <div className="fixed inset-0 z-50 flex items-end justify-center p-4 sm:items-center">
+        <div className="fixed inset-0 z-50 flex items-end justify-center p-0">
             {/* Backdrop */}
             <div className="absolute inset-0 bg-black/50" />
 
             {/* Banner */}
-            <div className="relative w-full max-w-2xl bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <div className="relative w-full bg-white dark:bg-slate-800 shadow-2xl border-t border-slate-200 dark:border-slate-700 overflow-hidden">
                 {/* Modern gradient background */}
                 <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-blue-900/20" />
 
                 {/* Content container with proper z-index */}
                 <div className="relative z-10">
-                    <div className="p-6">
+                    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
@@ -121,10 +128,10 @@ export function CookieConsentBanner({ onAccept, onReject, onCustomize }: CookieC
                         {!showDetails ? (
                             // Simple view
                             <div className="space-y-4">
-                                <div className="flex flex-col sm:flex-row gap-3">
+                                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                                     <MetaButton
                                         onClick={handleAcceptAll}
-                                        className="flex-1"
+                                        className="flex-1 sm:flex-none sm:min-w-[160px]"
                                         variant="primary"
                                         size="md"
                                     >
@@ -132,7 +139,7 @@ export function CookieConsentBanner({ onAccept, onReject, onCustomize }: CookieC
                                     </MetaButton>
                                     <MetaButton
                                         onClick={handleRejectAll}
-                                        className="flex-1"
+                                        className="flex-1 sm:flex-none sm:min-w-[120px]"
                                         variant="secondary-outline"
                                         size="md"
                                     >
@@ -140,7 +147,7 @@ export function CookieConsentBanner({ onAccept, onReject, onCustomize }: CookieC
                                     </MetaButton>
                                     <MetaButton
                                         onClick={() => setShowDetails(true)}
-                                        className="flex-1"
+                                        className="flex-1 sm:flex-none sm:min-w-[140px]"
                                         variant="secondary"
                                         size="md"
                                         icon={Settings}
@@ -234,10 +241,10 @@ export function CookieConsentBanner({ onAccept, onReject, onCustomize }: CookieC
                                     </div>
                                 </div>
 
-                                <div className="flex flex-col sm:flex-row gap-3">
+                                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                                     <MetaButton
                                         onClick={handleSavePreferences}
-                                        className="flex-1"
+                                        className="flex-1 sm:flex-none sm:min-w-[160px]"
                                         variant="primary"
                                         size="md"
                                     >
@@ -245,7 +252,7 @@ export function CookieConsentBanner({ onAccept, onReject, onCustomize }: CookieC
                                     </MetaButton>
                                     <MetaButton
                                         onClick={() => setShowDetails(false)}
-                                        className="flex-1"
+                                        className="flex-1 sm:flex-none sm:min-w-[120px]"
                                         variant="secondary-outline"
                                         size="md"
                                     >

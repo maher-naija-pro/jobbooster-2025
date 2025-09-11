@@ -22,14 +22,21 @@ const GDPRContext = createContext<GDPRContextType | undefined>(undefined)
 
 interface GDPRProviderProps {
     children: ReactNode
+    testMode?: boolean // Add test mode prop
 }
 
-export function GDPRProvider({ children }: GDPRProviderProps) {
+export function GDPRProvider({ children, testMode = process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_COOKIE_TEST_MODE === 'true' }: GDPRProviderProps) {
     const [consent, setConsent] = useState<CookiePreferences | null>(null)
     const [hasConsent, setHasConsent] = useState(false)
     const [showConsentBanner, setShowConsentBanner] = useState(false)
 
     useEffect(() => {
+        // In test mode, always show the banner
+        if (testMode) {
+            setShowConsentBanner(true)
+            return
+        }
+
         // Load consent from localStorage on mount
         const savedConsent = localStorage.getItem('cookie-consent')
         if (savedConsent) {
@@ -43,7 +50,7 @@ export function GDPRProvider({ children }: GDPRProviderProps) {
         } else {
             setShowConsentBanner(true)
         }
-    }, [])
+    }, [testMode])
 
     const updateConsent = (preferences: CookiePreferences) => {
         setConsent(preferences)
@@ -145,6 +152,7 @@ export function GDPRProvider({ children }: GDPRProviderProps) {
                     onAccept={handleAccept}
                     onReject={handleReject}
                     onCustomize={() => setShowConsentBanner(false)}
+                    testMode={testMode}
                 />
             )}
         </GDPRContext.Provider>
