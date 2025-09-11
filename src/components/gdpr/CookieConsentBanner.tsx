@@ -34,16 +34,14 @@ export function CookieConsentBanner({ onAccept, onReject, onCustomize, testMode 
     })
 
     useEffect(() => {
-        // In test mode, always show the banner
-        if (testMode) {
-            setShowBanner(true)
-            setIsLoading(false)
-            return
-        }
-
-        // Load existing preferences from database first
+        // Load existing preferences from database first (both test mode and normal mode)
         loadExistingPreferences()
     }, [testMode])
+
+    // Debug effect to track preference changes
+    useEffect(() => {
+        console.log('Preferences state updated:', preferences)
+    }, [preferences])
 
     const loadExistingPreferences = async () => {
         try {
@@ -67,15 +65,13 @@ export function CookieConsentBanner({ onAccept, onReject, onCustomize, testMode 
                     }
 
                     console.log('Processed preferences:', loadedPreferences)
+                    console.log('Setting preferences state with:', loadedPreferences)
                     setPreferences(loadedPreferences)
+                    console.log('Preferences state should now be updated')
 
                     // In test mode, always show banner with loaded preferences
                     // In normal mode, hide banner if preferences exist
-                    if (testMode) {
-                        setShowBanner(true)
-                    } else {
-                        setShowBanner(false)
-                    }
+                    setShowBanner(testMode)
                     setIsLoading(false)
                     return
                 } else {
@@ -88,7 +84,7 @@ export function CookieConsentBanner({ onAccept, onReject, onCustomize, testMode 
             console.error('Failed to load existing preferences:', error)
         }
 
-        // No fallback to localStorage - show banner for new users
+        // No fallback to localStorage - show banner for new users or in test mode
         setShowBanner(true)
         setIsLoading(false)
     }
@@ -342,6 +338,7 @@ export function CookieConsentBanner({ onAccept, onReject, onCustomize, testMode 
                                             </div>
                                         </div>
                                         <Switch
+                                            key={`analytics-${preferences.analytics}`}
                                             checked={preferences.analytics}
                                             onCheckedChange={(checked) => handlePreferenceChange('analytics', checked)}
                                         />
@@ -361,6 +358,7 @@ export function CookieConsentBanner({ onAccept, onReject, onCustomize, testMode 
                                             </div>
                                         </div>
                                         <Switch
+                                            key={`marketing-${preferences.marketing}`}
                                             checked={preferences.marketing}
                                             onCheckedChange={(checked) => handlePreferenceChange('marketing', checked)}
                                         />
@@ -380,6 +378,7 @@ export function CookieConsentBanner({ onAccept, onReject, onCustomize, testMode 
                                             </div>
                                         </div>
                                         <Switch
+                                            key={`preferences-${preferences.preferences}`}
                                             checked={preferences.preferences}
                                             onCheckedChange={(checked) => handlePreferenceChange('preferences', checked)}
                                         />

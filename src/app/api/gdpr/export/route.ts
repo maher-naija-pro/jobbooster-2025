@@ -1,24 +1,58 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 export async function POST(request: NextRequest) {
+    const startTime = Date.now()
+    let userId: string | undefined
+
     try {
+        logger.info('[GDPR Export] Starting data export request', {
+            method: 'POST',
+            endpoint: '/api/gdpr/export',
+            timestamp: new Date().toISOString()
+        })
+
         const supabase = await createClient()
         const { data: { user } } = await supabase.auth.getUser()
 
         if (!user) {
+            logger.warn('[GDPR Export] Unauthorized access attempt for data export', {
+                endpoint: '/api/gdpr/export',
+                method: 'POST',
+                timestamp: new Date().toISOString()
+            })
             return NextResponse.json(
                 { error: 'Unauthorized' },
                 { status: 401 }
             )
         }
 
+        userId = user.id
+        logger.debug('[GDPR Export] User authenticated for data export', {
+            userId,
+            userEmail: user.email,
+            timestamp: new Date().toISOString()
+        })
+
         const body = await request.json()
         const { format = 'json' } = body
 
+        logger.debug('[GDPR Export] Export request parameters received', {
+            userId,
+            format,
+            timestamp: new Date().toISOString()
+        })
+
         // Validate format
         if (!['json', 'csv', 'pdf'].includes(format)) {
+            logger.warn('[GDPR Export] Invalid export format requested', {
+                userId,
+                format,
+                validFormats: ['json', 'csv', 'pdf'],
+                timestamp: new Date().toISOString()
+            })
             return NextResponse.json(
                 { error: 'Invalid format. Must be json, csv, or pdf' },
                 { status: 400 }
@@ -26,9 +60,21 @@ export async function POST(request: NextRequest) {
         }
 
         // Collect all user data
+        logger.info('[GDPR Export] Starting data collection process', {
+            userId,
+            format,
+            timestamp: new Date().toISOString()
+        })
         const userData = await collectUserData(user.id)
 
         // Generate export based on format
+        logger.debug('[GDPR Export] Generating export data', {
+            userId,
+            format,
+            dataSize: JSON.stringify(userData).length,
+            timestamp: new Date().toISOString()
+        })
+
         let exportData: string
         let contentType: string
         let filename: string
@@ -38,12 +84,22 @@ export async function POST(request: NextRequest) {
                 exportData = JSON.stringify(userData, null, 2)
                 contentType = 'application/json'
                 filename = `user-data-export-${new Date().toISOString().split('T')[0]}.json`
+                logger.debug('[GDPR Export] JSON format generated', {
+                    userId,
+                    dataSize: exportData.length,
+                    timestamp: new Date().toISOString()
+                })
                 break
 
             case 'csv':
                 exportData = convertToCSV(userData)
                 contentType = 'text/csv'
                 filename = `user-data-export-${new Date().toISOString().split('T')[0]}.csv`
+                logger.debug('[GDPR Export] CSV format generated', {
+                    userId,
+                    dataSize: exportData.length,
+                    timestamp: new Date().toISOString()
+                })
                 break
 
             case 'pdf':
@@ -52,14 +108,31 @@ export async function POST(request: NextRequest) {
                 exportData = convertToText(userData)
                 contentType = 'text/plain'
                 filename = `user-data-export-${new Date().toISOString().split('T')[0]}.txt`
+                logger.debug('[GDPR Export] Text format generated (PDF fallback)', {
+                    userId,
+                    dataSize: exportData.length,
+                    timestamp: new Date().toISOString()
+                })
                 break
 
             default:
+                logger.error('[GDPR Export] Unsupported format requested', {
+                    userId,
+                    format,
+                    timestamp: new Date().toISOString()
+                })
                 throw new Error('Unsupported format')
         }
 
         // Log export activity
-        await prisma.userActivity.create({
+        logger.debug('[GDPR Export] Logging export activity', {
+            userId,
+            format,
+            dataSize: exportData.length,
+            timestamp: new Date().toISOString()
+        })
+
+        const activityResult = await prisma.userActivity.create({
             data: {
                 userId: user.id,
                 action: 'data_export',
@@ -70,6 +143,23 @@ export async function POST(request: NextRequest) {
                     dataSize: exportData.length
                 }
             }
+        })
+
+        logger.debug('[GDPR Export] Export activity logged', {
+            userId,
+            activityId: activityResult.id,
+            action: 'data_export',
+            timestamp: new Date().toISOString()
+        })
+
+        const duration = Date.now() - startTime
+        logger.info('[GDPR Export] Data export completed successfully', {
+            userId,
+            format,
+            duration: `${duration}ms`,
+            dataSize: exportData.length,
+            filename,
+            timestamp: new Date().toISOString()
         })
 
         // Return the export data
@@ -83,7 +173,15 @@ export async function POST(request: NextRequest) {
         })
 
     } catch (error) {
-        console.error('Error exporting data:', error)
+        const duration = Date.now() - startTime
+        logger.error('[GDPR Export] Error exporting data', {
+            userId,
+            error: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : undefined,
+            duration: `${duration}ms`,
+            timestamp: new Date().toISOString()
+        })
+
         return NextResponse.json(
             { error: 'Failed to export data' },
             { status: 500 }
@@ -92,6 +190,11 @@ export async function POST(request: NextRequest) {
 }
 
 async function collectUserData(userId: string) {
+    logger.debug('[GDPR Export] Starting data collection from database', {
+        userId,
+        timestamp: new Date().toISOString()
+    })
+
     // Collect all user data from database
     const [
         profile,
@@ -136,6 +239,17 @@ async function collectUserData(userId: string) {
             orderBy: { createdAt: 'desc' }
         })
     ])
+
+    logger.debug('[GDPR Export] Data collection completed', {
+        userId,
+        profileFound: !!profile,
+        cvDataCount: cvData.length,
+        generatedContentCount: generatedContent.length,
+        activityCount: userActivity.length,
+        sessionCount: userSessions.length,
+        uploadCount: cvUploads.length,
+        timestamp: new Date().toISOString()
+    })
 
     return {
         exportInfo: {

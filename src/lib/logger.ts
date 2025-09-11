@@ -122,6 +122,113 @@ class Logger {
         this.info(`[User Action] ${action}`, context);
     }
 
+    // GDPR-specific logging methods
+    gdprConsentUpdate(userId: string, consentVersion: string, context?: LogContext): void {
+        this.info(`[GDPR Consent] Consent updated`, {
+            ...(typeof context === 'object' && context !== null ? context : {}),
+            userId,
+            consentVersion,
+            action: 'consent_update',
+            timestamp: new Date().toISOString()
+        });
+    }
+
+    gdprConsentFetch(userId: string, context?: LogContext): void {
+        this.info(`[GDPR Consent] Consent data fetched`, {
+            ...(typeof context === 'object' && context !== null ? context : {}),
+            userId,
+            action: 'consent_fetch',
+            timestamp: new Date().toISOString()
+        });
+    }
+
+    gdprDataDeletion(userId: string, deletedRecords: number, reason: string, context?: LogContext): void {
+        this.info(`[GDPR Delete] Data deletion completed`, {
+            ...(typeof context === 'object' && context !== null ? context : {}),
+            userId,
+            deletedRecords,
+            reason,
+            action: 'data_deletion',
+            timestamp: new Date().toISOString()
+        });
+    }
+
+    gdprDataExport(userId: string, format: string, dataSize: number, context?: LogContext): void {
+        this.info(`[GDPR Export] Data export completed`, {
+            ...(typeof context === 'object' && context !== null ? context : {}),
+            userId,
+            format,
+            dataSize,
+            action: 'data_export',
+            timestamp: new Date().toISOString()
+        });
+    }
+
+    gdprUnauthorizedAccess(endpoint: string, method: string, context?: LogContext): void {
+        this.warn(`[GDPR Security] Unauthorized access attempt`, {
+            ...(typeof context === 'object' && context !== null ? context : {}),
+            endpoint,
+            method,
+            action: 'unauthorized_access',
+            timestamp: new Date().toISOString()
+        });
+    }
+
+    gdprValidationError(userId: string | undefined, field: string, value: any, context?: LogContext): void {
+        this.warn(`[GDPR Validation] Invalid data provided`, {
+            ...(typeof context === 'object' && context !== null ? context : {}),
+            userId,
+            field,
+            value,
+            action: 'validation_error',
+            timestamp: new Date().toISOString()
+        });
+    }
+
+    gdprDatabaseOperation(operation: string, userId: string, recordCount: number, context?: LogContext): void {
+        this.debug(`[GDPR Database] ${operation}`, {
+            ...(typeof context === 'object' && context !== null ? context : {}),
+            userId,
+            operation,
+            recordCount,
+            action: 'database_operation',
+            timestamp: new Date().toISOString()
+        });
+    }
+
+    gdprTransactionStart(userId: string, transactionType: string, context?: LogContext): void {
+        this.info(`[GDPR Transaction] Starting ${transactionType}`, {
+            ...(typeof context === 'object' && context !== null ? context : {}),
+            userId,
+            transactionType,
+            action: 'transaction_start',
+            timestamp: new Date().toISOString()
+        });
+    }
+
+    gdprTransactionComplete(userId: string, transactionType: string, duration: number, context?: LogContext): void {
+        this.info(`[GDPR Transaction] ${transactionType} completed`, {
+            ...(typeof context === 'object' && context !== null ? context : {}),
+            userId,
+            transactionType,
+            duration: `${duration}ms`,
+            action: 'transaction_complete',
+            timestamp: new Date().toISOString()
+        });
+    }
+
+    gdprError(operation: string, userId: string | undefined, error: Error | string, context?: LogContext): void {
+        this.error(`[GDPR Error] ${operation} failed`, {
+            ...(typeof context === 'object' && context !== null ? context : {}),
+            userId,
+            operation,
+            error: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : undefined,
+            action: 'gdpr_error',
+            timestamp: new Date().toISOString()
+        });
+    }
+
     // Mac-specific logging methods
     macProcessStart(processName: string, context?: LogContext): void {
         this.info(`[Mac Process] Starting ${processName}`, {
