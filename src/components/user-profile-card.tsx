@@ -81,7 +81,7 @@ export const UserProfileCard = ({ className }: UserProfileCardProps) => {
             <Button
                 onClick={() => setIsOpen(!isOpen)}
                 variant="outline"
-                className="text-sm font-medium mr-3 py-1.5 px-2 w-auto h-auto hover:bg-gray-50 transition-all duration-200"
+                className="text-sm font-medium mr-3 py-1.5 px-2 w-auto h-auto  transition-all duration-200"
             >
                 <Avatar className="h-8 w-8 mr-2">
                     <AvatarImage
