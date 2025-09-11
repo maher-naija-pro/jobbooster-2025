@@ -33,6 +33,10 @@ const routeList = {
       {
         label: "Terms of Service",
         href: "/legal/terms-of-service"
+      },
+      {
+        label: "Legal Notice",
+        href: "/legal/legal-notice"
       }
     ]
   }
