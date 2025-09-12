@@ -1,0 +1,50 @@
+# Data Retention Cron Jobs
+# 
+# This file contains example cron job configurations for data retention operations.
+# Copy this file to your system's crontab or use it as a reference for setting up
+# automated data retention processing.
+#
+# To install these cron jobs:
+# 1. Copy the relevant lines to your crontab: crontab -e
+# 2. Or copy this file and run: crontab crontab.example
+#
+# Note: Make sure to set the CRON_SECRET environment variable for security.
+
+# Data Retention Daily Check - Runs at 2 AM every day
+# Processes expired data for deletion
+0 2 * * * curl -X POST "https://your-domain.com/api/cron/data-retention" \
+  -H "Authorization: Bearer YOUR_CRON_SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{"jobType": "daily_check", "adminUserId": "cron-system"}' \
+  >> /var/log/data-retention-daily.log 2>&1
+
+# Data Retention Notification Check - Runs at 8 AM every day
+# Sends notifications to users before data deletion
+0 8 * * * curl -X POST "https://your-domain.com/api/cron/data-retention" \
+  -H "Authorization: Bearer YOUR_CRON_SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{"jobType": "notification_check", "adminUserId": "cron-system"}' \
+  >> /var/log/data-retention-notifications.log 2>&1
+
+# Data Retention Weekly Cleanup - Runs at 3 AM every Sunday
+# Performs additional cleanup tasks
+0 3 * * 0 curl -X POST "https://your-domain.com/api/cron/data-retention" \
+  -H "Authorization: Bearer YOUR_CRON_SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{"jobType": "weekly_cleanup", "adminUserId": "cron-system"}' \
+  >> /var/log/data-retention-weekly.log 2>&1
+
+# Alternative: Using the CLI script directly (if running on the same server)
+# 0 2 * * * cd /path/to/jobbooster-2025 && npm run data-retention -- --operation daily_check >> /var/log/data-retention-daily.log 2>&1
+# 0 8 * * * cd /path/to/jobbooster-2025 && npm run data-retention -- --operation notification_check >> /var/log/data-retention-notifications.log 2>&1
+# 0 3 * * 0 cd /path/to/jobbooster-2025 && npm run data-retention -- --operation weekly_cleanup >> /var/log/data-retention-weekly.log 2>&1
+
+# Environment Variables Required:
+# - CRON_SECRET: Secret key for authenticating cron requests
+# - DATA_RETENTION_ENABLED: Set to 'true' to enable the system
+# - DATABASE_URL: Database connection string
+# - All other environment variables from .env.example
+
+# Log Rotation (optional)
+# Add these lines to rotate logs weekly:
+# 0 0 * * 0 find /var/log -name "data-retention-*.log" -mtime +7 -delete

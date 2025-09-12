@@ -18,8 +18,7 @@ const templates = {
   Legal: {
     items: [
       { name: "Privacy Policy", href: "/legal/privacy-policy" },
-      { name: "Terms of Service", href: "/legal/terms-of-service" },
-      { name: "Privacy Settings", href: "/privacy-settings" }
+      { name: "Terms of Service", href: "/legal/terms-of-service" }
     ]
   }
 }

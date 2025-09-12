@@ -242,6 +242,20 @@ model UserSession {
   lastActivity DateTime @default(now()) @map("last_activity")
   profile      Profile  @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
+  // === Deletion & Retention Fields ===
+  isDeleted               Boolean  @default(false) @map("is_deleted") // Soft delete flag
+  deletedAt               DateTime? @map("deleted_at") // Soft delete timestamp
+  deletedBy               String?   @map("deleted_by") @db.VarChar(50) // Who deleted the record
+  retentionDate           DateTime? @map("retention_date") // Data retention date
+  retentionPolicy         String?   @map("retention_policy") @db.VarChar(100) // Retention policy applied
+  dataClassification      String?   @map("data_classification") @db.VarChar(50) // Data classification level
+  gdprConsent             Boolean  @default(false) @map("gdpr_consent") // GDPR consent flag
+  consentDate             DateTime? @map("consent_date") // Date consent was given
+  consentVersion          String?   @map("consent_version") @db.VarChar(20) // Consent version
+
+  @@index([isDeleted])
+  @@index([deletedAt])
+  @@index([retentionDate])
   @@map("user_sessions")
 }
 
@@ -257,6 +271,20 @@ model UserActivity {
   createdAt    DateTime @default(now()) @map("created_at")
   profile      Profile  @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
+  // === Deletion & Retention Fields ===
+  isDeleted               Boolean  @default(false) @map("is_deleted") // Soft delete flag
+  deletedAt               DateTime? @map("deleted_at") // Soft delete timestamp
+  deletedBy               String?   @map("deleted_by") @db.VarChar(50) // Who deleted the record
+  retentionDate           DateTime? @map("retention_date") // Data retention date
+  retentionPolicy         String?   @map("retention_policy") @db.VarChar(100) // Retention policy applied
+  dataClassification      String?   @map("data_classification") @db.VarChar(50) // Data classification level
+  gdprConsent             Boolean  @default(false) @map("gdpr_consent") // GDPR consent flag
+  consentDate             DateTime? @map("consent_date") // Date consent was given
+  consentVersion          String?   @map("consent_version") @db.VarChar(20) // Consent version
+
+  @@index([isDeleted])
+  @@index([deletedAt])
+  @@index([retentionDate])
   @@map("user_activity")
 }
 
@@ -545,6 +573,20 @@ model UserNotification {
   createdAt DateTime         @default(now()) @map("created_at")
   readAt    DateTime?        @map("read_at")
 
+  // === Deletion & Retention Fields ===
+  isDeleted               Boolean  @default(false) @map("is_deleted") // Soft delete flag
+  deletedAt               DateTime? @map("deleted_at") // Soft delete timestamp
+  deletedBy               String?   @map("deleted_by") @db.VarChar(50) // Who deleted the record
+  retentionDate           DateTime? @map("retention_date") // Data retention date
+  retentionPolicy         String?   @map("retention_policy") @db.VarChar(100) // Retention policy applied
+  dataClassification      String?   @map("data_classification") @db.VarChar(50) // Data classification level
+  gdprConsent             Boolean  @default(false) @map("gdpr_consent") // GDPR consent flag
+  consentDate             DateTime? @map("consent_date") // Date consent was given
+  consentVersion          String?   @map("consent_version") @db.VarChar(20) // Consent version
+
+  @@index([isDeleted])
+  @@index([deletedAt])
+  @@index([retentionDate])
   @@map("user_notifications")
 }
 
@@ -556,6 +598,20 @@ model ContactMessage {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  // === Deletion & Retention Fields ===
+  isDeleted               Boolean  @default(false) @map("is_deleted") // Soft delete flag
+  deletedAt               DateTime? @map("deleted_at") // Soft delete timestamp
+  deletedBy               String?   @map("deleted_by") @db.VarChar(50) // Who deleted the record
+  retentionDate           DateTime? @map("retention_date") // Data retention date
+  retentionPolicy         String?   @map("retention_policy") @db.VarChar(100) // Retention policy applied
+  dataClassification      String?   @map("data_classification") @db.VarChar(50) // Data classification level
+  gdprConsent             Boolean  @default(false) @map("gdpr_consent") // GDPR consent flag
+  consentDate             DateTime? @map("consent_date") // Date consent was given
+  consentVersion          String?   @map("consent_version") @db.VarChar(20) // Consent version
+
+  @@index([isDeleted])
+  @@index([deletedAt])
+  @@index([retentionDate])
   @@map("contact_messages")
 }
 
@@ -565,6 +621,20 @@ model Newsletter {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  // === Deletion & Retention Fields ===
+  isDeleted               Boolean  @default(false) @map("is_deleted") // Soft delete flag
+  deletedAt               DateTime? @map("deleted_at") // Soft delete timestamp
+  deletedBy               String?   @map("deleted_by") @db.VarChar(50) // Who deleted the record
+  retentionDate           DateTime? @map("retention_date") // Data retention date
+  retentionPolicy         String?   @map("retention_policy") @db.VarChar(100) // Retention policy applied
+  dataClassification      String?   @map("data_classification") @db.VarChar(50) // Data classification level
+  gdprConsent             Boolean  @default(false) @map("gdpr_consent") // GDPR consent flag
+  consentDate             DateTime? @map("consent_date") // Date consent was given
+  consentVersion          String?   @map("consent_version") @db.VarChar(20) // Consent version
+
+  @@index([isDeleted])
+  @@index([deletedAt])
+  @@index([retentionDate])
   @@map("newsletter")
 }
 
@@ -832,6 +902,17 @@ model FeatureUsage {
   // === Timestamps ===
   createdAt               DateTime  @default(now()) @map("created_at")
   updatedAt               DateTime  @updatedAt @map("updated_at")
+
+  // === Deletion & Retention Fields ===
+  isDeleted               Boolean  @default(false) @map("is_deleted") // Soft delete flag
+  deletedAt               DateTime? @map("deleted_at") // Soft delete timestamp
+  deletedBy               String?   @map("deleted_by") @db.VarChar(50) // Who deleted the record
+  retentionDate           DateTime? @map("retention_date") // Data retention date
+  retentionPolicy         String?   @map("retention_policy") @db.VarChar(100) // Retention policy applied
+  dataClassification      String?   @map("data_classification") @db.VarChar(50) // Data classification level
+  gdprConsent             Boolean  @default(false) @map("gdpr_consent") // GDPR consent flag
+  consentDate             DateTime? @map("consent_date") // Date consent was given
+  consentVersion          String?   @map("consent_version") @db.VarChar(20) // Consent version
   
   // === Relations ===
   profile                 Profile   @relation(fields: [userId], references: [userId], onDelete: Cascade)
@@ -839,6 +920,9 @@ model FeatureUsage {
   @@unique([userId, featureName])
   @@index([userId])
   @@index([featureName])
+  @@index([isDeleted])
+  @@index([deletedAt])
+  @@index([retentionDate])
   @@map("feature_usage")
 }
 
