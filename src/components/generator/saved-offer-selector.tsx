@@ -161,19 +161,34 @@ export function SavedOfferSelector({
     }
 
     return (
-        <div className={`space-y-2 ${className}`}>
+        <div className={`space-y-3 ${className}`}>
             {/* Header with toggle button */}
-            <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Saved Job Offers ({jobData?.length || 0})
-                </h3>
+            <div
+                className={`flex items-center justify-between p-3 rounded-lg border transition-all duration-200 cursor-pointer group ${isExpanded
+                    ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700'
+                    : 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-600'
+                    }`}
+                onClick={() => setIsExpanded(!isExpanded)}
+            >
+                <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-700 dark:group-hover:text-blue-300">
+                        Saved Job Offers ({jobData?.length || 0})
+                    </h3>
+                    <Badge variant="outline" className="text-xs group-hover:border-blue-400 group-hover:text-blue-600">
+                        {isExpanded ? 'Click to hide' : 'Click to select'}
+                    </Badge>
+                </div>
                 <div className="flex items-center gap-2">
                     <Button
                         variant="ghost"
                         size="sm"
-                        onClick={handleRefresh}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleRefresh();
+                        }}
                         disabled={isRefreshing}
                         className="h-8 w-8 p-0"
+                        title="Refresh job offers list"
                     >
                         {isRefreshing ? (
                             <Loader2 className="h-3 w-3 animate-spin" />
@@ -181,18 +196,13 @@ export function SavedOfferSelector({
                             <Briefcase className="h-3 w-3" />
                         )}
                     </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setIsExpanded(!isExpanded)}
-                        className="h-8 w-8 p-0"
-                    >
+                    <div className="h-8 w-8 flex items-center justify-center">
                         {isExpanded ? (
-                            <ChevronUp className="h-3 w-3" />
+                            <ChevronUp className="h-3 w-3 text-gray-500 group-hover:text-blue-500" />
                         ) : (
-                            <ChevronDown className="h-3 w-3" />
+                            <ChevronDown className="h-3 w-3 text-gray-500 group-hover:text-blue-500" />
                         )}
-                    </Button>
+                    </div>
                 </div>
             </div>
 
@@ -212,74 +222,84 @@ export function SavedOfferSelector({
 
             {/* Job Offers List */}
             {isExpanded && (
-                <div className="space-y-2 max-h-64 overflow-y-auto">
+                <div className="space-y-2 max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-lg p-2 bg-gray-50 dark:bg-gray-800/50">
                     {offerLoading ? (
                         <div className="flex items-center justify-center p-4">
                             <Loader2 className="h-4 w-4 animate-spin" />
                             <span className="ml-2 text-sm text-gray-500">Loading job offers...</span>
                         </div>
                     ) : (
-                        jobData?.map((offer) => {
-                            const isSelected = selectedOffer?.id === offer.id;
-                            const jobTitle = getJobTitle(offer);
-                            const companyName = getCompanyName(offer);
-                            const contentPreview = getContentPreview(offer.content);
+                        <>
+                            {/* Instructions */}
+                            <div className="text-xs text-gray-600 dark:text-gray-400 mb-2 px-2 py-1 bg-blue-50 dark:bg-blue-900/20 rounded border-l-2 border-blue-300 dark:border-blue-600">
+                                💡 Click on any job offer below to select it
+                            </div>
 
-                            return (
-                                <Card
-                                    key={offer.id}
-                                    className={`cursor-pointer transition-all duration-200 hover:shadow-md ${isSelected
-                                        ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                                        : 'hover:bg-gray-50 dark:hover:bg-gray-800'
-                                        }`}
-                                    onClick={() => handleOfferSelect(offer)}
-                                >
-                                    <CardContent className="p-3">
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <Briefcase className="h-4 w-4 text-gray-500 flex-shrink-0" />
-                                                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                                                        {jobTitle}
+                            {jobData?.map((offer) => {
+                                const isSelected = selectedOffer?.id === offer.id;
+                                const jobTitle = getJobTitle(offer);
+                                const companyName = getCompanyName(offer);
+                                const contentPreview = getContentPreview(offer.content);
+
+                                return (
+                                    <Card
+                                        key={offer.id}
+                                        className={`cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] group ${isSelected
+                                            ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-md'
+                                            : 'hover:bg-white dark:hover:bg-gray-700 hover:border-blue-300 dark:hover:border-blue-600'
+                                            }`}
+                                        onClick={() => handleOfferSelect(offer)}
+                                    >
+                                        <CardContent className="p-3">
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <Briefcase className={`h-4 w-4 flex-shrink-0 transition-colors ${isSelected ? 'text-blue-500' : 'text-gray-500 group-hover:text-blue-500'}`} />
+                                                        <p className={`text-sm font-medium truncate transition-colors ${isSelected ? 'text-blue-900 dark:text-blue-100' : 'text-gray-900 dark:text-gray-100 group-hover:text-blue-900 dark:group-hover:text-blue-100'}`}>
+                                                            {jobTitle}
+                                                        </p>
+                                                    </div>
+
+                                                    <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-2">
+                                                        <Building2 className="h-3 w-3" />
+                                                        <span className="truncate">{companyName}</span>
+                                                    </div>
+
+                                                    <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-2">
+                                                        <Calendar className="h-3 w-3" />
+                                                        <span>{formatDate(offer.createdAt)}</span>
+                                                    </div>
+
+                                                    <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
+                                                        {contentPreview}
                                                     </p>
-                                                </div>
 
-                                                <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-2">
-                                                    <Building2 className="h-3 w-3" />
-                                                    <span className="truncate">{companyName}</span>
-                                                </div>
+                                                    <div className="flex items-center gap-2 mt-2">
+                                                        {offer.jobLink && (
+                                                            <Badge variant="outline" className="text-xs">
+                                                                <LinkIcon className="h-3 w-3 mr-1" />
+                                                                Has Link
+                                                            </Badge>
+                                                        )}
 
-                                                <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-2">
-                                                    <Calendar className="h-3 w-3" />
-                                                    <span>{formatDate(offer.createdAt)}</span>
-                                                </div>
-
-                                                <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
-                                                    {contentPreview}
-                                                </p>
-
-                                                <div className="flex items-center gap-2 mt-2">
-                                                    {offer.jobLink && (
-                                                        <Badge variant="outline" className="text-xs">
-                                                            <LinkIcon className="h-3 w-3 mr-1" />
-                                                            Has Link
+                                                        <Badge variant="secondary" className="text-xs">
+                                                            {offer.content.length} chars
                                                         </Badge>
-                                                    )}
+                                                    </div>
+                                                </div>
 
-                                                    <Badge variant="secondary" className="text-xs">
-                                                        {offer.content.length} chars
-                                                    </Badge>
+                                                <div className="flex items-center gap-2">
+                                                    {isSelected && (
+                                                        <CheckCircle className="h-4 w-4 text-blue-500 flex-shrink-0" />
+                                                    )}
+                                                    <div className={`w-2 h-2 rounded-full transition-colors ${isSelected ? 'bg-blue-500' : 'bg-gray-300 group-hover:bg-blue-400'}`} />
                                                 </div>
                                             </div>
-
-                                            {isSelected && (
-                                                <CheckCircle className="h-4 w-4 text-blue-500 flex-shrink-0" />
-                                            )}
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            );
-                        })
+                                        </CardContent>
+                                    </Card>
+                                );
+                            })}
+                        </>
                     )}
                 </div>
             )}
