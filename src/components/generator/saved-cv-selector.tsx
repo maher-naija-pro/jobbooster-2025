@@ -52,20 +52,6 @@ export function SavedCVSelector({
     const [isExpanded, setIsExpanded] = useState(defaultExpanded);
     const [isRefreshing, setIsRefreshing] = useState(false);
 
-    // Don't render if user is not authenticated
-    if (authLoading) {
-        return (
-            <div className={`flex items-center justify-center p-4 ${className}`}>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span className="ml-2 text-sm text-gray-500">Loading...</span>
-            </div>
-        );
-    }
-
-    if (!user) {
-        return null; // Don't show for unauthenticated users
-    }
-
     // Refresh CV data
     const handleRefresh = useCallback(async () => {
         try {
@@ -110,6 +96,20 @@ export function SavedCVSelector({
                 return { icon: Clock, color: 'text-gray-500', bgColor: 'bg-gray-50' };
         }
     }, []);
+
+    // Don't render if user is not authenticated
+    if (authLoading) {
+        return (
+            <div className={`flex items-center justify-center p-4 ${className}`}>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span className="ml-2 text-sm text-gray-500">Loading...</span>
+            </div>
+        );
+    }
+
+    if (!user) {
+        return null; // Don't show for unauthenticated users
+    }
 
     // Don't show if no CVs available
     if (!cvLoading && (!cvsData || cvsData.length === 0)) {

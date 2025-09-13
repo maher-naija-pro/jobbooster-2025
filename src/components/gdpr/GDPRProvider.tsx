@@ -25,14 +25,19 @@ interface GDPRProviderProps {
     testMode?: boolean // Add test mode prop
 }
 
-export function GDPRProvider({ children, testMode = process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_COOKIE_TEST_MODE === 'true' }: GDPRProviderProps) {
+export function GDPRProvider({ children, testMode }: GDPRProviderProps) {
     const [consent, setConsent] = useState<CookiePreferences | null>(null)
     const [hasConsent, setHasConsent] = useState(false)
     const [showConsentBanner, setShowConsentBanner] = useState(false)
+    const [isTestMode, setIsTestMode] = useState(false)
 
     useEffect(() => {
+        // Determine test mode on client side to avoid hydration mismatch
+        const clientTestMode = testMode ?? (process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_COOKIE_TEST_MODE === 'true')
+        setIsTestMode(clientTestMode)
+
         // In test mode, always show the banner
-        if (testMode) {
+        if (clientTestMode) {
             setShowConsentBanner(true)
             return
         }
@@ -52,7 +57,7 @@ export function GDPRProvider({ children, testMode = process.env.NODE_ENV === 'de
                     setHasConsent(true)
 
                     // Don't show banner if user has existing preferences (unless in test mode)
-                    if (!testMode) {
+                    if (!isTestMode) {
                         setShowConsentBanner(false)
                     }
                     return
@@ -162,7 +167,7 @@ export function GDPRProvider({ children, testMode = process.env.NODE_ENV === 'de
                     onAccept={handleAccept}
                     onReject={handleReject}
                     onCustomize={() => setShowConsentBanner(false)}
-                    testMode={testMode}
+                    testMode={isTestMode}
                 />
             )}
         </GDPRContext.Provider>

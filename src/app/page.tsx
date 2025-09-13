@@ -25,7 +25,12 @@ export default function Home() {
   const searchParams = useSearchParams();
 
   // Check if test mode is enabled via environment variable
-  const isTestModeEnabled = process.env.NEXT_PUBLIC_ENABLE_TEST_MODE !== 'false';
+  const [isTestModeEnabled, setIsTestModeEnabled] = useState(false);
+
+  useEffect(() => {
+    // Determine test mode on client side to avoid hydration mismatch
+    setIsTestModeEnabled(process.env.NEXT_PUBLIC_ENABLE_TEST_MODE !== 'false');
+  }, []);
 
   // Load user's language preference
   useUserLanguage();
