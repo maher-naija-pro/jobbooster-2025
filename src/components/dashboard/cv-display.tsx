@@ -310,7 +310,7 @@ export function CVDisplay({
           CV Display
         </CardTitle>
         <CardDescription className="text-slate-600 text-base">
-          manage your uploaded CVs
+          {loading ? 'Loading...' : `${cvDataList.length} uploaded CV${cvDataList.length !== 1 ? 's' : ''}`}
         </CardDescription>
         <div className="flex justify-end items-center gap-2">
           {onFileUpload && (
@@ -445,10 +445,10 @@ export function CVDisplay({
 
           {/* Empty state - shown when no CVs are uploaded */}
           {!loading && !fetchError && cvDataList.length === 0 && (
-            <div className="text-center py-8">
-              <Icons.fileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground mb-4">No CVs uploaded yet</p>
-              <p className="text-sm text-muted-foreground">Use the Upload CV card to add your first CV</p>
+            <div className="text-center py-8 text-gray-500">
+              <Icons.fileText className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+              <p className="text-sm">No CVs uploaded yet</p>
+              <p className="text-xs text-gray-400">Use the Upload CV button to add your first CV</p>
             </div>
           )}
         </div>
