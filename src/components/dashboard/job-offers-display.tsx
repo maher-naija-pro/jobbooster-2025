@@ -213,7 +213,7 @@ export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
                 <CardDescription className="text-slate-600 text-base">
                     {jobData.length} saved job offers
                 </CardDescription>
-                <div className="flex justify-between items-center mt-3">
+                <div className="flex justify-end items-center gap-2 mt-3">
                     <MetaButton
                         onClick={() => setIsAddJobModalOpen(true)}
                         variant="primary"
