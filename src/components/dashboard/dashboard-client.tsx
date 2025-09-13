@@ -195,7 +195,11 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                             </Badge>
                             <span className="text-sm text-slate-500 flex items-center gap-2">
                                 <Icons.calendar className="h-4 w-4" />
-                                Member since {new Date(profile?.createdAt || user.created_at).toLocaleDateString()}
+                                Member since {new Date(profile?.createdAt || user.created_at).toLocaleDateString('en-US', {
+                                    year: 'numeric',
+                                    month: '2-digit',
+                                    day: '2-digit'
+                                })}
                             </span>
                         </div>
                     </header>

@@ -269,7 +269,11 @@ export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
             const weeks = Math.floor(diffInDays / 7);
             return `${weeks} week${weeks > 1 ? 's' : ''} ago`;
         } else {
-            return date.toLocaleDateString();
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
         }
     };
 
@@ -360,14 +364,36 @@ export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
                                 <div className="flex items-start gap-3 flex-1 min-w-0">
                                     <Icons.briefcase className="h-5 w-5 text-muted-foreground mt-1" />
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium truncate mb-1">
+                                        {/* Job Title - More prominent display */}
+                                        <h3 className="text-base font-semibold text-slate-900 truncate mb-2">
                                             {job.title || extractJobTitle(job.content)}
-                                        </p>
-                                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                                            <span className="flex items-center gap-1 min-w-0">
-                                                <Building2 className="h-3 w-3" />
-                                                <span className="truncate">{job.company || extractCompany(job.content)}</span>
+                                        </h3>
+
+                                        {/* Company Name - More prominent display */}
+                                        <div className="flex items-center gap-1 mb-2">
+                                            <Building2 className="h-4 w-4 text-slate-500" />
+                                            <span className="text-sm font-medium text-slate-700 truncate">
+                                                {job.company || extractCompany(job.content)}
                                             </span>
+                                        </div>
+
+                                        {/* Job Link - More prominent display */}
+                                        {job.jobLink && (
+                                            <div className="mb-2">
+                                                <a
+                                                    href={job.jobLink}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                                                >
+                                                    <ExternalLink className="h-4 w-4" />
+                                                    <span className="truncate max-w-[200px]">View Original Job Posting</span>
+                                                </a>
+                                            </div>
+                                        )}
+
+                                        {/* Additional metadata */}
+                                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
                                             {job.location && (
                                                 <span className="flex items-center gap-1">
                                                     <MapPin className="h-3 w-3" />
@@ -379,17 +405,6 @@ export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
                                                 <span>{formatDate(new Date(job.createdAt))}</span>
                                             </span>
                                         </div>
-                                        {job.jobLink && (
-                                            <a
-                                                href={job.jobLink}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="inline-flex items-center gap-1 mt-1 text-xs text-blue-600 hover:text-blue-800"
-                                            >
-                                                <ExternalLink className="h-3 w-3" />
-                                                View Job Posting
-                                            </a>
-                                        )}
                                     </div>
                                 </div>
                                 {/* Right: Actions */}
