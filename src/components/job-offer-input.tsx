@@ -194,7 +194,7 @@ export function JobOfferInput({
                                 onMouseLeave={() => setIsTooltipOpen(false)}
                                 placeholder="Paste your job offer here...&#10;&#10;Include job title, company name, requirements, responsibilities, and any other relevant details from the job posting."
                                 className={cn(
-                                    "w-full min-h-[200px] p-4 border-2 rounded-lg resize-vertical transition-all duration-300",
+                                    "w-full min-h-[150px] p-3 border-2 rounded-lg resize-vertical transition-all duration-300",
                                     "focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none",
                                     "hover:shadow-md hover:border-gray-400",
                                     "text-sm leading-relaxed font-medium",
@@ -205,7 +205,7 @@ export function JobOfferInput({
                                     validationState.isValid && !validationState.isWarning && "border-green-400 focus:ring-green-500/20 focus:border-green-500",
                                     !validationState.isError && !validationState.isWarning && !validationState.isValid && "border-gray-300 focus:border-blue-500"
                                 )}
-                                style={{ minHeight: '200px', maxHeight: '400px' }}
+                                style={{ minHeight: '150px', maxHeight: '300px' }}
                                 aria-invalid={validationState.isError ? 'true' : 'false'}
                                 aria-describedby={validationMessage ? 'job-content-validation' : undefined}
                             />

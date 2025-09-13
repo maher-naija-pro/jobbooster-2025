@@ -290,7 +290,7 @@ export function AddJobOfferModal({ isOpen, onClose, className }: AddJobOfferModa
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="space-y-6">
+                <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Job Title Field */}
                         <div className="space-y-2">
@@ -433,7 +433,7 @@ export function AddJobOfferModal({ isOpen, onClose, className }: AddJobOfferModa
                     )}
 
                     {/* Action Buttons */}
-                    <div className="flex justify-end gap-3 pt-4 border-t">
+                    <div className="flex justify-end gap-3 pt-3 border-t">
                         <Button
                             type="button"
                             variant="outline"

@@ -59,6 +59,7 @@ export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
     console.log('JobOffersDisplay - jobData:', jobData);
     console.log('JobOffersDisplay - loading:', loading);
     console.log('JobOffersDisplay - error:', error);
+    console.log('JobOffersDisplay - isAddJobModalOpen:', isAddJobModalOpen);
 
     /**
      * Effect hook to listen for job offer creation events
@@ -244,13 +245,17 @@ export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
                 </CardDescription>
                 <div className="flex justify-end items-center gap-2 mt-3">
                     <MetaButton
-                        onClick={() => setIsAddJobModalOpen(true)}
+                        onClick={() => {
+                            console.log('Add Job Offer button clicked');
+                            setIsAddJobModalOpen(true);
+                        }}
                         variant="primary"
                         size="sm"
                         icon={Plus}
                         text="Add Job Offer"
                         tooltip="Add a new job offer to your collection"
                         width="auto"
+                        disabled={false}
                     />
                     <RefreshButton
                         onRefresh={refetch}

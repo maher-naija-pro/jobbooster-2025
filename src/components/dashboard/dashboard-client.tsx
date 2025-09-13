@@ -179,7 +179,7 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                             <div className="flex-1">
                                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-2">
                                     Welcome back, {profile?.fullName || user.email?.split('@')[0]}!
-                                </h1>ga
+                                </h1>
                                 <p className="text-base sm:text-lg text-slate-600 max-w-2xl">
                                     Here's what's happening with your account today. Manage your CVs, generate content, and track your progress.
                                 </p>
