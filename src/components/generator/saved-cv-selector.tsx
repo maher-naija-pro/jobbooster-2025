@@ -82,6 +82,7 @@ export function SavedCVSelector({
     // Handle CV selection
     const handleCVSelect = useCallback((cv: CVData) => {
         onCVSelect(cv);
+        setIsExpanded(false); // Close the list after selection
         logger.info('CV selected', { cvId: cv.id, filename: cv.filename });
     }, [onCVSelect]);
 
