@@ -10,7 +10,6 @@ import { UploadHeader } from '../components/upload-header';
 import { useUserLanguage } from '../hooks/use-user-language';
 import { SavedCVSelector } from '../components/generator/saved-cv-selector';
 import { SavedOfferSelector } from '../components/generator/saved-offer-selector';
-import { saveJobOfferOnAction } from '../components/generator/save-data-utils';
 
 import { ErrorBoundary } from '../components/error-boundary';
 import { Language } from '../lib/types';
@@ -281,40 +280,14 @@ export default function Home() {
     }
   };
 
-  const handleGenerateLetter = async () => {
-    // Save job offer data before generating
-    if (state.jobOffer) {
-      try {
-        const jobId = await saveJobOfferOnAction(state.jobOffer);
-        if (jobId) {
-          console.log('Job offer saved with ID:', jobId);
-        }
-      } catch (error) {
-        console.error('Failed to save job offer:', error);
-        // Continue with generation even if save fails
-      }
-    }
-
+  const handleGenerateLetter = () => {
     // Clear any existing generated content before starting new generation
     dispatch({ type: 'CLEAR_GENERATED_CONTENT' });
     setStreamingContent('');
     handleStreamingGeneration('cover-letter');
   };
 
-  const handleGenerateMail = async () => {
-    // Save job offer data before generating
-    if (state.jobOffer) {
-      try {
-        const jobId = await saveJobOfferOnAction(state.jobOffer);
-        if (jobId) {
-          console.log('Job offer saved with ID:', jobId);
-        }
-      } catch (error) {
-        console.error('Failed to save job offer:', error);
-        // Continue with generation even if save fails
-      }
-    }
-
+  const handleGenerateMail = () => {
     // Clear any existing generated content before starting new generation
     dispatch({ type: 'CLEAR_GENERATED_CONTENT' });
     setStreamingContent('');
@@ -323,19 +296,6 @@ export default function Home() {
 
   const handleAnalyzeCV = async () => {
     if (!state.cvData || !state.jobOffer) return;
-
-    // Save job offer data before analyzing
-    if (state.jobOffer) {
-      try {
-        const jobId = await saveJobOfferOnAction(state.jobOffer);
-        if (jobId) {
-          console.log('Job offer saved with ID:', jobId);
-        }
-      } catch (error) {
-        console.error('Failed to save job offer:', error);
-        // Continue with analysis even if save fails
-      }
-    }
 
     // Clear any existing generated content before starting new analysis
     dispatch({ type: 'CLEAR_GENERATED_CONTENT' });
