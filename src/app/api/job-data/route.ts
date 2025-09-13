@@ -168,6 +168,20 @@ export async function POST(request: NextRequest) {
             companyLength: jobDataInput.company?.length || 0
         });
 
+        logger.debug('Attempting to create job data', {
+            action: 'create_job_data',
+            step: 'database_creation',
+            userId: user.id,
+            jobDataInput: {
+                userId: jobDataInput.userId,
+                contentLength: jobDataInput.content?.length || 0,
+                hasTitle: !!jobDataInput.title,
+                hasCompany: !!jobDataInput.company,
+                title: jobDataInput.title,
+                company: jobDataInput.company
+            }
+        });
+
         const jobData = await JobDataService.create(jobDataInput);
 
         const duration = Date.now() - startTime;
@@ -185,16 +199,30 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(jobData);
     } catch (error) {
         const duration = Date.now() - startTime;
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        const errorStack = error instanceof Error ? error.stack : undefined;
+
         logger.error('Error creating job data', {
             action: 'create_job_data',
             step: 'error',
             duration: `${duration}ms`,
-            error: error instanceof Error ? error.message : 'Unknown error',
-            stack: error instanceof Error ? error.stack : undefined
+            error: errorMessage,
+            stack: errorStack,
+            errorType: error?.constructor?.name || 'Unknown',
+            errorString: String(error)
         });
-        console.error('Error creating job data:', error);
+
+        console.error('Error creating job data:', {
+            message: errorMessage,
+            stack: errorStack,
+            error: error
+        });
+
         return NextResponse.json(
-            { error: 'Failed to create job data' },
+            {
+                error: 'Failed to create job data',
+                details: process.env.NODE_ENV === 'development' ? errorMessage : undefined
+            },
             { status: 500 }
         );
     }

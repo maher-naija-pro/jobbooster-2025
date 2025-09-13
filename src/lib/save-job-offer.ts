@@ -29,27 +29,68 @@ export async function saveJobOfferToDatabase(
             return { success: false, error: 'Job offer content must be at least 100 characters long' };
         }
 
+        // Prepare request data
+        const requestData = {
+            content: jobOfferContent.trim(),
+            title: title?.trim() || undefined,
+            company: company?.trim() || undefined,
+        };
+
+        console.log('Sending request to API:', {
+            action: 'save_job_offer',
+            step: 'api_request',
+            requestData: {
+                contentLength: requestData.content?.length || 0,
+                hasTitle: !!requestData.title,
+                hasCompany: !!requestData.company,
+                title: requestData.title,
+                company: requestData.company
+            }
+        });
+
         // Call the existing API route to save job data
         const response = await fetch('/api/job-data', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                content: jobOfferContent.trim(),
-                title: title?.trim() || undefined,
-                company: company?.trim() || undefined,
-            }),
+            body: JSON.stringify(requestData),
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
-            console.error('Failed to save job offer via API:', errorData);
-            return { success: false, error: errorData.error || 'Failed to save job offer' };
+            let errorData;
+            try {
+                errorData = await response.json();
+            } catch (parseError) {
+                console.error('Failed to parse error response:', parseError);
+                errorData = {};
+            }
+
+            console.error('Failed to save job offer via API:', {
+                status: response.status,
+                statusText: response.statusText,
+                errorData: errorData
+            });
+
+            return {
+                success: false,
+                error: errorData?.error || `HTTP ${response.status}: ${response.statusText}` || 'Failed to save job offer'
+            };
         }
 
         const jobData = await response.json();
-        console.log('Job offer saved successfully via API:', jobData);
+        console.log('Job offer saved successfully via API:', {
+            action: 'save_job_offer',
+            step: 'success',
+            jobData: {
+                id: jobData.id,
+                contentLength: jobData.content?.length || 0,
+                hasTitle: !!jobData.title,
+                hasCompany: !!jobData.company,
+                title: jobData.title,
+                company: jobData.company
+            }
+        });
 
         return { success: true, jobData };
 
