@@ -10,6 +10,7 @@ import { NotificationSettings } from '@/components/settings/notification-setting
 import { SecuritySettings } from '@/components/settings/security-settings'
 import { PrivacySettings } from '@/components/settings/privacy-settings'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { isNotificationsEnabled } from '@/lib/feature-flags'
 
 interface SettingsPageClientProps {
     profile: any
@@ -21,6 +22,9 @@ export function SettingsPageClient({ profile, message }: SettingsPageClientProps
     const [showDeletionModal, setShowDeletionModal] = useState(false)
     const [isExporting, setIsExporting] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
+
+    // Check if notifications feature is enabled
+    const notificationsEnabled = isNotificationsEnabled()
 
     // Mock data - replace with actual data from your API
     const userData = {
@@ -74,14 +78,21 @@ export function SettingsPageClient({ profile, message }: SettingsPageClientProps
         }
     }
 
-    const handleConsentSave = async (consentData: any) => {
-        console.log('Saving consent data:', consentData)
+    const handleConsentSave = async (preferences: any) => {
+        console.log('Saving consent data:', preferences)
         // Add actual consent saving logic here
+        await new Promise(resolve => setTimeout(resolve, 500)) // Simulate API call
     }
 
     const handleConsentReset = async () => {
         console.log('Resetting consent data')
         // Add actual consent reset logic here
+        await new Promise(resolve => setTimeout(resolve, 500)) // Simulate API call
+    }
+
+    const handleContactSupport = () => {
+        // Redirect to company contact page
+        window.location.href = '/company/contact'
     }
 
     return (
@@ -106,7 +117,7 @@ export function SettingsPageClient({ profile, message }: SettingsPageClientProps
 
                     {/* Main Settings Tabs */}
                     <Tabs defaultValue="profile" className="space-y-6">
-                        <TabsList className="grid w-full grid-cols-4">
+                        <TabsList className={`grid w-full ${notificationsEnabled ? 'grid-cols-4' : 'grid-cols-3'}`}>
                             <TabsTrigger value="profile" className="flex items-center gap-2">
                                 <Icons.user className="h-4 w-4" />
                                 Profile
@@ -115,10 +126,12 @@ export function SettingsPageClient({ profile, message }: SettingsPageClientProps
                                 <Icons.lock className="h-4 w-4" />
                                 Security
                             </TabsTrigger>
-                            <TabsTrigger value="notifications" className="flex items-center gap-2">
-                                <Icons.bell className="h-4 w-4" />
-                                Notifications
-                            </TabsTrigger>
+                            {notificationsEnabled && (
+                                <TabsTrigger value="notifications" className="flex items-center gap-2">
+                                    <Icons.bell className="h-4 w-4" />
+                                    Notifications
+                                </TabsTrigger>
+                            )}
                             <TabsTrigger value="privacy" className="flex items-center gap-2">
                                 <Icons.shield className="h-4 w-4" />
                                 Consent Management
@@ -144,13 +157,15 @@ export function SettingsPageClient({ profile, message }: SettingsPageClientProps
                         </TabsContent>
 
                         {/* Notifications Tab */}
-                        <TabsContent value="notifications" className="space-y-4">
-                            <div className="flex items-center gap-2 mb-4">
-                                <Icons.bell className="h-6 w-6 text-blue-600" />
-                                <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Notification Settings</h2>
-                            </div>
-                            <NotificationSettings profile={profile} />
-                        </TabsContent>
+                        {notificationsEnabled && (
+                            <TabsContent value="notifications" className="space-y-4">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <Icons.bell className="h-6 w-6 text-blue-600" />
+                                    <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Notification Settings</h2>
+                                </div>
+                                <NotificationSettings profile={profile} />
+                            </TabsContent>
+                        )}
 
                         {/* Consent Management Tab */}
                         <TabsContent value="privacy" className="space-y-4">
@@ -164,6 +179,7 @@ export function SettingsPageClient({ profile, message }: SettingsPageClientProps
                                 isExporting={isExporting}
                                 onConsentSave={handleConsentSave}
                                 onConsentReset={handleConsentReset}
+                                onContactSupport={handleContactSupport}
                             />
                         </TabsContent>
                     </Tabs>

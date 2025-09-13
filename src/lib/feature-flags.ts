@@ -19,6 +19,8 @@ export interface FeatureFlags {
     ALLOW_DISPOSABLE_EMAILS: boolean;
     /** Enable/disable social media icons in footer */
     ENABLE_SOCIAL_ICONS: boolean;
+    /** Enable/disable notification settings functionality */
+    ENABLE_NOTIFICATIONS: boolean;
 }
 
 /**
@@ -32,6 +34,7 @@ const DEFAULT_FEATURE_FLAGS: FeatureFlags = {
     EMAIL_VALIDATION_STRICT: true,
     ALLOW_DISPOSABLE_EMAILS: false,
     ENABLE_SOCIAL_ICONS: false,
+    ENABLE_NOTIFICATIONS: false,
 };
 
 /**
@@ -75,6 +78,10 @@ export function getFeatureFlags(): FeatureFlags {
             process.env.NEXT_PUBLIC_ENABLE_SOCIAL_ICONS,
             DEFAULT_FEATURE_FLAGS.ENABLE_SOCIAL_ICONS
         ),
+        ENABLE_NOTIFICATIONS: parseBooleanEnvVar(
+            process.env.NEXT_PUBLIC_ENABLE_NOTIFICATIONS,
+            DEFAULT_FEATURE_FLAGS.ENABLE_NOTIFICATIONS
+        ),
     };
 }
 
@@ -103,4 +110,12 @@ export function isPricingEnabled(): boolean {
  */
 export function isAnonymousAccessEnabled(): boolean {
     return getFeatureFlag('ENABLE_ANONYMOUS_ACCESS');
+}
+
+/**
+ * Check if notifications are enabled
+ * Convenience function for notification feature flag
+ */
+export function isNotificationsEnabled(): boolean {
+    return getFeatureFlag('ENABLE_NOTIFICATIONS');
 }

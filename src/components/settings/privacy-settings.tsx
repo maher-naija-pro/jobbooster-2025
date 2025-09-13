@@ -5,12 +5,24 @@ import { Icons } from '@/components/icons'
 import { MetaButton } from '@/components/buttons/meta-button'
 import { ConsentManagement } from '@/components/gdpr/ConsentManagement'
 
+interface ConsentPreferences {
+    essential: boolean
+    analytics: boolean
+    marketing: boolean
+    preferences: boolean
+    emailNotifications: boolean
+    pushNotifications: boolean
+    dataProcessing: boolean
+    dataSharing: boolean
+}
+
 interface PrivacySettingsProps {
     onExportClick: () => void
     onDeletionClick: () => void
     isExporting: boolean
-    onConsentSave: (consentData: any) => void
-    onConsentReset: () => void
+    onConsentSave: (preferences: ConsentPreferences) => Promise<void>
+    onConsentReset: () => Promise<void>
+    onContactSupport: () => void
 }
 
 /**
@@ -26,21 +38,13 @@ export function PrivacySettings({
     onDeletionClick,
     isExporting,
     onConsentSave,
-    onConsentReset
+    onConsentReset,
+    onContactSupport
 }: PrivacySettingsProps) {
     return (
         <div className="space-y-6">
             {/* Consent Management */}
             <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Icons.shield className="h-5 w-5 text-blue-600" />
-                        Consent Management
-                    </CardTitle>
-                    <CardDescription>
-                        Control how your data is processed and used
-                    </CardDescription>
-                </CardHeader>
                 <CardContent>
                     <ConsentManagement
                         onSave={onConsentSave}
@@ -68,13 +72,15 @@ export function PrivacySettings({
                                 You can request a copy of all your personal data in a structured,
                                 commonly used format.
                             </p>
-                            <MetaButton
-                                onClick={onExportClick}
-                                disabled={isExporting}
-                            >
-                                <Icons.download className="h-4 w-4 mr-2" />
-                                {isExporting ? 'Exporting...' : 'Export My Data'}
-                            </MetaButton>
+                            <div className="flex gap-3">
+                                <MetaButton
+                                    onClick={onContactSupport}
+                                    variant="secondary-outline"
+                                >
+                                    <Icons.mail className="h-4 w-4 mr-2" />
+                                    Contact Support
+                                </MetaButton>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
@@ -100,13 +106,15 @@ export function PrivacySettings({
                                     associated information.
                                 </p>
                             </div>
-                            <MetaButton
-                                onClick={onDeletionClick}
-                                variant="danger"
-                            >
-                                <Icons.trash className="h-4 w-4 mr-2" />
-                                Delete My Data
-                            </MetaButton>
+                            <div className="flex gap-3">
+                                <MetaButton
+                                    onClick={onContactSupport}
+                                    variant="secondary-outline"
+                                >
+                                    <Icons.mail className="h-4 w-4 mr-2" />
+                                    Contact Support
+                                </MetaButton>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>

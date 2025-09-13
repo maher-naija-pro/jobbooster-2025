@@ -29,7 +29,6 @@ interface ConsentPreferences {
     emailNotifications: boolean
     pushNotifications: boolean
     dataProcessing: boolean
-    dataSharing: boolean
 }
 
 interface ConsentManagementProps {
@@ -45,8 +44,7 @@ export function ConsentManagement({ onSave, onReset }: ConsentManagementProps) {
         preferences: false,
         emailNotifications: false,
         pushNotifications: false,
-        dataProcessing: false,
-        dataSharing: false
+        dataProcessing: false
     })
     const [isLoading, setIsLoading] = useState(false)
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
@@ -70,8 +68,7 @@ export function ConsentManagement({ onSave, onReset }: ConsentManagementProps) {
                         preferences: data.consent.preferences ?? false,
                         emailNotifications: data.consent.emailNotifications ?? false,
                         pushNotifications: data.consent.pushNotifications ?? false,
-                        dataProcessing: data.consent.dataProcessing ?? false,
-                        dataSharing: data.consent.dataSharing ?? false
+                        dataProcessing: data.consent.dataProcessing ?? false
                     }
                     setPreferences(loadedPreferences)
                     if (data.consentDate) {
@@ -118,8 +115,7 @@ export function ConsentManagement({ onSave, onReset }: ConsentManagementProps) {
                 preferences: false,
                 emailNotifications: false,
                 pushNotifications: false,
-                dataProcessing: false,
-                dataSharing: false
+                dataProcessing: false
             }
 
             setPreferences(defaults)
@@ -197,36 +193,22 @@ export function ConsentManagement({ onSave, onReset }: ConsentManagementProps) {
             icon: Database,
             color: 'text-cyan-600',
             bgColor: 'bg-cyan-50 dark:bg-cyan-900/20'
-        },
-        {
-            id: 'dataSharing',
-            title: 'Data Sharing',
-            description: 'Share anonymized data with trusted partners for research',
-            icon: Database,
-            color: 'text-teal-600',
-            bgColor: 'bg-teal-50 dark:bg-teal-900/20'
         }
     ]
 
     return (
         <div className="space-y-6">
-            {/* Header */}
-            <div className="text-center space-y-2">
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-                    Consent Management
-                </h2>
-                <p className="text-slate-600 dark:text-slate-300">
-                    Manage your privacy preferences and data processing consent
-                </p>
-                {lastUpdated && (
+            {/* Last Updated Info */}
+            {lastUpdated && (
+                <div className="text-center">
                     <p className="text-sm text-slate-500 dark:text-slate-400">
                         Last updated: {lastUpdated.toLocaleString()}
                     </p>
-                )}
-            </div>
+                </div>
+            )}
 
             {/* Cookie Consent */}
-            <Card>
+            <Card className="mt-10">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <Shield className="h-5 w-5 text-primary" />
@@ -356,14 +338,6 @@ export function ConsentManagement({ onSave, onReset }: ConsentManagementProps) {
                 >
                     {isLoading ? 'Saving...' : 'Save Preferences'}
                 </MetaButton>
-                <Button
-                    variant="outline"
-                    onClick={handleReset}
-                    disabled={isLoading}
-                    className="flex-1"
-                >
-                    Reset to Defaults
-                </Button>
             </div>
 
             {hasChanges && (
