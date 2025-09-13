@@ -59,6 +59,7 @@ export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
         deleteJobData,     // Function to delete a job offer
         archiveJobData,    // Function to archive a job offer
         unarchiveJobData,  // Function to unarchive a job offer
+        updateJobData,     // Function to update a job offer
     } = useJobData({ limit: 1000 });
 
     // Debug logging for development purposes
@@ -107,6 +108,12 @@ export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
             await deleteJobData(jobToDelete.id);
             setDeleteModalOpen(false);
             setJobToDelete(null);
+
+            // Close JobViewModal if it's open and the deleted job is the one being viewed
+            if (isJobViewModalOpen && selectedJob && selectedJob.id === jobToDelete.id) {
+                setIsJobViewModalOpen(false);
+                setSelectedJob(null);
+            }
         } catch (err) {
             console.error('Failed to delete job offer:', err);
         } finally {
@@ -461,6 +468,7 @@ export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
                 onDelete={handleDeleteClick}
                 onArchive={handleArchiveJob}
                 onUnarchive={handleUnarchiveJob}
+                onUpdate={updateJobData}
             />
         </Card>
     );
