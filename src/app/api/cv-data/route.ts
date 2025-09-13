@@ -539,10 +539,10 @@ export async function DELETE(request: NextRequest) {
             data: {
                 isDeleted: true,
                 deletedAt: new Date(),
-                deletedBy: isAuthenticated ? currentUserId : 'anonymous',
                 metadata: {
                     ...(existingCv.metadata as Record<string, any> || {}),
                     deletedVia: 'api',
+                    deletedBy: isAuthenticated ? currentUserId : 'anonymous',
                     deletionRequestId: requestId,
                     deletionTime: new Date().toISOString()
                 }

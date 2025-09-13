@@ -1,5 +1,4 @@
 import { ArrowRight, LogIn, Settings, User, User2Icon, UserX2Icon, X, Shield, Lock, Mail, Loader2 as Spinner, FileText, Bookmark, Briefcase, Search, Eye, Calendar, AlertCircle, Zap, RotateCcw, BarChart3, Bell, Globe, Cookie, Download, Trash2, Database, Smartphone, Key, Monitor, AlertTriangle, CheckCircle, EyeOff } from "lucide-react"
-import { HiOutlineTrash } from "react-icons/hi2";
 import { FileUp, Plus, Loader2 } from "lucide-react";
 import { MdContentCopy } from "react-icons/md";
 import { FaCheck } from "react-icons/fa6";
@@ -19,7 +18,7 @@ export const Icons = {
   Loader2: Loader2,
   login: LogIn,
   clean: X,
-  trash: HiOutlineTrash,
+  trash: Trash2,
   profile: User2Icon,
   employee: UserX2Icon,
   settings: Settings,
@@ -51,7 +50,6 @@ export const Icons = {
   globe: Globe,
   cookie: Cookie,
   download: Download,
-  trash: Trash2,
   database: Database,
   smartphone: Smartphone,
   key: Key,

@@ -26,6 +26,7 @@ import { logger } from '@/lib/logger';
 import { RefreshButton } from '@/components/buttons/refresh-button';
 import { CVDisplaySkeleton } from './cv-skeleton';
 import { CVUploadModal } from '@/components/cv/cv-upload-modal';
+import { DeleteConfirmationModal } from '@/components/ui/delete-confirmation-modal';
 
 /**
  * Props interface for the CVDisplay component
@@ -133,6 +134,10 @@ export function CVDisplay({
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [removingCvId, setRemovingCvId] = useState<string | null>(null);
 
+  // Delete confirmation modal state
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [cvToDelete, setCvToDelete] = useState<CVData | null>(null);
+
   /**
    * Formats a date consistently to avoid hydration issues between server and client
    * @param date - The date to format
@@ -220,13 +225,26 @@ export function CVDisplay({
   }, [convertDatabaseToCVData]);
 
   /**
+   * Opens the delete confirmation modal for a specific CV
+   * @param cv - The CV to delete
+   */
+  const handleDeleteClick = useCallback((cv: CVData) => {
+    setCvToDelete(cv);
+    setDeleteModalOpen(true);
+  }, []);
+
+  /**
    * Handles CV removal from the database
    * Updates local state and calls parent callback on success
-   * @param cvId - ID of the CV to remove
    */
-  const handleFileRemove = useCallback(async (cvId: string) => {
+  const handleFileRemove = useCallback(async () => {
+    if (!cvToDelete) return;
+
+    const cvId = cvToDelete.id;
+
     try {
       setRemovingCvId(cvId);
+      setFetchError(null); // Clear any previous errors
 
       logger.info('Removing CV from database', { cvId });
 
@@ -237,6 +255,12 @@ export function CVDisplay({
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to remove CV');
+      }
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to remove CV');
       }
 
       // Remove from local state
@@ -254,8 +278,19 @@ export function CVDisplay({
       logger.error('Failed to remove CV', { cvId, error: errorMessage });
     } finally {
       setRemovingCvId(null);
+      setCvToDelete(null);
     }
-  }, [onFileRemove]);
+  }, [cvToDelete, onFileRemove]);
+
+  /**
+   * Closes the delete confirmation modal
+   */
+  const handleCloseDeleteModal = useCallback(() => {
+    if (!removingCvId) {
+      setDeleteModalOpen(false);
+      setCvToDelete(null);
+    }
+  }, [removingCvId]);
 
   /**
    * Effect hook to load CVs when component mounts or refresh trigger changes
@@ -391,7 +426,7 @@ export function CVDisplay({
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => handleFileRemove(cv.id)}
+                      onClick={() => handleDeleteClick(cv)}
                       disabled={removingCvId === cv.id}
                       className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
                       title="Delete CV"
@@ -418,6 +453,16 @@ export function CVDisplay({
           )}
         </div>
       </CardContent>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={deleteModalOpen}
+        onClose={handleCloseDeleteModal}
+        onConfirm={handleFileRemove}
+        itemTitle={cvToDelete?.filename}
+        itemType="CV"
+        isDeleting={!!removingCvId}
+      />
     </Card>
   );
 }
