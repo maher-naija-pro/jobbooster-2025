@@ -299,7 +299,7 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                                             Error loading data
                                         </p>
                                     )}
-                                </CardContent>
+                                </CardCogantent>
                             </Card>
 
                             <Card className="group hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-white/80 backdrop-blur-sm">

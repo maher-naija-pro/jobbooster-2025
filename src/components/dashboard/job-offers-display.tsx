@@ -38,6 +38,7 @@ interface JobOffersDisplayProps {
 export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
     // Modal state
     const [isAddJobModalOpen, setIsAddJobModalOpen] = useState(false);
+    const [resetAddButton, setResetAddButton] = useState(false);
 
     // Delete confirmation modal state
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -130,6 +131,19 @@ export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
         console.log('Viewing job offer:', job);
         // You can implement modal opening or navigation here
         // Example: setSelectedJob(job); setShowModal(true);
+    };
+
+    /**
+     * Handles closing the add job offer modal and resets button state
+     */
+    const handleCloseAddJobModal = () => {
+        setIsAddJobModalOpen(false);
+        // Reset the button clicked state after a short delay to allow the modal to close
+        setTimeout(() => {
+            setResetAddButton(true);
+            // Reset the reset flag after a brief moment
+            setTimeout(() => setResetAddButton(false), 100);
+        }, 100);
     };
 
     /**
@@ -256,6 +270,7 @@ export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
                         tooltip="Add a new job offer to your collection"
                         width="auto"
                         disabled={false}
+                        resetClicked={resetAddButton}
                     />
                     <RefreshButton
                         onRefresh={refetch}
@@ -359,7 +374,7 @@ export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
             {/* Add Job Offer Modal */}
             <AddJobOfferModal
                 isOpen={isAddJobModalOpen}
-                onClose={() => setIsAddJobModalOpen(false)}
+                onClose={handleCloseAddJobModal}
             />
 
             {/* Delete Confirmation Modal */}
