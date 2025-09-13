@@ -16,6 +16,7 @@ import { Language } from '../lib/types';
 import { useState, useEffect } from 'react';
 import { FeatureGate } from '../components/auth/feature-gate';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { saveJobOfferToDatabase, isJobOfferAlreadySaved } from '../lib/save-job-offer';
 
 export default function Home() {
   const { state, dispatch } = useApp();
@@ -281,6 +282,9 @@ export default function Home() {
   };
 
   const handleGenerateLetter = () => {
+    // Save job offer to database before generating
+    handleSaveJobOffer();
+
     // Clear any existing generated content before starting new generation
     dispatch({ type: 'CLEAR_GENERATED_CONTENT' });
     setStreamingContent('');
@@ -288,6 +292,9 @@ export default function Home() {
   };
 
   const handleGenerateMail = () => {
+    // Save job offer to database before generating
+    handleSaveJobOffer();
+
     // Clear any existing generated content before starting new generation
     dispatch({ type: 'CLEAR_GENERATED_CONTENT' });
     setStreamingContent('');
@@ -296,6 +303,9 @@ export default function Home() {
 
   const handleAnalyzeCV = async () => {
     if (!state.cvData || !state.jobOffer) return;
+
+    // Save job offer to database before analyzing
+    handleSaveJobOffer();
 
     // Clear any existing generated content before starting new analysis
     dispatch({ type: 'CLEAR_GENERATED_CONTENT' });
@@ -440,6 +450,45 @@ export default function Home() {
       }
 
       console.log('Generation stopped by user');
+    }
+  };
+
+  // Function to save job offer to database
+  const handleSaveJobOffer = async () => {
+    if (!state.jobOffer || state.jobOffer.trim().length < 100) {
+      console.warn('Job offer content too short to save');
+      return;
+    }
+
+    try {
+      // Check if job offer is already saved
+      const isAlreadySaved = await isJobOfferAlreadySaved(state.jobOffer);
+      if (isAlreadySaved) {
+        console.log('Job offer already saved, skipping duplicate save');
+        return;
+      }
+
+      // Extract title and company from job offer content (basic parsing)
+      const titleMatch = state.jobOffer.match(/(?:title|position|role)[:\s]+([^\n\r]+)/i);
+      const companyMatch = state.jobOffer.match(/(?:company|employer|organization)[:\s]+([^\n\r]+)/i);
+
+      const title = titleMatch ? titleMatch[1].trim() : undefined;
+      const company = companyMatch ? companyMatch[1].trim() : undefined;
+
+      // Save job offer to database
+      const result = await saveJobOfferToDatabase(state.jobOffer, title, company);
+
+      if (result.success) {
+        console.log('Job offer saved successfully:', result.jobData);
+        // Optional: You could add a toast notification here in the future
+        // toast.success('Job offer saved to your collection');
+      } else {
+        console.error('Failed to save job offer:', result.error);
+        // Don't show error to user as this is a background operation
+      }
+    } catch (error) {
+      console.error('Error saving job offer:', error);
+      // Don't show error to user as this is a background operation
     }
   };
 
