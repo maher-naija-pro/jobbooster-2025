@@ -9,6 +9,10 @@ import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
 import { MetaButton } from '@/components/buttons/meta-button'
 import { Icons } from '@/components/icons'
+import { EmailInput } from '@/components/auth/email-input'
+import { DEFAULT_EMAIL_CONSTRAINTS } from '@/components/auth/email-constraints'
+import { requestPasswordReset } from '@/app/auth/reset-password/actions'
+import { logger } from '@/lib/logger'
 import { toast } from 'sonner'
 
 interface SecuritySettingsProps {
@@ -17,15 +21,10 @@ interface SecuritySettingsProps {
 
 export function SecuritySettings({ profile }: SecuritySettingsProps) {
     const [isLoading, setIsLoading] = useState(false)
-    const [showCurrentPassword, setShowCurrentPassword] = useState(false)
-    const [showNewPassword, setShowNewPassword] = useState(false)
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-
-    const [passwordForm, setPasswordForm] = useState({
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
-    })
+    const [isPasswordResetLoading, setIsPasswordResetLoading] = useState(false)
+    const [email, setEmail] = useState('')
+    const [passwordResetMessage, setPasswordResetMessage] = useState('')
+    const [passwordResetError, setPasswordResetError] = useState('')
 
     const [securitySettings, setSecuritySettings] = useState({
         twoFactorAuth: profile?.preferences?.security?.twoFactorAuth || false,
@@ -55,13 +54,6 @@ export function SecuritySettings({ profile }: SecuritySettingsProps) {
         }
     ]
 
-    const handlePasswordChange = (field: string, value: string) => {
-        setPasswordForm(prev => ({
-            ...prev,
-            [field]: value
-        }))
-    }
-
     const handleSecuritySettingChange = (key: string, value: boolean | number) => {
         setSecuritySettings(prev => ({
             ...prev,
@@ -69,31 +61,71 @@ export function SecuritySettings({ profile }: SecuritySettingsProps) {
         }))
     }
 
-    const handlePasswordUpdate = async () => {
-        if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-            toast.error('New passwords do not match')
+    const handlePasswordReset = async (e: React.FormEvent) => {
+        e.preventDefault()
+
+        if (!email.trim()) {
+            setPasswordResetError('Email is required')
             return
         }
 
-        if (passwordForm.newPassword.length < 8) {
-            toast.error('Password must be at least 8 characters long')
-            return
-        }
+        setIsPasswordResetLoading(true)
+        setPasswordResetError('')
+        setPasswordResetMessage('')
 
-        setIsLoading(true)
         try {
-            // Add actual password update logic here
-            await new Promise(resolve => setTimeout(resolve, 1000))
-            toast.success('Password updated successfully')
-            setPasswordForm({
-                currentPassword: '',
-                newPassword: '',
-                confirmPassword: ''
+            logger.info('Password reset request initiated from security settings', {
+                action: 'securitySettingsPasswordReset',
+                step: 'form_submission_started',
+                email: email ? `${email.substring(0, 3)}***@${email.split('@')[1]}` : 'null',
+                timestamp: new Date().toISOString()
             })
-        } catch (error) {
-            toast.error('Failed to update password')
+
+            const formData = new FormData()
+            formData.append('email', email)
+
+            const result = await requestPasswordReset(formData)
+
+            if (result.success) {
+                setPasswordResetMessage(result.message || 'Password reset email sent! Check your inbox.')
+                logger.info('Password reset email sent successfully from security settings', {
+                    action: 'securitySettingsPasswordReset',
+                    step: 'reset_email_sent',
+                    email: email ? `${email.substring(0, 3)}***@${email.split('@')[1]}` : 'null',
+                    timestamp: new Date().toISOString()
+                })
+                toast.success('Password reset email sent!')
+
+                // Clear form after successful submission with delay (matching modal behavior)
+                setTimeout(() => {
+                    setEmail('')
+                    setPasswordResetMessage('')
+                    setPasswordResetError('')
+                }, 2000)
+            } else {
+                setPasswordResetError(result.error || 'Failed to send password reset email')
+                logger.error('Password reset failed from security settings', {
+                    action: 'securitySettingsPasswordReset',
+                    step: 'reset_failed',
+                    error: result.error,
+                    email: email ? `${email.substring(0, 3)}***@${email.split('@')[1]}` : 'null',
+                    timestamp: new Date().toISOString()
+                })
+                toast.error(result.error || 'Failed to send password reset email')
+            }
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Failed to send password reset email'
+            setPasswordResetError(errorMessage)
+            logger.error('Unexpected error in password reset from security settings', {
+                action: 'securitySettingsPasswordReset',
+                step: 'unexpected_error',
+                error: errorMessage,
+                email: email ? `${email.substring(0, 3)}***@${email.split('@')[1]}` : 'null',
+                timestamp: new Date().toISOString()
+            })
+            toast.error(errorMessage)
         } finally {
-            setIsLoading(false)
+            setIsPasswordResetLoading(false)
         }
     }
 
@@ -132,7 +164,7 @@ export function SecuritySettings({ profile }: SecuritySettingsProps) {
 
     return (
         <div className="space-y-6">
-            {/* Password Change */}
+            {/* Password Reset */}
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -140,85 +172,93 @@ export function SecuritySettings({ profile }: SecuritySettingsProps) {
                         Change Password
                     </CardTitle>
                     <CardDescription>
-                        Update your password to keep your account secure
+                        Reset your password by requesting a secure link via email
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <div className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="currentPassword">Current Password</Label>
-                            <div className="relative">
-                                <Input
-                                    id="currentPassword"
-                                    type={showCurrentPassword ? 'text' : 'password'}
-                                    value={passwordForm.currentPassword}
-                                    onChange={(e) => handlePasswordChange('currentPassword', e.target.value)}
-                                    placeholder="Enter your current password"
-                                />
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                                >
-                                    {showCurrentPassword ? <Icons.eyeOff className="h-4 w-4" /> : <Icons.eye className="h-4 w-4" />}
-                                </Button>
+                        <div className="p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                            <div className="flex items-start gap-3">
+                                <Icons.alertCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                                <div className="space-y-2">
+                                    <p className="text-sm text-blue-800 dark:text-blue-200 font-medium">
+                                        Secure Password Reset
+                                    </p>
+                                    <p className="text-sm text-blue-700 dark:text-blue-300">
+                                        For security reasons, password changes require email verification.
+                                        Click the button below to receive a secure reset link in your email.
+                                    </p>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="newPassword">New Password</Label>
-                            <div className="relative">
-                                <Input
-                                    id="newPassword"
-                                    type={showNewPassword ? 'text' : 'password'}
-                                    value={passwordForm.newPassword}
-                                    onChange={(e) => handlePasswordChange('newPassword', e.target.value)}
-                                    placeholder="Enter your new password"
-                                />
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                                    onClick={() => setShowNewPassword(!showNewPassword)}
-                                >
-                                    {showNewPassword ? <Icons.eyeOff className="h-4 w-4" /> : <Icons.eye className="h-4 w-4" />}
-                                </Button>
-                            </div>
-                        </div>
+                        <form onSubmit={handlePasswordReset} className="space-y-4">
+                            {passwordResetMessage && (
+                                <div className="p-3 text-sm text-green-600 bg-green-50 dark:bg-green-950/20 dark:text-green-400 rounded-md">
+                                    {passwordResetMessage}
+                                </div>
+                            )}
 
-                        <div className="space-y-2">
-                            <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                            <div className="relative">
-                                <Input
-                                    id="confirmPassword"
-                                    type={showConfirmPassword ? 'text' : 'password'}
-                                    value={passwordForm.confirmPassword}
-                                    onChange={(e) => handlePasswordChange('confirmPassword', e.target.value)}
-                                    placeholder="Confirm your new password"
+                            {passwordResetError && (
+                                <div className="p-3 text-sm text-red-600 bg-red-50 dark:bg-red-950/20 dark:text-red-400 rounded-md">
+                                    {passwordResetError}
+                                </div>
+                            )}
+
+                            <div className="space-y-2">
+                                <Label htmlFor="email">Email Address</Label>
+                                <EmailInput
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="Enter your email address"
+                                    required
+                                    disabled={isPasswordResetLoading}
+                                    autoComplete="email"
+                                    constraints={DEFAULT_EMAIL_CONSTRAINTS}
                                 />
+                            </div>
+
+                            <div className="flex gap-3 pt-2">
                                 <Button
                                     type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    variant="outline"
+                                    onClick={() => {
+                                        setEmail('')
+                                        setPasswordResetMessage('')
+                                        setPasswordResetError('')
+                                    }}
+                                    disabled={isPasswordResetLoading}
+                                    className="flex-1"
                                 >
-                                    {showConfirmPassword ? <Icons.eyeOff className="h-4 w-4" /> : <Icons.eye className="h-4 w-4" />}
+                                    Clear
+                                </Button>
+                                <Button
+                                    type="submit"
+                                    disabled={isPasswordResetLoading || !email.trim()}
+                                    className="flex-1"
+                                >
+                                    {isPasswordResetLoading ? (
+                                        <>
+                                            <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                                            Sending...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Icons.mail className="mr-2 h-4 w-4" />
+                                            Send Reset Link
+                                        </>
+                                    )}
                                 </Button>
                             </div>
-                        </div>
+                        </form>
                     </div>
-
-                    <MetaButton onClick={handlePasswordUpdate} disabled={isLoading}>
-                        {isLoading ? 'Updating...' : 'Update Password'}
-                    </MetaButton>
                 </CardContent>
             </Card>
 
- 
+
         </div>
     )
 }
