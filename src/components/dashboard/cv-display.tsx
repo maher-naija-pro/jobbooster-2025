@@ -21,10 +21,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { CVData } from '@/lib/types';
 import { Icons } from '@/components/icons';
-import { ExternalLink, BarChart3 } from 'lucide-react';
+import { ExternalLink, BarChart3, Upload } from 'lucide-react';
 import { logger } from '@/lib/logger';
 import { RefreshButton } from '@/components/buttons/refresh-button';
 import { CVDisplaySkeleton } from './cv-skeleton';
+import { CVUploadModal } from '@/components/cv/cv-upload-modal';
 
 /**
  * Props interface for the CVDisplay component
@@ -32,10 +33,22 @@ import { CVDisplaySkeleton } from './cv-skeleton';
 interface CVDisplayProps {
   /** Callback function called when a CV is removed */
   onFileRemove?: (cvId: string) => void;
+  /** Callback function called when a file is uploaded */
+  onFileUpload?: (file: File) => Promise<void>;
   /** Additional CSS classes to apply to the component */
   className?: string;
   /** Trigger value that causes the component to refresh when changed */
   refreshTrigger?: number;
+  /** CV data for upload modal */
+  cvData?: CVData | null;
+  /** Processing state for upload modal */
+  isProcessing?: boolean;
+  /** Error state for upload modal */
+  error?: string | null;
+  /** Upload progress for upload modal */
+  uploadProgress?: number;
+  /** Uploading state for upload modal */
+  isUploading?: boolean;
 }
 
 /**
@@ -105,13 +118,19 @@ interface DatabaseCVData {
  */
 export function CVDisplay({
   onFileRemove,
+  onFileUpload,
   className,
-  refreshTrigger
+  refreshTrigger,
+  cvData,
+  isProcessing = false,
+  error = null,
+  uploadProgress = 0,
+  isUploading = false
 }: CVDisplayProps) {
   // State management for CV data and UI states
   const [cvDataList, setCvDataList] = useState<CVData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [removingCvId, setRemovingCvId] = useState<string | null>(null);
 
   /**
@@ -167,7 +186,7 @@ export function CVDisplay({
   const fetchCVs = useCallback(async () => {
     try {
       setLoading(true);
-      setError(null);
+      setFetchError(null);
 
       logger.info('Fetching CVs from database');
 
@@ -193,7 +212,7 @@ export function CVDisplay({
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch CVs';
-      setError(errorMessage);
+      setFetchError(errorMessage);
       logger.error('Failed to fetch CVs', { error: errorMessage });
     } finally {
       setLoading(false);
@@ -231,7 +250,7 @@ export function CVDisplay({
       logger.info('CV removed successfully', { cvId });
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to remove CV';
-      setError(errorMessage);
+      setFetchError(errorMessage);
       logger.error('Failed to remove CV', { cvId, error: errorMessage });
     } finally {
       setRemovingCvId(null);
@@ -258,7 +277,28 @@ export function CVDisplay({
         <CardDescription className="text-slate-600 text-base">
           View and manage your uploaded CVs
         </CardDescription>
-        <div className="flex justify-end">
+        <div className="flex justify-end items-center gap-2">
+          {onFileUpload && (
+            <CVUploadModal
+              onFileUpload={onFileUpload}
+              onFileRemove={() => { }}
+              cvData={cvData}
+              isProcessing={isProcessing}
+              error={error}
+              uploadProgress={uploadProgress}
+              isUploading={isUploading}
+              cvDataList={cvDataList}
+            >
+              <Button
+                variant="default"
+                size="sm"
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                Upload CV
+              </Button>
+            </CVUploadModal>
+          )}
           <RefreshButton
             onRefresh={fetchCVs}
             isLoading={loading}
@@ -275,10 +315,10 @@ export function CVDisplay({
           {loading && <CVDisplaySkeleton />}
 
           {/* Error state - displays error message with retry button */}
-          {error && (
+          {fetchError && (
             <div className="text-center py-8">
               <Icons.clean className="h-8 w-8 text-red-500 mx-auto mb-4" />
-              <p className="text-red-600 mb-4">{error}</p>
+              <p className="text-red-600 mb-4">{fetchError}</p>
               <Button
                 size="sm"
                 variant="outline"
@@ -292,7 +332,7 @@ export function CVDisplay({
           )}
 
           {/* CVs list - displays all uploaded CVs with their metadata and actions */}
-          {!loading && !error && cvDataList.length > 0 && (
+          {!loading && !fetchError && cvDataList.length > 0 && (
             <div className="space-y-3">
               {cvDataList.map((cv) => (
                 <div
@@ -369,7 +409,7 @@ export function CVDisplay({
           )}
 
           {/* Empty state - shown when no CVs are uploaded */}
-          {!loading && !error && cvDataList.length === 0 && (
+          {!loading && !fetchError && cvDataList.length === 0 && (
             <div className="text-center py-8">
               <Icons.fileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-muted-foreground mb-4">No CVs uploaded yet</p>

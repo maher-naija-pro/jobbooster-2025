@@ -391,41 +391,19 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                         aria-label="Main dashboard content"
                         className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-8"
                     >
-                        {/* CV Upload Card */}
-                        <section aria-labelledby="cv-upload-heading" className="lg:col-span-1">
-                            <Card className="h-full border-0 shadow-lg bg-white/90 backdrop-blur-sm">
-                                <CardHeader className="pb-4">
-                                    <CardTitle className="flex items-center gap-3 text-xl font-bold text-slate-900">
-                                        <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500">
-                                            <Icons.fileText className="h-6 w-6 text-white" aria-hidden="true" />
-                                        </div>
-                                        Upload CV
-                                    </CardTitle>
-                                    <CardDescription className="text-slate-600 text-base">
-                                        Upload a new CV or resume to get started
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <CVUpload
-                                        onFileUpload={handleFileUpload}
-                                        onFileRemove={() => { }} // Not used for individual CV removal
-                                        cvData={cvDataList.find(cv => cv.status === 'processing') || null}
-                                        isProcessing={isProcessing}
-                                        error={error}
-                                        uploadProgress={uploadProgress}
-                                        isUploading={isUploading}
-                                        className="w-full"
-                                        cvDataList={cvDataList}
-                                    />
-                                </CardContent>
-                            </Card>
-                        </section>
+
 
                         {/* CV Display Form */}
                         <section aria-labelledby="cv-display-heading" className="lg:col-span-1">
                             <CVDisplay
                                 onFileRemove={handleFileRemove}
+                                onFileUpload={handleFileUpload}
                                 refreshTrigger={Date.now()}
+                                cvData={cvDataList.find(cv => cv.status === 'processing') || null}
+                                isProcessing={isProcessing}
+                                error={error}
+                                uploadProgress={uploadProgress}
+                                isUploading={isUploading}
                             />
                         </section>
 

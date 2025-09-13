@@ -105,6 +105,11 @@ export function MetaButton({
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         if (isLoading || disabled || isClicked) return
 
+        // Prevent default behavior if event exists
+        if (event && event.preventDefault) {
+            event.preventDefault()
+        }
+
         setIsClicked(true)
 
         // Analytics tracking
