@@ -4,6 +4,7 @@ import React, { useState, useCallback, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Alert, AlertDescription } from '../ui/alert';
+import { Card, CardContent } from '../ui/card';
 import { JobOfferInput } from '../job-offer-input';
 import { useJobData } from '@/hooks/useJobData';
 import { Icons } from '../icons';
@@ -277,152 +278,161 @@ export function AddJobOfferModal({ isOpen, onClose, className }: AddJobOfferModa
 
     return (
         <Dialog open={isOpen} onOpenChange={handleClose}>
-            <DialogContent className={`max-w-2xl max-h-[90vh] overflow-y-auto ${className}`}>
-                <DialogHeader>
+            <DialogContent className={`max-w-2xl max-h-[90vh] overflow-y-auto bg-white/95 backdrop-blur-sm border-0 shadow-2xl ${className}`}>
+                <DialogHeader className="pb-6">
                     <DialogTitle className="flex items-center gap-3 text-xl font-bold text-slate-900">
-                        <div className="p-2 rounded-lg bg-gradient-to-br from-orange-500 to-amber-500">
+                        <div className="p-2 rounded-lg bg-gradient-to-br from-orange-500 to-amber-500 shadow-lg">
                             <Icons.briefcase className="h-6 w-6 text-white" aria-hidden="true" />
                         </div>
                         Add Job Offer
                     </DialogTitle>
-                    <DialogDescription className="text-slate-600 text-base">
+                    <DialogDescription className="text-slate-600 text-base mt-2">
                         Save a new job offer for analysis and tracking
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {/* Job Title Field */}
-                        <div className="space-y-2">
-                            <Label
-                                htmlFor="modal-job-title"
-                                className="text-sm font-medium text-gray-700 flex items-center gap-2"
-                            >
-                                <Briefcase className="w-4 h-4 text-gray-500" aria-hidden="true" />
-                                Job Title (Optional)
-                            </Label>
-                            <div className="relative">
-                                <Input
-                                    id="modal-job-title"
-                                    type="text"
-                                    value={newJobTitle}
-                                    onChange={(e) => {
-                                        setNewJobTitle(e.target.value);
-                                        handleFieldChange('title', e.target.value, validateTitle);
-                                    }}
-                                    onBlur={() => handleFieldBlur('title')}
-                                    placeholder="e.g., Senior Frontend Developer"
-                                    className={cn(
-                                        "pl-10 transition-all duration-200",
-                                        fieldErrors.title.error && touchedFields.has('title') && "border-red-300 focus:border-red-500 focus:ring-red-500",
-                                        fieldErrors.title.success && !fieldErrors.title.error && "border-green-300 focus:border-green-500 focus:ring-green-500"
-                                    )}
-                                    aria-invalid={fieldErrors.title.error ? 'true' : 'false'}
-                                    aria-describedby={fieldErrors.title.error ? 'modal-job-title-error' : fieldErrors.title.success ? 'modal-job-title-success' : undefined}
-                                />
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Briefcase className="w-4 h-4 text-gray-400" aria-hidden="true" />
+                <div className="space-y-6">
+                    {/* Form Fields Card */}
+                    <Card className="overflow-hidden border-0 shadow-sm hover:shadow-lg transition-all duration-300">
+                        <CardContent className="p-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Job Title Field */}
+                                <div className="space-y-2">
+                                    <Label
+                                        htmlFor="modal-job-title"
+                                        className="text-sm font-medium text-gray-700 flex items-center gap-2"
+                                    >
+                                        <Briefcase className="w-4 h-4 text-gray-500" aria-hidden="true" />
+                                        Job Title (Optional)
+                                    </Label>
+                                    <div className="relative">
+                                        <Input
+                                            id="modal-job-title"
+                                            type="text"
+                                            value={newJobTitle}
+                                            onChange={(e) => {
+                                                setNewJobTitle(e.target.value);
+                                                handleFieldChange('title', e.target.value, validateTitle);
+                                            }}
+                                            onBlur={() => handleFieldBlur('title')}
+                                            placeholder="e.g., Senior Frontend Developer"
+                                            className={cn(
+                                                "pl-10 transition-all duration-200",
+                                                fieldErrors.title.error && touchedFields.has('title') && "border-red-300 focus:border-red-500 focus:ring-red-500",
+                                                fieldErrors.title.success && !fieldErrors.title.error && "border-green-300 focus:border-green-500 focus:ring-green-500"
+                                            )}
+                                            aria-invalid={fieldErrors.title.error ? 'true' : 'false'}
+                                            aria-describedby={fieldErrors.title.error ? 'modal-job-title-error' : fieldErrors.title.success ? 'modal-job-title-success' : undefined}
+                                        />
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <Briefcase className="w-4 h-4 text-gray-400" aria-hidden="true" />
+                                        </div>
+                                    </div>
+                                    {renderFieldMessage('title', 'Job Title')}
+                                </div>
+
+                                {/* Company Field */}
+                                <div className="space-y-2">
+                                    <Label
+                                        htmlFor="modal-company"
+                                        className="text-sm font-medium text-gray-700 flex items-center gap-2"
+                                    >
+                                        <Building2 className="w-4 h-4 text-gray-500" aria-hidden="true" />
+                                        Company (Optional)
+                                    </Label>
+                                    <div className="relative">
+                                        <Input
+                                            id="modal-company"
+                                            type="text"
+                                            value={newJobCompany}
+                                            onChange={(e) => {
+                                                setNewJobCompany(e.target.value);
+                                                handleFieldChange('company', e.target.value, validateCompany);
+                                            }}
+                                            onBlur={() => handleFieldBlur('company')}
+                                            placeholder="e.g., Tech Corp"
+                                            className={cn(
+                                                "pl-10 transition-all duration-200",
+                                                fieldErrors.company.error && touchedFields.has('company') && "border-red-300 focus:border-red-500 focus:ring-red-500",
+                                                fieldErrors.company.success && !fieldErrors.company.error && "border-green-300 focus:border-green-500 focus:ring-green-500"
+                                            )}
+                                            aria-invalid={fieldErrors.company.error ? 'true' : 'false'}
+                                            aria-describedby={fieldErrors.company.error ? 'modal-company-error' : fieldErrors.company.success ? 'modal-company-success' : undefined}
+                                        />
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <Building2 className="w-4 h-4 text-gray-400" aria-hidden="true" />
+                                        </div>
+                                    </div>
+                                    {renderFieldMessage('company', 'Company')}
                                 </div>
                             </div>
-                            {renderFieldMessage('title', 'Job Title')}
-                        </div>
 
-                        {/* Company Field */}
-                        <div className="space-y-2">
-                            <Label
-                                htmlFor="modal-company"
-                                className="text-sm font-medium text-gray-700 flex items-center gap-2"
-                            >
-                                <Building2 className="w-4 h-4 text-gray-500" aria-hidden="true" />
-                                Company (Optional)
-                            </Label>
-                            <div className="relative">
-                                <Input
-                                    id="modal-company"
-                                    type="text"
-                                    value={newJobCompany}
-                                    onChange={(e) => {
-                                        setNewJobCompany(e.target.value);
-                                        handleFieldChange('company', e.target.value, validateCompany);
-                                    }}
-                                    onBlur={() => handleFieldBlur('company')}
-                                    placeholder="e.g., Tech Corp"
-                                    className={cn(
-                                        "pl-10 transition-all duration-200",
-                                        fieldErrors.company.error && touchedFields.has('company') && "border-red-300 focus:border-red-500 focus:ring-red-500",
-                                        fieldErrors.company.success && !fieldErrors.company.error && "border-green-300 focus:border-green-500 focus:ring-green-500"
-                                    )}
-                                    aria-invalid={fieldErrors.company.error ? 'true' : 'false'}
-                                    aria-describedby={fieldErrors.company.error ? 'modal-company-error' : fieldErrors.company.success ? 'modal-company-success' : undefined}
-                                />
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Building2 className="w-4 h-4 text-gray-400" aria-hidden="true" />
+                            {/* Job Link Field */}
+                            <div className="space-y-2 mt-6">
+                                <Label
+                                    htmlFor="modal-job-link"
+                                    className="text-sm font-medium text-gray-700 flex items-center gap-2"
+                                >
+                                    <Link className="w-4 h-4 text-gray-500" aria-hidden="true" />
+                                    Job Link (Optional)
+                                </Label>
+                                <div className="relative">
+                                    <Input
+                                        id="modal-job-link"
+                                        type="url"
+                                        value={newJobLink}
+                                        onChange={(e) => {
+                                            setNewJobLink(e.target.value);
+                                            handleFieldChange('jobLink', e.target.value, validateJobLink);
+                                        }}
+                                        onBlur={() => handleFieldBlur('jobLink')}
+                                        placeholder="e.g., https://company.com/jobs/123"
+                                        className={cn(
+                                            "pl-10 transition-all duration-200",
+                                            fieldErrors.jobLink.error && touchedFields.has('jobLink') && "border-red-300 focus:border-red-500 focus:ring-red-500",
+                                            fieldErrors.jobLink.success && !fieldErrors.jobLink.error && "border-green-300 focus:border-green-500 focus:ring-green-500"
+                                        )}
+                                        aria-invalid={fieldErrors.jobLink.error ? 'true' : 'false'}
+                                        aria-describedby={fieldErrors.jobLink.error ? 'modal-job-link-error' : fieldErrors.jobLink.success ? 'modal-job-link-success' : undefined}
+                                    />
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <Link className="w-4 h-4 text-gray-400" aria-hidden="true" />
+                                    </div>
                                 </div>
+                                {renderFieldMessage('jobLink', 'Job Link')}
                             </div>
-                            {renderFieldMessage('company', 'Company')}
-                        </div>
-                    </div>
+                        </CardContent>
+                    </Card>
 
-                    {/* Job Link Field */}
-                    <div className="space-y-2">
-                        <Label
-                            htmlFor="modal-job-link"
-                            className="text-sm font-medium text-gray-700 flex items-center gap-2"
-                        >
-                            <Link className="w-4 h-4 text-gray-500" aria-hidden="true" />
-                            Job Link (Optional)
-                        </Label>
-                        <div className="relative">
-                            <Input
-                                id="modal-job-link"
-                                type="url"
-                                value={newJobLink}
-                                onChange={(e) => {
-                                    setNewJobLink(e.target.value);
-                                    handleFieldChange('jobLink', e.target.value, validateJobLink);
-                                }}
-                                onBlur={() => handleFieldBlur('jobLink')}
-                                placeholder="e.g., https://company.com/jobs/123"
-                                className={cn(
-                                    "pl-10 transition-all duration-200",
-                                    fieldErrors.jobLink.error && touchedFields.has('jobLink') && "border-red-300 focus:border-red-500 focus:ring-red-500",
-                                    fieldErrors.jobLink.success && !fieldErrors.jobLink.error && "border-green-300 focus:border-green-500 focus:ring-green-500"
+                    {/* Job Content Field Card */}
+                    <Card className="overflow-hidden border-0 shadow-sm hover:shadow-lg transition-all duration-300">
+                        <CardContent className="p-6">
+                            <div className="space-y-2">
+                                <JobOfferInput
+                                    value={newJobContent}
+                                    onChange={(value) => {
+                                        setNewJobContent(value);
+                                        handleFieldChange('content', value, validateContent);
+                                    }}
+                                    onClear={() => {
+                                        setNewJobContent('');
+                                        handleFieldChange('content', '', validateContent);
+                                    }}
+                                    error={fieldErrors.content.error && touchedFields.has('content') ? fieldErrors.content.error : saveError}
+                                    onSave={handleSaveJobOffer}
+                                    isSaving={isSaving}
+                                    showSaveButton={false}
+                                    className="w-full"
+                                />
+                                {fieldErrors.content.success && !fieldErrors.content.error && (
+                                    <div className="flex items-center text-sm text-green-600">
+                                        <CheckCircle className="w-4 h-4 mr-1 flex-shrink-0" aria-hidden="true" />
+                                        <span>{fieldErrors.content.success}</span>
+                                    </div>
                                 )}
-                                aria-invalid={fieldErrors.jobLink.error ? 'true' : 'false'}
-                                aria-describedby={fieldErrors.jobLink.error ? 'modal-job-link-error' : fieldErrors.jobLink.success ? 'modal-job-link-success' : undefined}
-                            />
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Link className="w-4 h-4 text-gray-400" aria-hidden="true" />
                             </div>
-                        </div>
-                        {renderFieldMessage('jobLink', 'Job Link')}
-                    </div>
-
-                    {/* Job Content Field */}
-                    <div className="space-y-2">
-                        <JobOfferInput
-                            value={newJobContent}
-                            onChange={(value) => {
-                                setNewJobContent(value);
-                                handleFieldChange('content', value, validateContent);
-                            }}
-                            onClear={() => {
-                                setNewJobContent('');
-                                handleFieldChange('content', '', validateContent);
-                            }}
-                            error={fieldErrors.content.error && touchedFields.has('content') ? fieldErrors.content.error : saveError}
-                            onSave={handleSaveJobOffer}
-                            isSaving={isSaving}
-                            showSaveButton={false}
-                            className="w-full"
-                        />
-                        {fieldErrors.content.success && !fieldErrors.content.error && (
-                            <div className="flex items-center text-sm text-green-600">
-                                <CheckCircle className="w-4 h-4 mr-1 flex-shrink-0" aria-hidden="true" />
-                                <span>{fieldErrors.content.success}</span>
-                            </div>
-                        )}
-                    </div>
+                        </CardContent>
+                    </Card>
 
                     {/* Error Display */}
                     {saveError && (
@@ -432,25 +442,30 @@ export function AddJobOfferModal({ isOpen, onClose, className }: AddJobOfferModa
                         </Alert>
                     )}
 
-                    {/* Action Buttons */}
-                    <div className="flex justify-end gap-3 pt-3 border-t">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={handleClose}
-                            disabled={isSaving}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            type="button"
-                            onClick={handleSaveJobOffer}
-                            disabled={isSaving || !newJobContent.trim()}
-                            className="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white"
-                        >
-                            {isSaving ? 'Saving...' : 'Save Job Offer'}
-                        </Button>
-                    </div>
+                    {/* Action Buttons Card */}
+                    <Card className="overflow-hidden border-0 shadow-sm">
+                        <CardContent className="p-6">
+                            <div className="flex justify-end gap-3">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={handleClose}
+                                    disabled={isSaving}
+                                    className="px-6 py-2 transition-all duration-200 hover:shadow-md"
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    type="button"
+                                    onClick={handleSaveJobOffer}
+                                    disabled={isSaving || !newJobContent.trim()}
+                                    className="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white px-6 py-2 transition-all duration-200 hover:shadow-md"
+                                >
+                                    {isSaving ? 'Saving...' : 'Save Job Offer'}
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
                 </div>
             </DialogContent>
         </Dialog>
