@@ -11,6 +11,7 @@ import { JobData } from '@/lib/types';
 import { Icons } from '../icons';
 import { RefreshButton } from '../buttons/refresh-button';
 import { Trash2, Eye, Archive, ArchiveRestore, Calendar, MapPin, Building2 } from 'lucide-react';
+import { DeleteConfirmationModal } from '../ui/delete-confirmation-modal';
 
 interface JobOfferManagerProps {
     className?: string;
@@ -23,6 +24,11 @@ export function JobOfferManager({ className }: JobOfferManagerProps) {
     const [newJobLink, setNewJobLink] = useState('');
     const [isSaving, setIsSaving] = useState(false);
     const [saveError, setSaveError] = useState<string | null>(null);
+
+    // Delete confirmation modal state
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [jobToDelete, setJobToDelete] = useState<JobData | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const {
         jobData,
@@ -64,13 +70,42 @@ export function JobOfferManager({ className }: JobOfferManagerProps) {
         }
     };
 
-    const handleDeleteJob = async (id: string) => {
-        if (confirm('Are you sure you want to delete this job offer?')) {
-            try {
-                await deleteJobData(id);
-            } catch (err) {
-                console.error('Failed to delete job offer:', err);
-            }
+    /**
+     * Handles opening the delete confirmation modal for a job offer
+     * 
+     * @param job - The job offer object to delete
+     */
+    const handleDeleteClick = (job: JobData) => {
+        setJobToDelete(job);
+        setDeleteModalOpen(true);
+    };
+
+    /**
+     * Handles the actual deletion of a job offer
+     * Called when user confirms deletion in the modal
+     */
+    const handleConfirmDelete = async () => {
+        if (!jobToDelete) return;
+
+        try {
+            setIsDeleting(true);
+            await deleteJobData(jobToDelete.id);
+            setDeleteModalOpen(false);
+            setJobToDelete(null);
+        } catch (err) {
+            console.error('Failed to delete job offer:', err);
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
+    /**
+     * Handles closing the delete confirmation modal
+     */
+    const handleCloseDeleteModal = () => {
+        if (!isDeleting) {
+            setDeleteModalOpen(false);
+            setJobToDelete(null);
         }
     };
 
@@ -312,7 +347,7 @@ export function JobOfferManager({ className }: JobOfferManagerProps) {
                                     <Button
                                         size="sm"
                                         variant="ghost"
-                                        onClick={() => handleDeleteJob(job.id)}
+                                        onClick={() => handleDeleteClick(job)}
                                         className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
                                     >
                                         <Trash2 className="h-4 w-4" />
@@ -324,6 +359,16 @@ export function JobOfferManager({ className }: JobOfferManagerProps) {
                 </div>
 
             </CardContent>
+
+            {/* Delete Confirmation Modal */}
+            <DeleteConfirmationModal
+                isOpen={deleteModalOpen}
+                onClose={handleCloseDeleteModal}
+                onConfirm={handleConfirmDelete}
+                itemTitle={jobToDelete?.title || jobToDelete?.company || 'Job Offer'}
+                itemType="Job Offer"
+                isDeleting={isDeleting}
+            />
         </Card>
     );
 }
