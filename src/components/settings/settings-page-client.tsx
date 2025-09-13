@@ -4,10 +4,8 @@ import { useState } from 'react'
 import { Icons } from '@/components/icons'
 import { DataExportModal } from '@/components/gdpr/DataExportModal'
 import { DataDeletionModal } from '@/components/gdpr/DataDeletionModal'
-import { PreferencesForm } from '@/components/user/preferences-form'
-import { UserProfileSettings } from '@/components/settings/user-profile-settings'
 import { NotificationSettings } from '@/components/settings/notification-settings'
-import { SecuritySettings } from '@/components/settings/security-settings'
+
 import { PrivacySettings } from '@/components/settings/privacy-settings'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { isNotificationsEnabled } from '@/lib/feature-flags'
@@ -118,14 +116,8 @@ export function SettingsPageClient({ profile, message }: SettingsPageClientProps
                     {/* Main Settings Tabs */}
                     <Tabs defaultValue="profile" className="space-y-6">
                         <TabsList className={`grid w-full ${notificationsEnabled ? 'grid-cols-4' : 'grid-cols-3'}`}>
-                            <TabsTrigger value="profile" className="flex items-center gap-2">
-                                <Icons.user className="h-4 w-4" />
-                                Profile
-                            </TabsTrigger>
-                            <TabsTrigger value="security" className="flex items-center gap-2">
-                                <Icons.lock className="h-4 w-4" />
-                                Security
-                            </TabsTrigger>
+
+
                             {notificationsEnabled && (
                                 <TabsTrigger value="notifications" className="flex items-center gap-2">
                                     <Icons.bell className="h-4 w-4" />
@@ -138,23 +130,7 @@ export function SettingsPageClient({ profile, message }: SettingsPageClientProps
                             </TabsTrigger>
                         </TabsList>
 
-                        {/* Profile Tab */}
-                        <TabsContent value="profile" className="space-y-4">
-                            <div className="flex items-center gap-2 mb-4">
-                                <Icons.user className="h-6 w-6 text-blue-600" />
-                                <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Profile Settings</h2>
-                            </div>
-                            <UserProfileSettings profile={profile} />
-                        </TabsContent>
 
-                        {/* Security Tab */}
-                        <TabsContent value="security" className="space-y-4">
-                            <div className="flex items-center gap-2 mb-4">
-                                <Icons.lock className="h-6 w-6 text-blue-600" />
-                                <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Security Settings</h2>
-                            </div>
-                            <SecuritySettings profile={profile} />
-                        </TabsContent>
 
                         {/* Notifications Tab */}
                         {notificationsEnabled && (
