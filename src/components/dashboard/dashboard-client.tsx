@@ -299,7 +299,7 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                                     </p>
                                     {jobOffersError && (
                                         <p className="text-sm text-red-600 mt-2 flex items-center gap-1">
-                                            <Icons.alertCircle className="h-4 w-4" aria-hidden="true" />
+                                          gaf  <Icons.alertCircle className="h-4 w-4" aria-hidden="true" />
                                             Error loading data
                                         </p>
                                     )}
@@ -327,65 +327,6 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                         </div>
                     </section>
 
-                    {/* Quick Actions */}
-                    <section aria-labelledby="quick-actions-heading">
-                        <Card className="border-0 shadow-lg bg-white/90 backdrop-blur-sm">
-                            <CardHeader className="pb-4">
-                                <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-3">
-                                    <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
-                                        <Icons.zap className="h-5 w-5 sm:h-6 sm:w-6 text-white" aria-hidden="true" />
-                                    </div>
-                                    Quick Actions
-                                </CardTitle>
-                                <CardDescription className="text-slate-600 text-sm sm:text-base">
-                                    Common tasks and shortcuts to help you get started
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                                    <Button
-                                        className="w-full justify-start h-12 text-left group hover:shadow-md transition-all duration-200"
-                                        variant="outline"
-                                        aria-label="Generate a cover letter for job applications"
-                                    >
-                                        <div className="p-2 rounded-lg bg-blue-100 group-hover:bg-blue-200 transition-colors mr-3">
-                                            <Icons.mail className="h-5 w-5 text-blue-600" aria-hidden="true" />
-                                        </div>
-                                        <div>
-                                            <div className="font-semibold">Generate Cover Letter</div>
-                                            <div className="text-sm text-slate-500">Create personalized cover letters</div>
-                                        </div>
-                                    </Button>
-                                    <Button
-                                        className="w-full justify-start h-12 text-left group hover:shadow-md transition-all duration-200"
-                                        variant="outline"
-                                        aria-label="Generate professional emails"
-                                    >
-                                        <div className="p-2 rounded-lg bg-green-100 group-hover:bg-green-200 transition-colors mr-3">
-                                            <Icons.mail className="h-5 w-5 text-green-600" aria-hidden="true" />
-                                        </div>
-                                        <div>
-                                            <div className="font-semibold">Generate Email</div>
-                                            <div className="text-sm text-slate-500">Professional email templates</div>
-                                        </div>
-                                    </Button>
-                                    <Button
-                                        className="w-full justify-start h-12 text-left group hover:shadow-md transition-all duration-200"
-                                        variant="outline"
-                                        aria-label="Analyze your CV for improvements"
-                                    >
-                                        <div className="p-2 rounded-lg bg-purple-100 group-hover:bg-purple-200 transition-colors mr-3">
-                                            <Icons.search className="h-5 w-5 text-purple-600" aria-hidden="true" />
-                                        </div>
-                                        <div>
-                                            <div className="font-semibold">Analyze CV</div>
-                                            <div className="text-sm text-slate-500">Get CV improvement suggestions</div>
-                                        </div>
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </section>
 
                     {/* Main Content */}
                     <main
