@@ -11,6 +11,7 @@ import { RefreshButton } from '../buttons/refresh-button';
 import { Trash2, Archive, ArchiveRestore, Calendar, MapPin, Building2, ExternalLink, Eye, Plus } from 'lucide-react';
 import { JobOffersDisplaySkeleton } from './job-offer-skeleton';
 import { AddJobOfferModal } from './add-job-offer-modal';
+import { JobViewModal } from './job-view-modal';
 import { MetaButton } from '../buttons/meta-button';
 import { DeleteConfirmationModal } from '../ui/delete-confirmation-modal';
 
@@ -44,6 +45,10 @@ export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [jobToDelete, setJobToDelete] = useState<any>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+
+    // Job view modal state
+    const [isJobViewModalOpen, setIsJobViewModalOpen] = useState(false);
+    const [selectedJob, setSelectedJob] = useState<any>(null);
 
     // Custom hook to manage job data state and operations
     const {
@@ -121,16 +126,61 @@ export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
 
     /**
      * Handles viewing job offer details
-     * Opens a modal or navigates to detailed view
+     * Opens the job view modal with the selected job
      * 
      * @param job - The job offer object to view
      */
     const handleViewJob = (job: any) => {
-        // For now, we'll just log the job details
-        // In a real implementation, this would open a modal or navigate to a detail page
         console.log('Viewing job offer:', job);
-        // You can implement modal opening or navigation here
-        // Example: setSelectedJob(job); setShowModal(true);
+        setSelectedJob(job);
+        setIsJobViewModalOpen(true);
+    };
+
+    /**
+     * Handles closing the job view modal
+     */
+    const handleCloseJobViewModal = () => {
+        setIsJobViewModalOpen(false);
+        setSelectedJob(null);
+    };
+
+    /**
+     * Handles editing a job offer
+     * 
+     * @param job - The job offer object to edit
+     */
+    const handleEditJob = (job: any) => {
+        console.log('Editing job offer:', job);
+        // TODO: Implement edit functionality
+        // This could open an edit modal or navigate to an edit page
+    };
+
+    /**
+     * Handles archiving a job offer
+     * 
+     * @param job - The job offer object to archive
+     */
+    const handleArchiveJob = async (job: any) => {
+        try {
+            await archiveJobData(job.id);
+            refetch(); // Refresh the list
+        } catch (err) {
+            console.error('Failed to archive job offer:', err);
+        }
+    };
+
+    /**
+     * Handles unarchiving a job offer
+     * 
+     * @param job - The job offer object to unarchive
+     */
+    const handleUnarchiveJob = async (job: any) => {
+        try {
+            await unarchiveJobData(job.id);
+            refetch(); // Refresh the list
+        } catch (err) {
+            console.error('Failed to unarchive job offer:', err);
+        }
     };
 
     /**
@@ -385,6 +435,17 @@ export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
                 itemTitle={jobToDelete?.title || jobToDelete?.company || 'Job Offer'}
                 itemType="Job Offer"
                 isDeleting={isDeleting}
+            />
+
+            {/* Job View Modal */}
+            <JobViewModal
+                isOpen={isJobViewModalOpen}
+                onClose={handleCloseJobViewModal}
+                job={selectedJob}
+                onEdit={handleEditJob}
+                onDelete={handleDeleteClick}
+                onArchive={handleArchiveJob}
+                onUnarchive={handleUnarchiveJob}
             />
         </Card>
     );
