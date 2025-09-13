@@ -299,7 +299,7 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                                     </p>
                                     {jobOffersError && (
                                         <p className="text-sm text-red-600 mt-2 flex items-center gap-1">
-                                          gaf  <Icons.alertCircle className="h-4 w-4" aria-hidden="true" />
+                                            <Icons.alertCircle className="h-4 w-4" aria-hidden="true" />
                                             Error loading data
                                         </p>
                                     )}
@@ -309,19 +309,25 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                             <Card className="group hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-white/80 backdrop-blur-sm">
                                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                                     <CardTitle className="text-sm font-semibold text-slate-700">
-                                        Account Status
+                                        Generate Content
                                     </CardTitle>
                                     <div className="p-2 rounded-lg bg-orange-100 group-hover:bg-orange-200 transition-colors">
-                                        <Icons.user className="h-5 w-5 text-orange-600" aria-hidden="true" />
+                                        <Icons.zap className="h-5 w-5 text-orange-600" aria-hidden="true" />
                                     </div>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-3xl font-bold text-slate-900 mb-1">
-                                        {user.email_confirmed_at ? 'Verified' : 'Pending'}
+                                    <div className="text-3xl font-bold text-slate-900 mb-3">
+                                        Ready to Generate
                                     </div>
-                                    <p className="text-sm text-slate-600">
-                                        {subscription.plan} plan
+                                    <p className="text-sm text-slate-600 mb-4">
+                                        Create personalized content for your job applications
                                     </p>
+                                    <Button
+                                        onClick={() => window.location.href = '/'}
+                                        className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200"
+                                    >
+                                        Generate
+                                    </Button>
                                 </CardContent>
                             </Card>
                         </div>
