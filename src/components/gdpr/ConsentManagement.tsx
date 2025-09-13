@@ -330,11 +330,10 @@ export function ConsentManagement({ onSave, onReset }: ConsentManagementProps) {
             </Card>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-4">
+            <div className="flex justify-end pt-4">
                 <MetaButton
                     onClick={handleSave}
                     disabled={!hasChanges || isLoading}
-                    className="flex-1"
                 >
                     {isLoading ? 'Saving...' : 'Save Preferences'}
                 </MetaButton>
