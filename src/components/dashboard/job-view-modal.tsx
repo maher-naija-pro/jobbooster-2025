@@ -208,14 +208,14 @@ export function JobViewModal({
                                     </div>
                                 </div>
 
-                                {/* Job Link */}
-                                {job.jobLink && (
-                                    <div className="space-y-2 lg:col-span-2">
-                                        <div className="flex items-center gap-2 text-sm font-medium text-slate-700">
-                                            <ExternalLink className="h-4 w-4 text-blue-500 flex-shrink-0" />
-                                            Job Link
-                                        </div>
-                                        <div className="bg-white p-3 rounded-lg border">
+                                {/* Job Link - Always display */}
+                                <div className="space-y-2 lg:col-span-2">
+                                    <div className="flex items-center gap-2 text-sm font-medium text-slate-700">
+                                        <ExternalLink className="h-4 w-4 text-blue-500 flex-shrink-0" />
+                                        Job Link
+                                    </div>
+                                    <div className="bg-white p-3 rounded-lg border min-h-[3rem] flex items-center">
+                                        {job.jobLink ? (
                                             <a
                                                 href={job.jobLink}
                                                 target="_blank"
@@ -224,9 +224,13 @@ export function JobViewModal({
                                             >
                                                 {job.jobLink}
                                             </a>
-                                        </div>
+                                        ) : (
+                                            <span className="text-slate-400 italic text-sm">
+                                                No job link provided
+                                            </span>
+                                        )}
                                     </div>
-                                )}
+                                </div>
                             </div>
                         </CardHeader>
                     </Card>
