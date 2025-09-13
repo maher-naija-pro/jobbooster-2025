@@ -1,4 +1,4 @@
-import { ArrowRight, LogIn, Settings, User, User2Icon, UserX2Icon, X, Shield, Lock, Mail, Loader2 as Spinner, FileText, Bookmark, Briefcase, Search, Eye, Calendar, AlertCircle, Zap, RotateCcw } from "lucide-react"
+import { ArrowRight, LogIn, Settings, User, User2Icon, UserX2Icon, X, Shield, Lock, Mail, Loader2 as Spinner, FileText, Bookmark, Briefcase, Search, Eye, Calendar, AlertCircle, Zap, RotateCcw, BarChart3, Bell, Globe, Cookie, Download, Trash2, Database, Smartphone, Key, Monitor, AlertTriangle, CheckCircle, EyeOff } from "lucide-react"
 import { HiOutlineTrash } from "react-icons/hi2";
 import { FileUp, Plus, Loader2 } from "lucide-react";
 import { MdContentCopy } from "react-icons/md";
@@ -45,4 +45,18 @@ export const Icons = {
   discord: FaDiscord,
   linkedin: FaLinkedin,
   twitter: FaTwitter,
+  // Settings & Analytics
+  barChart3: BarChart3,
+  bell: Bell,
+  globe: Globe,
+  cookie: Cookie,
+  download: Download,
+  trash: Trash2,
+  database: Database,
+  smartphone: Smartphone,
+  key: Key,
+  monitor: Monitor,
+  alertTriangle: AlertTriangle,
+  checkCircle: CheckCircle,
+  eyeOff: EyeOff,
 }

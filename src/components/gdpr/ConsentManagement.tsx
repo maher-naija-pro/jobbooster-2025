@@ -275,47 +275,7 @@ export function ConsentManagement({ onSave, onReset }: ConsentManagementProps) {
                 </CardContent>
             </Card>
 
-            {/* Notifications */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Bell className="h-5 w-5 text-primary" />
-                        Notification Preferences
-                    </CardTitle>
-                    <CardDescription>
-                        Choose how you want to receive updates from us
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    {notificationCategories.map((category) => (
-                        <div
-                            key={category.id}
-                            className={`p-4 rounded-lg border ${category.bgColor} ${preferences[category.id as keyof ConsentPreferences]
-                                ? 'border-primary/20'
-                                : 'border-slate-200 dark:border-slate-700'
-                                }`}
-                        >
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <category.icon className={`h-5 w-5 ${category.color}`} />
-                                    <div>
-                                        <Label className="font-medium">{category.title}</Label>
-                                        <p className="text-sm text-slate-600 dark:text-slate-300">
-                                            {category.description}
-                                        </p>
-                                    </div>
-                                </div>
-                                <Switch
-                                    checked={preferences[category.id as keyof ConsentPreferences]}
-                                    onCheckedChange={(checked) =>
-                                        handlePreferenceChange(category.id as keyof ConsentPreferences, checked)
-                                    }
-                                />
-                            </div>
-                        </div>
-                    ))}
-                </CardContent>
-            </Card>
+
 
             {/* Data Processing */}
             <Card>
