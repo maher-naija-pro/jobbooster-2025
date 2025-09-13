@@ -8,6 +8,8 @@ import { ActionButtons } from '../components/action-buttons';
 import { ContentGenerator } from '../components/content-generator';
 import { UploadHeader } from '../components/upload-header';
 import { useUserLanguage } from '../hooks/use-user-language';
+import { SavedCVSelector } from '../components/generator/saved-cv-selector';
+import { SavedOfferSelector } from '../components/generator/saved-offer-selector';
 
 import { ErrorBoundary } from '../components/error-boundary';
 import { Language } from '../lib/types';
@@ -150,6 +152,16 @@ export default function Home() {
 
   const handleJobOfferClear = () => {
     dispatch({ type: 'CLEAR_JOB_OFFER' });
+  };
+
+  // Handle CV selection from saved CVs
+  const handleCVSelect = (cvData: any) => {
+    dispatch({ type: 'SET_CV_DATA', payload: cvData });
+  };
+
+  // Handle job offer selection from saved offers
+  const handleOfferSelect = (offerData: any) => {
+    dispatch({ type: 'SET_JOB_OFFER', payload: offerData.content });
   };
 
   const handleStreamingGeneration = async (type: 'cover-letter' | 'email') => {
@@ -466,6 +478,13 @@ export default function Home() {
                     isUploading={state.isUploading}
                   />
 
+                  {/* Saved CV Selector - Only for authenticated users */}
+                  <SavedCVSelector
+                    onCVSelect={handleCVSelect}
+                    selectedCV={state.cvData}
+                    className="mt-4"
+                  />
+
                   {/* Language Selection */}
                   <LanguageSelector
                     currentLanguage={state.language}
@@ -478,6 +497,13 @@ export default function Home() {
                     onChange={handleJobOfferChange}
                     onClear={handleJobOfferClear}
                     error={state.jobOffer.length > 0 && state.jobOffer.length < 100 ? 'Please provide at least 100 characters' : null}
+                  />
+
+                  {/* Saved Job Offer Selector - Only for authenticated users */}
+                  <SavedOfferSelector
+                    onOfferSelect={handleOfferSelect}
+                    selectedOffer={null} // We don't track selected offer separately, just the content
+                    className="mt-4"
                   />
 
                   {/* Action Buttons */}
@@ -513,6 +539,13 @@ export default function Home() {
                     isUploading={state.isUploading}
                   />
 
+                  {/* Saved CV Selector - Only for authenticated users */}
+                  <SavedCVSelector
+                    onCVSelect={handleCVSelect}
+                    selectedCV={state.cvData}
+                    className="mt-4"
+                  />
+
                   {/* Language Selection */}
                   <LanguageSelector
                     currentLanguage={state.language}
@@ -525,6 +558,13 @@ export default function Home() {
                     onChange={handleJobOfferChange}
                     onClear={handleJobOfferClear}
                     error={state.jobOffer.length > 0 && state.jobOffer.length < 100 ? 'Please provide at least 100 characters' : null}
+                  />
+
+                  {/* Saved Job Offer Selector - Only for authenticated users */}
+                  <SavedOfferSelector
+                    onOfferSelect={handleOfferSelect}
+                    selectedOffer={null} // We don't track selected offer separately, just the content
+                    className="mt-4"
                   />
 
                   {/* Action Buttons */}
