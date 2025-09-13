@@ -9,6 +9,7 @@ import { UserProfileSettings } from '@/components/settings/user-profile-settings
 import { NotificationSettings } from '@/components/settings/notification-settings'
 import { SecuritySettings } from '@/components/settings/security-settings'
 import { PrivacySettings } from '@/components/settings/privacy-settings'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 interface SettingsPageClientProps {
     profile: any
@@ -103,31 +104,59 @@ export function SettingsPageClient({ profile, message }: SettingsPageClientProps
                     )}
 
 
-                    {/* Main Settings Sections */}
-                    <div className="space-y-8">
-                        {/* Profile Section */}
-                        <div className="space-y-4">
+                    {/* Main Settings Tabs */}
+                    <Tabs defaultValue="profile" className="space-y-6">
+                        <TabsList className="grid w-full grid-cols-4">
+                            <TabsTrigger value="profile" className="flex items-center gap-2">
+                                <Icons.user className="h-4 w-4" />
+                                Profile
+                            </TabsTrigger>
+                            <TabsTrigger value="security" className="flex items-center gap-2">
+                                <Icons.lock className="h-4 w-4" />
+                                Security
+                            </TabsTrigger>
+                            <TabsTrigger value="notifications" className="flex items-center gap-2">
+                                <Icons.bell className="h-4 w-4" />
+                                Notifications
+                            </TabsTrigger>
+                            <TabsTrigger value="privacy" className="flex items-center gap-2">
+                                <Icons.shield className="h-4 w-4" />
+                                Consent Management
+                            </TabsTrigger>
+                        </TabsList>
+
+                        {/* Profile Tab */}
+                        <TabsContent value="profile" className="space-y-4">
                             <div className="flex items-center gap-2 mb-4">
                                 <Icons.user className="h-6 w-6 text-blue-600" />
-                                <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Profile</h2>
+                                <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Profile Settings</h2>
                             </div>
                             <UserProfileSettings profile={profile} />
-                        </div>
+                        </TabsContent>
 
-                        {/* Notifications Section */}
-                        <div className="space-y-4">
+                        {/* Security Tab */}
+                        <TabsContent value="security" className="space-y-4">
+                            <div className="flex items-center gap-2 mb-4">
+                                <Icons.lock className="h-6 w-6 text-blue-600" />
+                                <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Security Settings</h2>
+                            </div>
+                            <SecuritySettings profile={profile} />
+                        </TabsContent>
+
+                        {/* Notifications Tab */}
+                        <TabsContent value="notifications" className="space-y-4">
                             <div className="flex items-center gap-2 mb-4">
                                 <Icons.bell className="h-6 w-6 text-blue-600" />
-                                <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Notifications</h2>
+                                <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Notification Settings</h2>
                             </div>
                             <NotificationSettings profile={profile} />
-                        </div>
+                        </TabsContent>
 
-                        {/* Privacy Section */}
-                        <div className="space-y-4">
+                        {/* Consent Management Tab */}
+                        <TabsContent value="privacy" className="space-y-4">
                             <div className="flex items-center gap-2 mb-4">
                                 <Icons.shield className="h-6 w-6 text-blue-600" />
-                                <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Privacy</h2>
+                                <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Consent Management</h2>
                             </div>
                             <PrivacySettings
                                 onExportClick={() => setShowExportModal(true)}
@@ -136,17 +165,8 @@ export function SettingsPageClient({ profile, message }: SettingsPageClientProps
                                 onConsentSave={handleConsentSave}
                                 onConsentReset={handleConsentReset}
                             />
-                        </div>
-
-                        {/* Security Section */}
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-2 mb-4">
-                                <Icons.lock className="h-6 w-6 text-blue-600" />
-                                <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Security</h2>
-                            </div>
-                            <SecuritySettings profile={profile} />
-                        </div>
-                    </div>
+                        </TabsContent>
+                    </Tabs>
 
                     {/* Modals */}
                     <DataExportModal
