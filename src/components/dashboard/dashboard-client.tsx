@@ -162,25 +162,25 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                 {announcement}
             </div>
 
-            <div className="container mx-auto py-8 px-4">
-                <div className="max-w-7xl mx-auto">
+            <div className="container mx-auto py-6 px-4 sm:py-8">
+                <div className="max-w-8xl mx-auto space-y-8">
                     {/* Header Section */}
-                    <header className="mb-12">
+                    <header className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
                         <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6 mb-6">
-                            <Avatar className="h-20 w-20 ring-4 ring-white shadow-lg">
+                            <Avatar className="h-16 w-16 sm:h-20 sm:w-20 ring-4 ring-white shadow-lg">
                                 <AvatarImage
                                     src={profile?.avatarUrl}
                                     alt={`Profile picture of ${profile?.fullName || user.email}`}
                                 />
-                                <AvatarFallback className="text-2xl font-semibold bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                                <AvatarFallback className="text-xl sm:text-2xl font-semibold bg-gradient-to-br from-blue-500 to-purple-600 text-white">
                                     {initials}
                                 </AvatarFallback>
                             </Avatar>
                             <div className="flex-1">
-                                <h1 className="text-4xl font-bold text-slate-900 mb-2">
+                                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-2">
                                     Welcome back, {profile?.fullName || user.email?.split('@')[0]}!
                                 </h1>
-                                <p className="text-lg text-slate-600 max-w-2xl">
+                                <p className="text-base sm:text-lg text-slate-600 max-w-2xl">
                                     Here's what's happening with your account today. Manage your CVs, generate content, and track your progress.
                                 </p>
                             </div>
@@ -204,12 +204,11 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                     <section
                         ref={statsRef}
                         aria-labelledby="stats-heading"
-                        className="mb-12"
                     >
                         <h2 id="stats-heading" className="sr-only">
                             Account Statistics
                         </h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
                             <Card className="group hover:shadow-lg transition-all duration-300 border-0 shadow-md bg-white/80 backdrop-blur-sm">
                                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                                     <CardTitle className="text-sm font-semibold text-slate-700">
@@ -325,21 +324,21 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                     </section>
 
                     {/* Quick Actions */}
-                    <section aria-labelledby="quick-actions-heading" className="mb-12">
+                    <section aria-labelledby="quick-actions-heading">
                         <Card className="border-0 shadow-lg bg-white/90 backdrop-blur-sm">
                             <CardHeader className="pb-4">
-                                <CardTitle className="text-2xl font-bold text-slate-900 flex items-center gap-3">
+                                <CardTitle className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-3">
                                     <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
-                                        <Icons.zap className="h-6 w-6 text-white" aria-hidden="true" />
+                                        <Icons.zap className="h-5 w-5 sm:h-6 sm:w-6 text-white" aria-hidden="true" />
                                     </div>
                                     Quick Actions
                                 </CardTitle>
-                                <CardDescription className="text-slate-600 text-base">
+                                <CardDescription className="text-slate-600 text-sm sm:text-base">
                                     Common tasks and shortcuts to help you get started
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                                     <Button
                                         className="w-full justify-start h-12 text-left group hover:shadow-md transition-all duration-200"
                                         variant="outline"
@@ -389,12 +388,10 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                         ref={mainContentRef}
                         tabIndex={-1}
                         aria-label="Main dashboard content"
-                        className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-8"
+                        className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8"
                     >
-
-
                         {/* CV Display Form */}
-                        <section aria-labelledby="cv-display-heading" className="lg:col-span-1">
+                        <section aria-labelledby="cv-display-heading">
                             <CVDisplay
                                 onFileRemove={handleFileRemove}
                                 onFileUpload={handleFileUpload}
@@ -407,9 +404,8 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                             />
                         </section>
 
-
                         {/* Saved Job Offers */}
-                        <section aria-labelledby="saved-offers-heading" className="lg:col-span-1">
+                        <section aria-labelledby="saved-offers-heading">
                             <JobOffersDisplay />
                         </section>
                     </main>
