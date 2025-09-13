@@ -275,7 +275,7 @@ export function CVDisplay({
           CV Display
         </CardTitle>
         <CardDescription className="text-slate-600 text-base">
-          View and manage your uploaded CVs
+          manage your uploaded CVs
         </CardDescription>
         <div className="flex justify-end items-center gap-2">
           {onFileUpload && (

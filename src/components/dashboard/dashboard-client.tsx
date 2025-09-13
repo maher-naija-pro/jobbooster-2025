@@ -407,10 +407,6 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                             />
                         </section>
 
-                        {/* Add Job Offer */}
-                        <section aria-labelledby="job-offer-heading" className="lg:col-span-1">
-                            <JobOfferInputForm />
-                        </section>
 
                         {/* Saved Job Offers */}
                         <section aria-labelledby="saved-offers-heading" className="lg:col-span-1">

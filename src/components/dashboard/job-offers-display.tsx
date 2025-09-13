@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
@@ -8,8 +8,10 @@ import { Alert, AlertDescription } from '../ui/alert';
 import { useJobData } from '@/hooks/useJobData';
 import { Icons } from '../icons';
 import { RefreshButton } from '../buttons/refresh-button';
-import { Trash2, Archive, ArchiveRestore, Calendar, MapPin, Building2, ExternalLink, Eye } from 'lucide-react';
+import { Trash2, Archive, ArchiveRestore, Calendar, MapPin, Building2, ExternalLink, Eye, Plus } from 'lucide-react';
 import { JobOffersDisplaySkeleton } from './job-offer-skeleton';
+import { AddJobOfferModal } from './add-job-offer-modal';
+import { MetaButton } from '../buttons/meta-button';
 
 /**
  * Props interface for the JobOffersDisplay component
@@ -33,6 +35,9 @@ interface JobOffersDisplayProps {
  * @returns JSX element containing the job offers display
  */
 export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
+    // Modal state
+    const [isAddJobModalOpen, setIsAddJobModalOpen] = useState(false);
+
     // Custom hook to manage job data state and operations
     const {
         jobData,           // Array of job offer objects
@@ -208,7 +213,16 @@ export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
                 <CardDescription className="text-slate-600 text-base">
                     {jobData.length} saved job offers
                 </CardDescription>
-                <div className="flex justify-end mt-3">
+                <div className="flex justify-between items-center mt-3">
+                    <MetaButton
+                        onClick={() => setIsAddJobModalOpen(true)}
+                        variant="primary"
+                        size="sm"
+                        icon={Plus}
+                        text="Add Job Offer"
+                        tooltip="Add a new job offer to your collection"
+                        width="auto"
+                    />
                     <RefreshButton
                         onRefresh={refetch}
                         isLoading={loading}
@@ -307,6 +321,12 @@ export function JobOffersDisplay({ className }: JobOffersDisplayProps) {
                 </div>
 
             </CardContent>
+
+            {/* Add Job Offer Modal */}
+            <AddJobOfferModal
+                isOpen={isAddJobModalOpen}
+                onClose={() => setIsAddJobModalOpen(false)}
+            />
         </Card>
     );
 }
