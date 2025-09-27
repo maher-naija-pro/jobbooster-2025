@@ -265,7 +265,7 @@ export function PrivacySettingsPage() {
                                         </div>
                                         <MetaButton
                                             onClick={() => setShowDeletionModal(true)}
-                                            variant="destructive"
+                                            variant="danger"
                                         >
                                             <Trash2 className="h-4 w-4 mr-2" />
                                             Delete My Data
@@ -291,7 +291,7 @@ export function PrivacySettingsPage() {
                                             You have the right to have inaccurate personal data corrected and incomplete
                                             personal data completed. You can update your information through your profile settings.
                                         </p>
-                                        <MetaButton variant="outline">
+                                        <MetaButton variant="primary-outline">
                                             <Settings className="h-4 w-4 mr-2" />
                                             Update Profile
                                         </MetaButton>

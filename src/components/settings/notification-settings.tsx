@@ -232,7 +232,7 @@ export function NotificationSettings({ profile }: NotificationSettingsProps) {
 
             {/* Action Buttons */}
             <div className="flex justify-end gap-2">
-                <MetaButton variant="outline" onClick={handleReset}>
+                <MetaButton variant="primary-outline" onClick={handleReset}>
                     Reset to Defaults
                 </MetaButton>
                 <MetaButton onClick={handleSave} disabled={isLoading}>

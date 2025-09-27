@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { FileDown, Mail, Square, BarChart3 } from 'lucide-react';
-import { Button } from './ui/button';
+import { MetaButton } from './buttons/meta-button';
 import { FeatureGate } from './auth/feature-gate';
 
 interface ActionButtonsProps {
@@ -68,68 +68,50 @@ export function ActionButtons({
             {/* Modern Action Buttons */}
             <div className="space-y-3">
                 {/* Generate Cover Letter Button */}
-                <Button
+                <MetaButton
                     onClick={handleGenerateLetterClick}
                     disabled={isDisabled || (isGenerating && !isGeneratingLetter)}
-                    variant={isDisabled ? "secondary" : isGeneratingLetter ? "destructive" : "default"}
-                    size="default"
-                    className="w-full gap-3 h-12 text-sm font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:ring-4 focus:ring-blue-500/20"
+                    variant={isDisabled ? "secondary" : isGeneratingLetter ? "danger" : "primary"}
+                    size="lg"
+                    width="full"
+                    isLoading={false}
+                    showLoadingIcon={false}
+                    icon={isGeneratingLetter ? Square : FileDown}
+                    className="gap-3 text-sm font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:ring-4 focus:ring-blue-500/20"
                 >
-                    {isGeneratingLetter ? (
-                        <>
-                            <Square className="w-4 h-4" />
-                            Stop Generation
-                        </>
-                    ) : (
-                        <>
-                            <FileDown className="w-4 h-4" />
-                            Generate Cover Letter
-                        </>
-                    )}
-                </Button>
+                    {isGeneratingLetter ? "Stop Generation" : "Generate Cover Letter"}
+                </MetaButton>
 
                 {/* Generate Email Button */}
-                <Button
+                <MetaButton
                     onClick={handleGenerateMailClick}
                     disabled={isDisabled || (isGenerating && !isGeneratingEmail)}
-                    variant={isDisabled ? "secondary" : isGeneratingEmail ? "destructive" : "success"}
-                    size="default"
-                    className="w-full gap-3 h-12 text-sm font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:ring-4 focus:ring-green-500/20"
+                    variant={isDisabled ? "secondary" : isGeneratingEmail ? "danger" : "success"}
+                    size="lg"
+                    width="full"
+                    isLoading={false}
+                    showLoadingIcon={false}
+                    icon={isGeneratingEmail ? Square : Mail}
+                    className="gap-3 text-sm font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:ring-4 focus:ring-green-500/20"
                 >
-                    {isGeneratingEmail ? (
-                        <>
-                            <Square className="w-4 h-4" />
-                            Stop Generation
-                        </>
-                    ) : (
-                        <>
-                            <Mail className="w-4 h-4" />
-                            Generate Email
-                        </>
-                    )}
-                </Button>
+                    {isGeneratingEmail ? "Stop Generation" : "Generate Email"}
+                </MetaButton>
 
                 {/* Analyze CV Button - Protected Feature */}
                 <FeatureGate feature="CV Analysis">
-                    <Button
+                    <MetaButton
                         onClick={handleAnalyzeCVClick}
                         disabled={isDisabled || (isGenerating && !isAnalyzingCV)}
-                        variant={isDisabled ? "secondary" : isAnalyzingCV ? "destructive" : "accent"}
-                        size="default"
-                        className="w-full gap-3 h-12 text-sm font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:ring-4 focus:ring-purple-500/20"
+                        variant={isDisabled ? "secondary" : isAnalyzingCV ? "danger" : "primary"}
+                        size="lg"
+                        width="full"
+                        isLoading={false}
+                        showLoadingIcon={false}
+                        icon={isAnalyzingCV ? Square : BarChart3}
+                        className="gap-3 text-sm font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:ring-4 focus:ring-purple-500/20"
                     >
-                        {isAnalyzingCV ? (
-                            <>
-                                <Square className="w-4 h-4" />
-                                Stop Analysis
-                            </>
-                        ) : (
-                            <>
-                                <BarChart3 className="w-4 h-4" />
-                                Analyze CV
-                            </>
-                        )}
-                    </Button>
+                        {isAnalyzingCV ? "Stop Analysis" : "Analyze CV"}
+                    </MetaButton>
                 </FeatureGate>
             </div>
         </div>

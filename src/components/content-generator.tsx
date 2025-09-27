@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FileText, CheckCircle, Copy, XCircle, TrendingUp, TrendingDown, Star, Target, Award, BookOpen, Briefcase, Users, Lightbulb, AlertTriangle, ChevronDown, ChevronUp, Eye, EyeOff, Building, MapPin, DollarSign, Calendar, GraduationCap, Code, Heart, Globe, Wrench } from 'lucide-react';
 import { GeneratedContent, CVAnalysisResult, JobAnalysis } from '../lib/types';
-import { Button } from './ui/button';
+import { MetaButton } from './buttons/meta-button';
 import { Card, CardContent, CardHeader } from './ui/card';
 import { Badge } from './ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
@@ -132,24 +132,26 @@ export function ContentGenerator({
                 <div className="flex items-center justify-between">
                     <h2 className="text-2xl font-bold text-gray-900">CV Analysis Results</h2>
                     <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
-                        <Button
+                        <MetaButton
                             onClick={() => setAnalysisMode('compact')}
-                            variant={analysisMode === 'compact' ? 'default' : 'ghost'}
+                            variant={analysisMode === 'compact' ? 'primary' : 'primary-ghost'}
                             size="sm"
+                            width="fit"
+                            icon={Eye}
                             className="gap-1"
                         >
-                            <Eye className="w-4 h-4" />
                             Compact
-                        </Button>
-                        <Button
+                        </MetaButton>
+                        <MetaButton
                             onClick={() => setAnalysisMode('detailed')}
-                            variant={analysisMode === 'detailed' ? 'default' : 'ghost'}
+                            variant={analysisMode === 'detailed' ? 'primary' : 'primary-ghost'}
                             size="sm"
+                            width="fit"
+                            icon={EyeOff}
                             className="gap-1"
                         >
-                            <EyeOff className="w-4 h-4" />
                             Detailed
-                        </Button>
+                        </MetaButton>
                     </div>
                 </div>
 
@@ -378,24 +380,26 @@ export function ContentGenerator({
                 <div className="flex items-center justify-between">
                     <h2 className="text-2xl font-bold text-gray-900">Detailed CV Analysis</h2>
                     <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
-                        <Button
+                        <MetaButton
                             onClick={() => setAnalysisMode('compact')}
-                            variant={analysisMode === 'compact' ? 'default' : 'ghost'}
+                            variant={analysisMode === 'compact' ? 'primary' : 'primary-ghost'}
                             size="sm"
+                            width="fit"
+                            icon={Eye}
                             className="gap-1"
                         >
-                            <Eye className="w-4 h-4" />
                             Compact
-                        </Button>
-                        <Button
+                        </MetaButton>
+                        <MetaButton
                             onClick={() => setAnalysisMode('detailed')}
-                            variant={analysisMode === 'detailed' ? 'default' : 'ghost'}
+                            variant={analysisMode === 'detailed' ? 'primary' : 'primary-ghost'}
                             size="sm"
+                            width="fit"
+                            icon={EyeOff}
                             className="gap-1"
                         >
-                            <EyeOff className="w-4 h-4" />
                             Detailed
-                        </Button>
+                        </MetaButton>
                     </div>
                 </div>
 
@@ -771,10 +775,12 @@ export function ContentGenerator({
                 {/* Strengths */}
                 {jobMatch.strengths && jobMatch.strengths.length > 0 && (
                     <div className="bg-green-50 rounded-lg border border-green-200">
-                        <Button
+                        <MetaButton
                             onClick={() => setIsStrengthsExpanded(!isStrengthsExpanded)}
-                            variant="ghost"
+                            variant="success-ghost"
+                            width="full"
                             className="w-full flex items-center justify-between p-6 text-left hover:bg-green-100 h-auto"
+                            icon={isStrengthsExpanded ? ChevronUp : ChevronDown}
                         >
                             <div className="flex items-center gap-3">
                                 <TrendingUp className="w-6 h-6 text-green-600" />
@@ -783,12 +789,7 @@ export function ContentGenerator({
                                     {jobMatch.strengths.length}
                                 </Badge>
                             </div>
-                            {isStrengthsExpanded ? (
-                                <ChevronUp className="w-5 h-5 text-green-600" />
-                            ) : (
-                                <ChevronDown className="w-5 h-5 text-green-600" />
-                            )}
-                        </Button>
+                        </MetaButton>
                         {isStrengthsExpanded && (
                             <div className="px-6 pb-6">
                                 <div className="grid gap-3">
@@ -807,10 +808,12 @@ export function ContentGenerator({
                 {/* Missing Skills */}
                 {jobMatch.missingSkills && jobMatch.missingSkills.length > 0 && (
                     <div className="bg-orange-50 rounded-lg border border-orange-200">
-                        <Button
+                        <MetaButton
                             onClick={() => setIsMissingSkillsExpanded(!isMissingSkillsExpanded)}
-                            variant="ghost"
+                            variant="warning-ghost"
+                            width="full"
                             className="w-full flex items-center justify-between p-6 text-left hover:bg-orange-100 h-auto"
+                            icon={isMissingSkillsExpanded ? ChevronUp : ChevronDown}
                         >
                             <div className="flex items-center gap-3">
                                 <TrendingDown className="w-6 h-6 text-orange-600" />
@@ -819,12 +822,7 @@ export function ContentGenerator({
                                     {jobMatch.missingSkills.length}
                                 </Badge>
                             </div>
-                            {isMissingSkillsExpanded ? (
-                                <ChevronUp className="w-5 h-5 text-orange-600" />
-                            ) : (
-                                <ChevronDown className="w-5 h-5 text-orange-600" />
-                            )}
-                        </Button>
+                        </MetaButton>
                         {isMissingSkillsExpanded && (
                             <div className="px-6 pb-6">
                                 <div className="grid gap-3">
@@ -947,30 +945,23 @@ export function ContentGenerator({
                             </span>
                         </div>
                         <div className="flex items-center gap-3">
-                            <Button
+                            <MetaButton
                                 onClick={handleCopyContent}
-                                variant="ghost"
+                                variant={isCopied ? "success-ghost" : copyError ? "danger-ghost" : "secondary-ghost"}
                                 size="sm"
+                                width="fit"
+                                icon={isCopied ? CheckCircle : copyError ? XCircle : Copy}
+                                disabled={!content}
+                                tooltip={isCopied ? 'Content copied to clipboard!' : copyError ? 'Failed to copy content' : 'Copy content to clipboard'}
                                 className={`group gap-1.5 h-8 px-3 transition-all duration-200 ease-in-out ${isCopied
                                     ? 'text-green-600 bg-green-50 hover:bg-green-100 border border-green-200'
                                     : copyError
                                         ? 'text-red-600 bg-red-50 hover:bg-red-100 border border-red-200'
                                         : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 border border-transparent hover:border-gray-200'
                                     }`}
-                                disabled={!content}
-                                title={isCopied ? 'Content copied to clipboard!' : copyError ? 'Failed to copy content' : 'Copy content to clipboard'}
                             >
-                                {isCopied ? (
-                                    <CheckCircle className="w-3.5 h-3.5 animate-pulse" />
-                                ) : copyError ? (
-                                    <XCircle className="w-3.5 h-3.5 animate-pulse" />
-                                ) : (
-                                    <Copy className="w-3.5 h-3.5 transition-transform duration-200 group-hover:scale-110 group-hover:rotate-12" />
-                                )}
-                                <span className="text-xs font-medium">
-                                    {isCopied ? 'Copied!' : copyError ? 'Failed' : 'Copy'}
-                                </span>
-                            </Button>
+                                {isCopied ? 'Copied!' : copyError ? 'Failed' : 'Copy'}
+                            </MetaButton>
                             <div className="text-xs text-gray-600 flex items-center h-8">
                                 {content.metadata.wordCount} words • {content.metadata.estimatedReadTime} min read
                             </div>

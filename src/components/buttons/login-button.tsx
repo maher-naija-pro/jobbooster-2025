@@ -43,7 +43,7 @@ export const LoginButton = () => {
       <MetaButton
         variant="primary-outline"
         size="md"
-        width="sm"
+        width="fit"
         text="Loading..."
         className="text-base font-semibold mr-5 py-2 px-8 w-full"
         icon={Icons.Loader2}
@@ -59,7 +59,7 @@ export const LoginButton = () => {
           onClick={handleLogin}
           variant="primary"
           size="md"
-          width="sm"
+          width="fit"
           text="Login"
           analyticsEvent="login_button_click"
           analyticsData={{

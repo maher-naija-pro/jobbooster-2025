@@ -5,7 +5,7 @@ import { Upload, FileText, Trash2, CheckCircle, AlertCircle, Loader, Eye, Target
 import { cn, validateFile, formatFileSize } from '../lib/utils';
 import { CVData } from '../lib/types';
 
-import { Button } from './ui/button';
+import { MetaButton } from './buttons/meta-button';
 import { Card, CardContent, CardHeader } from './ui/card';
 import { Alert, AlertDescription } from './ui/alert';
 
@@ -232,23 +232,23 @@ export function CVUpload({
                                         {cvData.filename}
                                     </p>
                                     <div className="flex items-center gap-2 ml-2">
-                                        <Button
-                                            variant="ghost"
+                                        <MetaButton
+                                            variant="primary-ghost"
                                             size="sm"
+                                            width="fit"
+                                            icon={Eye}
                                             className="h-8 w-8 p-0 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
-                                            aria-label="View file details"
-                                        >
-                                            <Eye className="w-4 h-4" />
-                                        </Button>
-                                        <Button
+                                            tooltip="View file details"
+                                        />
+                                        <MetaButton
                                             onClick={handleRemove}
-                                            variant="ghost"
+                                            variant="danger-ghost"
                                             size="sm"
+                                            width="fit"
+                                            icon={Trash2}
                                             className="h-8 w-8 p-0 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg"
-                                            aria-label="Remove file"
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </Button>
+                                            tooltip="Remove file"
+                                        />
                                     </div>
                                 </div>
                                 <div className="flex items-center justify-between text-sm text-gray-600">

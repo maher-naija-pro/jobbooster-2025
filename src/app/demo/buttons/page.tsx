@@ -265,17 +265,17 @@ export default function ButtonDemoPage() {
                         title="Fixed Widths"
                         description="Different fixed width options"
                     >
-                        <MetaButton width="sm" text="Small" variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
-                        <MetaButton width="md" text="Medium" variant="success" theme={theme} disableAnimations={!animationsEnabled} />
-                        <MetaButton width="lg" text="Large Width" variant="warning" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton width="fit" text="Small" variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton width="auto" text="Medium" variant="success" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton width="full" text="Large Width" variant="warning" theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
 
                     <ButtonCard
                         title="Full Width"
                         description="Buttons that span the full width of their container"
                     >
-                        <MetaButton fullWidth text="Full Width Button" variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
-                        <MetaButton fullWidth text="Another Full Width" variant="success" icon={SaveIcon} theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton width="full" text="Full Width Button" variant="primary" theme={theme} disableAnimations={!animationsEnabled} />
+                        <MetaButton width="full" text="Another Full Width" variant="success" icon={SaveIcon} theme={theme} disableAnimations={!animationsEnabled} />
                     </ButtonCard>
                 </DemoSection>
 
