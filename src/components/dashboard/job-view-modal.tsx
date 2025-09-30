@@ -108,37 +108,37 @@ export function JobViewModal({
 
         // Map jobType values
         if (mappedData.jobType) {
-            const jobTypeMap: Record<string, string> = {
+            const jobTypeMap: Record<string, 'full-time' | 'part-time' | 'contract' | 'internship'> = {
                 'FULL_TIME': 'full-time',
                 'PART_TIME': 'part-time',
                 'CONTRACT': 'contract',
-                'TEMPORARY': 'temporary',
+                'TEMPORARY': 'contract', // Map temporary to contract
                 'INTERNSHIP': 'internship',
-                'FREELANCE': 'freelance',
-                'VOLUNTEER': 'volunteer'
+                'FREELANCE': 'contract', // Map freelance to contract
+                'VOLUNTEER': 'contract' // Map volunteer to contract
             };
             mappedData.jobType = jobTypeMap[mappedData.jobType] || 'full-time';
         }
 
         // Map remoteType values
         if (mappedData.remoteType) {
-            const remoteTypeMap: Record<string, string> = {
+            const remoteTypeMap: Record<string, 'remote' | 'hybrid' | 'onsite'> = {
                 'ONSITE': 'onsite',
                 'REMOTE': 'remote',
                 'HYBRID': 'hybrid',
-                'FLEXIBLE': 'flexible'
+                'FLEXIBLE': 'hybrid' // Map flexible to hybrid
             };
             mappedData.remoteType = remoteTypeMap[mappedData.remoteType] || 'onsite';
         }
 
         // Map experienceLevel values
         if (mappedData.experienceLevel) {
-            const experienceLevelMap: Record<string, string> = {
+            const experienceLevelMap: Record<string, 'entry' | 'mid' | 'senior' | 'executive'> = {
                 'ENTRY_LEVEL': 'entry',
-                'JUNIOR': 'junior',
+                'JUNIOR': 'entry', // Map junior to entry
                 'MID_LEVEL': 'mid',
                 'SENIOR': 'senior',
-                'LEAD': 'lead',
+                'LEAD': 'senior', // Map lead to senior
                 'EXECUTIVE': 'executive'
             };
             mappedData.experienceLevel = experienceLevelMap[mappedData.experienceLevel] || 'mid';
@@ -188,52 +188,6 @@ export function JobViewModal({
         setSaveSuccess(false);
     };
 
-    /**
-     * Maps form values to Prisma enum values
-     */
-    const mapFormValuesToPrisma = (data: Partial<JobData>): Partial<JobData> => {
-        const mappedData = { ...data };
-
-        // Map jobType values
-        if (mappedData.jobType) {
-            const jobTypeMap: Record<string, string> = {
-                'full-time': 'FULL_TIME',
-                'part-time': 'PART_TIME',
-                'contract': 'CONTRACT',
-                'temporary': 'TEMPORARY',
-                'internship': 'INTERNSHIP',
-                'freelance': 'FREELANCE',
-                'volunteer': 'VOLUNTEER'
-            };
-            mappedData.jobType = jobTypeMap[mappedData.jobType] || mappedData.jobType;
-        }
-
-        // Map remoteType values
-        if (mappedData.remoteType) {
-            const remoteTypeMap: Record<string, string> = {
-                'onsite': 'ONSITE',
-                'remote': 'REMOTE',
-                'hybrid': 'HYBRID',
-                'flexible': 'FLEXIBLE'
-            };
-            mappedData.remoteType = remoteTypeMap[mappedData.remoteType] || mappedData.remoteType;
-        }
-
-        // Map experienceLevel values
-        if (mappedData.experienceLevel) {
-            const experienceLevelMap: Record<string, string> = {
-                'entry': 'ENTRY_LEVEL',
-                'junior': 'JUNIOR',
-                'mid': 'MID_LEVEL',
-                'senior': 'SENIOR',
-                'lead': 'LEAD',
-                'executive': 'EXECUTIVE'
-            };
-            mappedData.experienceLevel = experienceLevelMap[mappedData.experienceLevel] || mappedData.experienceLevel;
-        }
-
-        return mappedData;
-    };
 
     /**
      * Handles saving changes
@@ -250,10 +204,7 @@ export function JobViewModal({
                 Object.entries(editData).filter(([_, value]) => value !== '' && value !== undefined)
             );
 
-            // Map form values to Prisma enum values
-            const mappedData = mapFormValuesToPrisma(filteredData);
-
-            await onUpdate(job.id, mappedData);
+            await onUpdate(job.id, filteredData);
 
             setSaveSuccess(true);
             setIsEditMode(false);

@@ -317,7 +317,7 @@ export function CVDisplay({
             <CVUploadModal
               onFileUpload={onFileUpload}
               onFileRemove={() => { }}
-              cvData={cvData}
+              cvData={cvData || null}
               isProcessing={isProcessing}
               error={error}
               uploadProgress={uploadProgress}

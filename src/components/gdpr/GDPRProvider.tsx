@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react'
 import { CookieConsentBanner } from './CookieConsentBanner'
 
 interface CookiePreferences {
@@ -31,21 +31,6 @@ export function GDPRProvider({ children, testMode }: GDPRProviderProps) {
     const [showConsentBanner, setShowConsentBanner] = useState(false)
     const [isTestMode, setIsTestMode] = useState(false)
 
-    useEffect(() => {
-        // Determine test mode on client side to avoid hydration mismatch
-        const clientTestMode = testMode ?? (process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_COOKIE_TEST_MODE === 'true')
-        setIsTestMode(clientTestMode)
-
-        // In test mode, always show the banner
-        if (clientTestMode) {
-            setShowConsentBanner(true)
-            return
-        }
-
-        // Load consent from database first, then localStorage as fallback
-        loadConsentFromDatabase()
-    }, [loadConsentFromDatabase, testMode])
-
     const loadConsentFromDatabase = useCallback(async () => {
         try {
             const response = await fetch('/api/gdpr/consent')
@@ -70,6 +55,21 @@ export function GDPRProvider({ children, testMode }: GDPRProviderProps) {
         // No fallback to localStorage - show banner for new users
         setShowConsentBanner(true)
     }, [isTestMode])
+
+    useEffect(() => {
+        // Determine test mode on client side to avoid hydration mismatch
+        const clientTestMode = testMode ?? (process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_COOKIE_TEST_MODE === 'true')
+        setIsTestMode(clientTestMode)
+
+        // In test mode, always show the banner
+        if (clientTestMode) {
+            setShowConsentBanner(true)
+            return
+        }
+
+        // Load consent from database first, then localStorage as fallback
+        loadConsentFromDatabase()
+    }, [loadConsentFromDatabase, testMode])
 
     const updateConsent = (preferences: CookiePreferences) => {
         setConsent(preferences)

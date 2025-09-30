@@ -207,7 +207,7 @@ export const DATA_RETENTION_CONFIG = {
  * Get configuration for a specific data type
  */
 export function getDataTypeConfig(dataType: DataType) {
-    const override = DATA_RETENTION_CONFIG.overrides[dataType];
+    const override = (DATA_RETENTION_CONFIG.overrides as any)[dataType];
     if (override) {
         return {
             retentionDays: override.retentionDays,

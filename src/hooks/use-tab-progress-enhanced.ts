@@ -46,7 +46,7 @@ export function useTabProgressEnhanced({
             // Reset to original title and favicon when not generating
             document.title = originalTitleRef.current;
             if (showFaviconProgress) {
-                resetFavicon();
+                resetFavicon(originalFaviconRef);
             }
         }
 
@@ -54,7 +54,7 @@ export function useTabProgressEnhanced({
         return () => {
             document.title = originalTitleRef.current;
             if (showFaviconProgress) {
-                resetFavicon();
+                resetFavicon(originalFaviconRef);
             }
         };
     }, [isGenerating, generationType, progress, baseTitle, showFaviconProgress]);
@@ -172,7 +172,7 @@ function updateFavicon(href: string) {
     link.href = href;
 }
 
-function resetFavicon() {
+function resetFavicon(originalFaviconRef: React.MutableRefObject<string>) {
     const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
     if (link && originalFaviconRef.current) {
         link.href = originalFaviconRef.current;

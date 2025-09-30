@@ -29,6 +29,7 @@ interface ConsentPreferences {
     emailNotifications: boolean
     pushNotifications: boolean
     dataProcessing: boolean
+    dataSharing: boolean
 }
 
 interface ConsentManagementProps {
@@ -44,7 +45,8 @@ export function ConsentManagement({ onSave, onReset }: ConsentManagementProps) {
         preferences: false,
         emailNotifications: false,
         pushNotifications: false,
-        dataProcessing: false
+        dataProcessing: false,
+        dataSharing: false
     })
     const [isLoading, setIsLoading] = useState(false)
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
@@ -68,7 +70,8 @@ export function ConsentManagement({ onSave, onReset }: ConsentManagementProps) {
                         preferences: data.consent.preferences ?? false,
                         emailNotifications: data.consent.emailNotifications ?? false,
                         pushNotifications: data.consent.pushNotifications ?? false,
-                        dataProcessing: data.consent.dataProcessing ?? false
+                        dataProcessing: data.consent.dataProcessing ?? false,
+                        dataSharing: data.consent.dataSharing ?? false
                     }
                     setPreferences(loadedPreferences)
                     if (data.consentDate) {
@@ -115,7 +118,8 @@ export function ConsentManagement({ onSave, onReset }: ConsentManagementProps) {
                 preferences: false,
                 emailNotifications: false,
                 pushNotifications: false,
-                dataProcessing: false
+                dataProcessing: false,
+                dataSharing: false
             }
 
             setPreferences(defaults)

@@ -49,7 +49,7 @@ export async function createUserSession(
     try {
         const headersList = request ? await headers() : null
         const userAgent = headersList?.get('user-agent') || 'Unknown'
-        const ipAddress = getClientIP(request, headersList)
+        const ipAddress = getClientIP(request, headersList || undefined)
 
         // Parse device information from user agent
         const deviceInfo = parseUserAgent(userAgent)
@@ -103,7 +103,7 @@ export async function updateSessionActivity(
 ): Promise<{ success: boolean; error?: any }> {
     try {
         const headersList = request ? await headers() : null
-        const ipAddress = getClientIP(request, headersList)
+        const ipAddress = getClientIP(request, headersList || undefined)
         const userAgent = headersList?.get('user-agent') || 'Unknown'
 
         await prisma.userSession.updateMany({

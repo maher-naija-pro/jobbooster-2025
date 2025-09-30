@@ -220,7 +220,7 @@ export const RETENTION_QUERIES = {
 function getRetentionDays(dataType: DataType): number {
     // import locally to avoid circular deps at module init time
     const { RETENTION_PERIODS } = require('./data-retention') as typeof import('./data-retention');
-    return (RETENTION_PERIODS as Record<number, number>)[dataType] || 365;
+    return (RETENTION_PERIODS as any)[dataType] || 365;
 }
 
 /**

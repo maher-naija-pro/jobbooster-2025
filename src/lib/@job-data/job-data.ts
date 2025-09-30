@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, JobType, RemoteType, ExperienceLevel, ProcessingStatus } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -8,11 +8,11 @@ export interface CreateJobDataInput {
     title?: string;
     company?: string;
     jobLink?: string; // Note: This field is filtered out before Prisma operations
-    jobType?: 'full-time' | 'part-time' | 'contract' | 'internship';
+    jobType?: JobType;
     location?: string;
-    remoteType?: 'remote' | 'hybrid' | 'onsite';
+    remoteType?: RemoteType;
     salaryRange?: string;
-    experienceLevel?: 'entry' | 'mid' | 'senior' | 'executive';
+    experienceLevel?: ExperienceLevel;
     industry?: string;
     department?: string;
     employmentType?: string;
@@ -24,11 +24,11 @@ export interface UpdateJobDataInput {
     title?: string;
     company?: string;
     jobLink?: string; // Note: This field is filtered out before Prisma operations
-    jobType?: 'full-time' | 'part-time' | 'contract' | 'internship';
+    jobType?: JobType;
     location?: string;
-    remoteType?: 'remote' | 'hybrid' | 'onsite';
+    remoteType?: RemoteType;
     salaryRange?: string;
-    experienceLevel?: 'entry' | 'mid' | 'senior' | 'executive';
+    experienceLevel?: ExperienceLevel;
     industry?: string;
     department?: string;
     employmentType?: string;
@@ -36,6 +36,7 @@ export interface UpdateJobDataInput {
     isPublic?: boolean;
     isActive?: boolean;
     isArchived?: boolean;
+    archiveDate?: Date | null;
 }
 
 export class JobDataService {
@@ -89,7 +90,7 @@ export class JobDataService {
         options: {
             page?: number;
             limit?: number;
-            status?: string;
+            status?: ProcessingStatus;
             isArchived?: boolean;
         } = {}
     ) {

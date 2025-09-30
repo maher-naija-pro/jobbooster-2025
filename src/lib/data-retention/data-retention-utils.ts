@@ -18,7 +18,7 @@ interface PrismaLikeModel {
     }): Promise<Array<Record<string, unknown>>>;
 }
 
-type PrismaLikeClient = Record<string, PrismaLikeModel>;
+type PrismaLikeClient = any;
 
 /**
  * Data retention operation result
@@ -204,13 +204,13 @@ export async function getEligibleRecords(
             take: limit,
         });
 
-        return records.map(record => {
+        return records.map((record: any) => {
             const createdAt = record[fields.createdAt] as Date;
             const lastAccessedAt = record[fields.lastAccessedAt] as Date | undefined;
             const referenceDate = lastAccessedAt || createdAt;
 
             return {
-                id: record.id,
+                id: record.id as string,
                 createdAt,
                 lastAccessedAt,
                 deletionDate: calculateDeletionDate(dataType, referenceDate),
@@ -260,13 +260,13 @@ export async function getRecordsNeedingNotification(
             take: limit,
         });
 
-        return records.map(record => {
+        return records.map((record: any) => {
             const createdAt = record[fields.createdAt] as Date;
             const lastAccessedAt = record[fields.lastAccessedAt] as Date | undefined;
             const referenceDate = lastAccessedAt || createdAt;
 
             return {
-                id: record.id,
+                id: record.id as string,
                 createdAt,
                 lastAccessedAt,
                 deletionDate: calculateDeletionDate(dataType, referenceDate),

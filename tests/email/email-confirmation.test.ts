@@ -143,12 +143,12 @@ function handleRateLimitError(error: any, testName: string) {
 }
 
 // Helper function to simulate email confirmation
-export async function simulateEmailConfirmation(tokenHash: string, type: string = 'email') {
+export async function simulateEmailConfirmation(tokenHash: string, type: 'email' | 'sms' = 'email') {
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
     const { data, error } = await supabase.auth.verifyOtp({
         token_hash: tokenHash,
-        type: type
+        type: type as any
     })
 
     return { data, error }

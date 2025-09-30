@@ -242,14 +242,14 @@ export function ProfileForm({ profile }: ProfileFormProps) {
         toast.success(result.message)
         setError('')
         // Update local state to reflect the changes
-        setUsername(formData.get('username') as string)
-        setFullName(formData.get('fullName') as string)
+        setUsername((formData.get('username') as string) || '')
+        setFullName((formData.get('fullName') as string) || '')
       } else {
-        setError(result.error)
-        toast.error(result.error)
+        setError(result.error || 'An error occurred')
+        toast.error(result.error || 'An error occurred')
         // Revert optimistic update on error
-        setUsername(profile?.username || '')
-        setFullName(profile?.fullName || '')
+        setUsername(profile?.username ?? '')
+        setFullName(profile?.fullName ?? '')
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An error occurred'
@@ -262,7 +262,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
   }
 
   return (
-    <form action={updateProfile} className="space-y-4">
+    <form action={handleSubmit} className="space-y-4">
       {error && (
         <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">
           {error}

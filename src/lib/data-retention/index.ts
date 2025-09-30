@@ -19,7 +19,7 @@ export {
     isEligibleForDeletion,
     shouldSendDeletionNotification,
     getRetentionPoliciesSummary,
-} from '../data-retention';
+} from './data-retention';
 
 // Database schema and operations
 export {

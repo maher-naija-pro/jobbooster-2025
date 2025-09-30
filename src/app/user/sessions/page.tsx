@@ -28,7 +28,17 @@ export default async function SessionsPage() {
         )
     }
 
-    const { analytics, activeSessions } = sessionData.data || { analytics: { totalSessions: 0, activeSessions: 0, expiredSessions: 0, averageSessionDuration: 0 }, activeSessions: [] }
+    const { analytics, activeSessions } = sessionData.data || { 
+        analytics: { 
+            totalSessions: 0, 
+            activeSessions: 0, 
+            expiredSessions: 0, 
+            sessionsByDevice: [], 
+            sessionsByLocation: [], 
+            recentSessions: [] 
+        }, 
+        activeSessions: [] 
+    }
 
     const getDeviceIcon = (device: string) => {
         switch (device.toLowerCase()) {

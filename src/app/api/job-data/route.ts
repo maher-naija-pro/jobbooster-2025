@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
         const result = await JobDataService.getByUserId(user.id, {
             page,
             limit,
-            status,
+            status: status as any,
             isArchived: archived,
         });
 

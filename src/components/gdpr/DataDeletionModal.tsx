@@ -207,14 +207,14 @@ export function DataDeletionModal({ isOpen, onClose, onDelete }: DataDeletionMod
                                         <div
                                             key={dataType.id}
                                             className={`p-4 rounded-lg border ${deletionOptions[dataType.id as keyof DeletionOptions]
-                                                    ? 'border-red-200 bg-red-50 dark:bg-red-900/20'
-                                                    : 'border-slate-200 dark:border-slate-700'
+                                                ? 'border-red-200 bg-red-50 dark:bg-red-900/20'
+                                                : 'border-slate-200 dark:border-slate-700'
                                                 }`}
                                         >
                                             <div className="flex items-center gap-3">
                                                 <Checkbox
                                                     id={dataType.id}
-                                                    checked={deletionOptions[dataType.id as keyof DeletionOptions]}
+                                                    checked={!!deletionOptions[dataType.id as keyof DeletionOptions]}
                                                     onCheckedChange={(checked) =>
                                                         handleOptionChange(dataType.id as keyof DeletionOptions, checked as boolean)
                                                     }

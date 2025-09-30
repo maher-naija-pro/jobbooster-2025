@@ -8,6 +8,21 @@ interface CVAnalysisSkeletonProps {
     className?: string;
 }
 
+// Helper components
+const SkeletonButton = () => (
+    <div className="bg-gray-200 rounded-lg px-3 py-2 w-20 h-8 shimmer"></div>
+);
+
+const SkeletonText = ({ width = 'w-full', height = 'h-4', className = '' }: {
+    width?: string;
+    height?: string;
+    className?: string;
+}) => {
+    return (
+        <div className={`bg-gray-200 rounded ${width} ${height} shimmer ${className}`}></div>
+    );
+};
+
 export function CVAnalysisSkeleton({ progress, className = '' }: CVAnalysisSkeletonProps) {
     // Determine which sections to show based on progress
     const showHeader = progress >= 20;
@@ -21,14 +36,6 @@ export function CVAnalysisSkeleton({ progress, className = '' }: CVAnalysisSkele
         <div className={`animate-pulse ${boxClassName}`}>
             {children}
         </div>
-    );
-
-    const SkeletonText = ({ width = 'w-full', height = 'h-4' }: { width?: string; height?: string }) => (
-        <div className={`bg-gray-200 rounded ${width} ${height} shimmer`}></div>
-    );
-
-    const SkeletonButton = () => (
-        <div className="bg-gray-200 rounded-lg px-3 py-2 w-20 h-8 shimmer"></div>
     );
 
     const SkeletonCard = ({ children, bgColor = 'bg-gray-50', borderColor = 'border-gray-200' }: {
@@ -346,13 +353,3 @@ export function CVAnalysisProgressiveSkeleton({ progress, className = '' }: CVAn
     );
 }
 
-// Helper component for skeleton text
-function SkeletonText({ width = 'w-full', height = 'h-4', className = '' }: {
-    width?: string;
-    height?: string;
-    className?: string;
-}) {
-    return (
-        <div className={`bg-gray-200 rounded ${width} ${height} shimmer ${className}`}></div>
-    );
-}

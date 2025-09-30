@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch'
@@ -32,16 +32,6 @@ export function CookieConsentBanner({ onAccept, onReject, onCustomize, testMode 
         marketing: false,
         preferences: false
     })
-
-    useEffect(() => {
-        // Load existing preferences from database first (both test mode and normal mode)
-        loadExistingPreferences()
-    }, [loadExistingPreferences, testMode])
-
-    // Debug effect to track preference changes
-    useEffect(() => {
-        console.log('Preferences state updated:', preferences)
-    }, [preferences])
 
     const loadExistingPreferences = useCallback(async () => {
         try {
@@ -88,6 +78,16 @@ export function CookieConsentBanner({ onAccept, onReject, onCustomize, testMode 
         setShowBanner(true)
         setIsLoading(false)
     }, [testMode])
+
+    useEffect(() => {
+        // Load existing preferences from database first (both test mode and normal mode)
+        loadExistingPreferences()
+    }, [loadExistingPreferences, testMode])
+
+    // Debug effect to track preference changes
+    useEffect(() => {
+        console.log('Preferences state updated:', preferences)
+    }, [preferences])
 
     const handleAcceptAll = async () => {
         const allAccepted = {

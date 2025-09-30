@@ -161,7 +161,7 @@ async function executeOperation(options: CliOptions): Promise<void> {
                     options.dataType as DataType,
                     options.adminUserId
                 );
-                
+
                 // Convert BatchDeletionResult to OperationResult
                 result = {
                     success: batchResult.failed === 0,
@@ -265,7 +265,7 @@ async function listPolicies(): Promise<void> {
     console.log('📋 Data Retention Policies:');
     console.log('==========================');
 
-    const policies = getRetentionPoliciesSummary() as PolicySummary[];
+    const policies = getRetentionPoliciesSummary() as any[];
 
     policies.forEach((policy: PolicySummary) => {
         console.log('');
