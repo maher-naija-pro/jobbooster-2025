@@ -20,20 +20,20 @@ const prisma = new PrismaClient();
  */
 export async function GET(
     request: NextRequest,
-    { params }: { params: { dataType: string } }
+    { params }: { params: Promise<{ dataType: string }> }
 ) {
     const startTime = Date.now();
     const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-    logger.info('Data retention data type info request started', {
-        requestId,
-        endpoint: '/api/data-retention/[dataType]',
-        method: 'GET',
-        dataType: params.dataType
-    });
-
     try {
-        const { dataType } = params;
+        const { dataType } = await params;
+
+        logger.info('Data retention data type info request started', {
+            requestId,
+            endpoint: '/api/data-retention/[dataType]',
+            method: 'GET',
+            dataType: dataType
+        });
 
         // Validate data type
         if (!Object.values(DataType).includes(dataType as DataType)) {
@@ -112,7 +112,6 @@ export async function GET(
         const processingTime = Date.now() - startTime;
         logger.error('Error getting data type info', {
             requestId,
-            dataType: params.dataType,
             error: error instanceof Error ? error.message : 'Unknown error',
             stack: error instanceof Error ? error.stack : undefined,
             processingTime
@@ -130,20 +129,20 @@ export async function GET(
  */
 export async function POST(
     request: NextRequest,
-    { params }: { params: { dataType: string } }
+    { params }: { params: Promise<{ dataType: string }> }
 ) {
     const startTime = Date.now();
     const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-    logger.info('Data retention data type processing request started', {
-        requestId,
-        endpoint: '/api/data-retention/[dataType]',
-        method: 'POST',
-        dataType: params.dataType
-    });
-
     try {
-        const { dataType } = params;
+        const { dataType } = await params;
+
+        logger.info('Data retention data type processing request started', {
+            requestId,
+            endpoint: '/api/data-retention/[dataType]',
+            method: 'POST',
+            dataType: dataType
+        });
         const body = await request.json();
         const { dryRun = false, adminUserId } = body;
 
@@ -207,7 +206,6 @@ export async function POST(
         const processingTime = Date.now() - startTime;
         logger.error('Error processing data type', {
             requestId,
-            dataType: params.dataType,
             error: error instanceof Error ? error.message : 'Unknown error',
             stack: error instanceof Error ? error.stack : undefined,
             processingTime
@@ -225,20 +223,20 @@ export async function POST(
  */
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { dataType: string } }
+    { params }: { params: Promise<{ dataType: string }> }
 ) {
     const startTime = Date.now();
     const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-    logger.info('Data retention force delete request started', {
-        requestId,
-        endpoint: '/api/data-retention/[dataType]',
-        method: 'DELETE',
-        dataType: params.dataType
-    });
-
     try {
-        const { dataType } = params;
+        const { dataType } = await params;
+
+        logger.info('Data retention force delete request started', {
+            requestId,
+            endpoint: '/api/data-retention/[dataType]',
+            method: 'DELETE',
+            dataType: dataType
+        });
         const body = await request.json();
         const { adminUserId, confirm = false } = body;
 
@@ -328,7 +326,6 @@ export async function DELETE(
         const processingTime = Date.now() - startTime;
         logger.error('Error force deleting data type', {
             requestId,
-            dataType: params.dataType,
             error: error instanceof Error ? error.message : 'Unknown error',
             stack: error instanceof Error ? error.stack : undefined,
             processingTime
