@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { openai } from '@/lib/openai';
 import { logger } from '@/lib/logger';
 import { generateAnonymousSessionId } from '@/lib/anonymous-session';
+import { ProcessingStatus } from '@prisma/client';
 
 // Environment validation
 const requiredEnvVars = {
@@ -210,7 +211,6 @@ export async function POST(request: NextRequest) {
             metadata?: unknown;
         }
 
-        type ProcessingStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
 
         const cvData = await prisma.cvData.findFirst({
             where: {
@@ -258,7 +258,7 @@ export async function POST(request: NextRequest) {
         await prisma.cvData.update({
             where: { id: cvId },
             data: {
-                processingStatus: 'PROCESSING' as ProcessingStatus,
+                processingStatus: ProcessingStatus.PROCESSING,
                 processingStartedAt: new Date(),
                 processingError: null
             }
@@ -440,7 +440,7 @@ Please provide a comprehensive analysis of this CV with individual skills listed
             await prisma.cvData.update({
                 where: { id: cvId },
                 data: {
-                    processingStatus: 'FAILED' as ProcessingStatus,
+                    processingStatus: ProcessingStatus.FAILED,
                     processingError: 'OpenAI service unavailable',
                     processingCompletedAt: new Date()
                 }
@@ -480,7 +480,7 @@ Please provide a comprehensive analysis of this CV with individual skills listed
             await prisma.cvData.update({
                 where: { id: cvId },
                 data: {
-                    processingStatus: 'FAILED' as ProcessingStatus,
+                    processingStatus: ProcessingStatus.FAILED,
                     processingError: 'No response from AI service',
                     processingCompletedAt: new Date()
                 }
@@ -608,7 +608,7 @@ Please provide a comprehensive analysis of this CV with individual skills listed
             await prisma.cvData.update({
                 where: { id: cvId },
                 data: {
-                    processingStatus: 'FAILED' as ProcessingStatus,
+                    processingStatus: ProcessingStatus.FAILED,
                     processingError: 'Invalid response format from AI service',
                     processingCompletedAt: new Date()
                 }
@@ -639,18 +639,18 @@ Please provide a comprehensive analysis of this CV with individual skills listed
             githubUrl?: string | null;
             dateOfBirth?: Date | null;
             professionalSummary?: string | null;
-            technicalSkills?: unknown[];
-            softSkills?: unknown[];
-            languages?: unknown[];
-            certifications?: unknown[];
-            education?: unknown[];
-            workExperience?: unknown[];
-            projects?: unknown[];
-            metadata: Record<string, unknown>;
+            technicalSkills?: any;
+            softSkills?: any;
+            languages?: any;
+            certifications?: any;
+            education?: any;
+            workExperience?: any;
+            projects?: any;
+            metadata?: any;
         };
 
         const updateData: CvDataUpdateInput = {
-            processingStatus: 'COMPLETED' as ProcessingStatus,
+            processingStatus: ProcessingStatus.COMPLETED,
             processingCompletedAt: new Date(),
             processingTime: openaiProcessingTime,
             processingError: null,
@@ -795,7 +795,7 @@ Please provide a comprehensive analysis of this CV with individual skills listed
                 await prisma.cvData.update({
                     where: { id: cvId },
                     data: {
-                        processingStatus: 'FAILED' as ProcessingStatus,
+                        processingStatus: ProcessingStatus.FAILED,
                         processingError: error instanceof Error ? error.message : String(error),
                         processingCompletedAt: new Date()
                     }

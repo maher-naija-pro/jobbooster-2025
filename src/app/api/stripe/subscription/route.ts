@@ -51,7 +51,6 @@ export async function POST(req: NextRequest) {
     });
 
     const customers = await stripeapi.customers.list({
-      // @ts-expect-error Stripe typings for list() do not include email filter though API supports it
       limit: 1,
       email: user.email
     })
@@ -118,7 +117,7 @@ export async function POST(req: NextRequest) {
       subscriptionId: subscription.id
     });
 
-    if (!invoice.payment_intent) {
+    if (!(invoice as any).payment_intent) {
       logger.error('Invoice processing failed - no payment intent found', {
         requestId,
         invoiceId: invoice.id,
@@ -129,8 +128,7 @@ export async function POST(req: NextRequest) {
       }, { status: 404 });
     }
 
-    // @ts-expect-error invoice.payment_intent may be string or expanded object per Stripe API
-    const paymentIntent = await stripeapi.paymentIntents.retrieve(invoice.payment_intent)
+    const paymentIntent = await stripeapi.paymentIntents.retrieve((invoice as any).payment_intent)
 
     logger.info('Stripe subscription creation completed successfully', {
       requestId,

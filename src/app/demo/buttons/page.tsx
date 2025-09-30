@@ -588,7 +588,7 @@ export default function ButtonDemoPage() {
                                         loadingText="Loading with pulse..."
                                         loadingTextAnimation="pulse"
                                         isLoading={loadingStates.pulse}
-                                        onClick={() => toggleLoading('pulse')}
+                                        onClick={() => handleLoadingToggle('pulse')}
                                         variant="primary"
                                         size="sm"
                                     />
@@ -597,7 +597,7 @@ export default function ButtonDemoPage() {
                                         loadingText="Loading with bounce..."
                                         loadingTextAnimation="bounce"
                                         isLoading={loadingStates.bounce}
-                                        onClick={() => toggleLoading('bounce')}
+                                        onClick={() => handleLoadingToggle('bounce')}
                                         variant="secondary"
                                         size="sm"
                                     />
@@ -606,7 +606,7 @@ export default function ButtonDemoPage() {
                                         loadingText="Loading with fade..."
                                         loadingTextAnimation="fade"
                                         isLoading={loadingStates.fade}
-                                        onClick={() => toggleLoading('fade')}
+                                        onClick={() => handleLoadingToggle('fade')}
                                         variant="success"
                                         size="sm"
                                     />
@@ -622,7 +622,7 @@ export default function ButtonDemoPage() {
                                         loadingText="Spinning..."
                                         loadingIconType="spinner"
                                         isLoading={loadingStates.spinner}
-                                        onClick={() => toggleLoading('spinner')}
+                                        onClick={() => handleLoadingToggle('spinner')}
                                         variant="primary"
                                         size="sm"
                                     />
@@ -631,7 +631,7 @@ export default function ButtonDemoPage() {
                                         loadingText="Dots loading..."
                                         loadingIconType="dots"
                                         isLoading={loadingStates.dots}
-                                        onClick={() => toggleLoading('dots')}
+                                        onClick={() => handleLoadingToggle('dots')}
                                         variant="warning"
                                         size="sm"
                                     />
@@ -640,7 +640,7 @@ export default function ButtonDemoPage() {
                                         loadingText="Bars loading..."
                                         loadingIconType="bars"
                                         isLoading={loadingStates.bars}
-                                        onClick={() => toggleLoading('bars')}
+                                        onClick={() => handleLoadingToggle('bars')}
                                         variant="danger"
                                         size="sm"
                                     />
@@ -656,7 +656,7 @@ export default function ButtonDemoPage() {
                                         loadingText="Slow loading..."
                                         loadingSpeed="slow"
                                         isLoading={loadingStates.slow}
-                                        onClick={() => toggleLoading('slow')}
+                                        onClick={() => handleLoadingToggle('slow')}
                                         variant="primary-outline"
                                         size="sm"
                                     />
@@ -665,7 +665,7 @@ export default function ButtonDemoPage() {
                                         loadingText="Normal loading..."
                                         loadingSpeed="normal"
                                         isLoading={loadingStates.normal}
-                                        onClick={() => toggleLoading('normal')}
+                                        onClick={() => handleLoadingToggle('normal')}
                                         variant="secondary-outline"
                                         size="sm"
                                     />
@@ -674,7 +674,7 @@ export default function ButtonDemoPage() {
                                         loadingText="Fast loading..."
                                         loadingSpeed="fast"
                                         isLoading={loadingStates.fast}
-                                        onClick={() => toggleLoading('fast')}
+                                        onClick={() => handleLoadingToggle('fast')}
                                         variant="success-outline"
                                         size="sm"
                                     />

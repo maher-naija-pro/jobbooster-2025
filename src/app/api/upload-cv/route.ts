@@ -197,11 +197,13 @@ export async function POST(request: NextRequest) {
             storagePath: uploadData.path
         });
 
+        let userId: string | undefined;
+
         try {
             // Get user ID from Supabase auth
             const { data: { user } } = await supabase.auth.getUser();
             const isAuthenticated = !!user;
-            let userId = user?.id;
+            userId = user?.id;
 
             // For anonymous users, create a temporary profile
             if (!isAuthenticated) {
@@ -330,8 +332,8 @@ export async function POST(request: NextRequest) {
                 uploadDate: fileRecord.createdAt,
                 processedContent: fileRecord.extractedText || '',
                 status: 'completed',
-                fileUrl: fileRecord.fileUrl,
-                processingStatus: fileRecord.processingStatus.toLowerCase() as 'uploaded' | 'extracting' | 'analyzing' | 'completed' | 'failed',
+                fileUrl: fileRecord.fileUrl || undefined,
+                processingStatus: fileRecord.processingStatus,
                 processingStartedAt: fileRecord.processingStartedAt || undefined,
                 processingCompletedAt: fileRecord.processingCompletedAt || undefined,
                 processingError: fileRecord.processingError || undefined,

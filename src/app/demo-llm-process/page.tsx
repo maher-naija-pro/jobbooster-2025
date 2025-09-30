@@ -96,26 +96,6 @@ export default function DemoLLMProcessPage() {
         setIsDragOver(false);
     }, []);
 
-    const handleDrop = useCallback(async (e: React.DragEvent) => {
-        e.preventDefault();
-        setIsDragOver(false);
-
-        const files = Array.from(e.dataTransfer.files);
-        if (files.length > 0) {
-            await processFile(files[0]);
-        }
-    }, [processFile]);
-
-    const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-        if (files && files.length > 0) {
-            await processFile(files[0]);
-            if (fileInputRef.current) {
-                fileInputRef.current.value = '';
-            }
-        }
-    }, [processFile]);
-
     const processFile = useCallback(async (file: File) => {
         const validation = validateFile(file);
         if (!validation.isValid) {
@@ -160,6 +140,26 @@ export default function DemoLLMProcessPage() {
             }));
         }
     }, []);
+
+    const handleDrop = useCallback(async (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragOver(false);
+
+        const files = Array.from(e.dataTransfer.files);
+        if (files.length > 0) {
+            await processFile(files[0]);
+        }
+    }, [processFile]);
+
+    const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (files && files.length > 0) {
+            await processFile(files[0]);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+        }
+    }, [processFile]);
 
     const handleLLMProcess = async () => {
         if (!cvData) return;

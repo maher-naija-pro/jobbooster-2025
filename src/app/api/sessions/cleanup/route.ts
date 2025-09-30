@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
             requestId,
             processingTime: Date.now() - startTime,
             success: result.success,
-            cleanedSessions: result.cleanedSessions || 0
+            deletedCount: result.deletedCount || 0
         });
 
         return NextResponse.json(result)
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
             requestId,
             processingTime: Date.now() - startTime,
             success: result.success,
-            cleanedSessions: result.cleanedSessions || 0
+            deletedCount: result.deletedCount || 0
         });
 
         return NextResponse.json(result)

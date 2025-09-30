@@ -205,17 +205,7 @@ async function collectUserData(userId: string) {
         cvUploads
     ] = await Promise.all([
         prisma.profile.findUnique({
-            where: { userId },
-            include: {
-                user: {
-                    select: {
-                        id: true,
-                        email: true,
-                        createdAt: true,
-                        lastSignInAt: true
-                    }
-                }
-            }
+            where: { userId }
         }),
         prisma.cvData.findMany({
             where: { userId },
@@ -260,22 +250,18 @@ async function collectUserData(userId: string) {
         profile: profile ? {
             ...profile,
             // Remove sensitive fields if needed
-            user: profile.user ? {
-                id: profile.user.id,
-                email: profile.user.email,
-                createdAt: profile.user.createdAt,
-                lastSignInAt: profile.user.lastSignInAt
-            } : null
+            userId: profile.userId,
+            email: profile.email
         } : null,
         cvData: cvData.map(cv => ({
             id: cv.id,
             fileName: cv.fileName,
             fileSize: cv.fileSize,
-            fileType: cv.fileType,
+            mimeType: cv.mimeType,
             createdAt: cv.createdAt,
             updatedAt: cv.updatedAt,
             // Don't include the actual file content for privacy
-            hasContent: !!cv.content
+            hasContent: !!cv.extractedText
         })),
         generatedContent: generatedContent.map(content => ({
             id: content.id,
@@ -298,14 +284,13 @@ async function collectUserData(userId: string) {
             ipAddress: session.ipAddress,
             userAgent: session.userAgent,
             createdAt: session.createdAt,
-            lastActiveAt: session.lastActiveAt
+            lastActivity: session.lastActivity
         })),
         uploads: cvUploads.map(upload => ({
             id: upload.id,
             fileName: upload.fileName,
             fileSize: upload.fileSize,
-            fileType: upload.fileType,
-            status: upload.status,
+            mimeType: upload.mimeType,
             createdAt: upload.createdAt
         }))
     }

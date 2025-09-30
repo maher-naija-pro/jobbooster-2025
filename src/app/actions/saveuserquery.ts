@@ -1,6 +1,6 @@
 "use server"
 
-import db from "@/lib/db/db"
+import { db } from "@/lib/db"
 
 export const Save_user_query = async (
     jobdescription: string,
@@ -9,10 +9,10 @@ export const Save_user_query = async (
 ) => {
 
     try {
-        await db.query.create({
+        await db.contactMessage.create({
             data: {
-                pdfname,
-                jobdescription
+                name: pdfname,
+                message: jobdescription
             }
         })
     } catch (error) {

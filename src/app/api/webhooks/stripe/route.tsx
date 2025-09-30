@@ -62,15 +62,16 @@ export async function POST(req: Request) {
       customerId: subscription.customer
     });
 
-    await db.orgSubscription.create({
-      data: {
-        orgId: session?.metadata?.orgId,
-        stripeSubscriptionId: subscription.id,
-        stripeCustomerId: subscription.customer as string,
-        stripePriceId: subscription.items.data[0].price.id,
-        stripeCurrentPeriodEnd: new Date(subscription.current_period_end * 1000)
-      }
-    });
+    // TODO: Implement orgSubscription model in Prisma schema
+    // await db.orgSubscription.create({
+    //   data: {
+    //     orgId: session?.metadata?.orgId,
+    //     stripeSubscriptionId: subscription.id,
+    //     stripeCustomerId: subscription.customer as string,
+    //     stripePriceId: subscription.items.data[0].price.id,
+    //     stripeCurrentPeriodEnd: new Date(subscription.current_period_end * 1000)
+    //   }
+    // });
 
     logger.info('Organization subscription created successfully', {
       requestId,
@@ -88,15 +89,16 @@ export async function POST(req: Request) {
 
     const subscription = await stripeapi.subscriptions.retrieve(session.subscription as string)
 
-    await db.orgSubscription.update({
-      where: {
-        stripeSubscriptionId: subscription.id
-      },
-      data: {
-        stripePriceId: subscription.items.data[0].price.id,
-        stripeCurrentPeriodEnd: new Date(subscription.current_period_end * 1000)
-      }
-    });
+    // TODO: Implement orgSubscription model in Prisma schema
+    // await db.orgSubscription.update({
+    //   where: {
+    //     stripeSubscriptionId: subscription.id
+    //   },
+    //   data: {
+    //     stripePriceId: subscription.items.data[0].price.id,
+    //     stripeCurrentPeriodEnd: new Date(subscription.current_period_end * 1000)
+    //   }
+    // });
 
     logger.info('Organization subscription updated for payment success', {
       requestId,

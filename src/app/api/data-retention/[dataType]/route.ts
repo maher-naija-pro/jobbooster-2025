@@ -68,7 +68,7 @@ export async function GET(
         const policy = getRetentionPolicy(typedDataType);
 
         // Get retention statistics
-        const stats = await calculateRetentionStats(typedDataType, prisma);
+        const stats = await calculateRetentionStats(typedDataType, prisma as any);
 
         // Get eligible records (without processing them)
         const deletionService = new DataRetentionDeletionService(prisma, { dryRun: true });
@@ -191,7 +191,9 @@ export async function POST(
             dataType: typedDataType,
             dryRun,
             processingTime: Date.now() - startTime,
-            success: result.success
+            totalProcessed: result.totalProcessed,
+            successful: result.successful,
+            failed: result.failed
         });
 
         return NextResponse.json({
@@ -311,7 +313,9 @@ export async function DELETE(
             requestId,
             dataType: typedDataType,
             processingTime: Date.now() - startTime,
-            success: result.success
+            totalProcessed: result.totalProcessed,
+            successful: result.successful,
+            failed: result.failed
         });
 
         return NextResponse.json({
