@@ -174,7 +174,7 @@ class Logger {
         });
     }
 
-    gdprValidationError(userId: string | undefined, field: string, value: any, context?: LogContext): void {
+    gdprValidationError(userId: string | undefined, field: string, value: unknown, context?: LogContext): void {
         this.warn(`[GDPR Validation] Invalid data provided`, {
             ...(typeof context === 'object' && context !== null ? context : {}),
             userId,

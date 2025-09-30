@@ -153,7 +153,7 @@ export class DataRetentionScheduler {
      * Run notification check
      * This should be called daily to send deletion notifications
      */
-    async runNotificationCheck(adminUserId?: string): Promise<ScheduledJobResult> {
+    async runNotificationCheck(_adminUserId?: string): Promise<ScheduledJobResult> {
         const jobId = `notification_check_${Date.now()}`;
         const startTime = new Date();
 
@@ -403,7 +403,7 @@ export class DataRetentionScheduler {
      */
     private async cleanupTemporaryFiles(): Promise<{ cleanedUp: number; errors: string[] }> {
         const errors: string[] = [];
-        let cleanedUp = 0;
+        const cleanedUp = 0;
 
         try {
             // This would integrate with file storage system

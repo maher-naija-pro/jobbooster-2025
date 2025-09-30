@@ -257,7 +257,10 @@ export class DataRetentionDeletionService {
     /**
      * Determine the appropriate operation for a data type
      */
-    private determineOperation(dataType: DataType, policy: any): DeletionOperation {
+    private determineOperation(
+        dataType: DataType,
+        policy: { allowAnonymization?: boolean; requiresManualReview?: boolean }
+    ): DeletionOperation {
         // Check if anonymization is allowed and preferred
         if (policy.allowAnonymization) {
             return 'anonymize';
@@ -363,14 +366,15 @@ export class DataRetentionDeletionService {
         const fields = getFieldMappings(dataType);
 
         try {
-            await (this.prisma as any)[tableName].update({
-                where: { id: record.id },
-                data: {
-                    [fields.isDeleted]: true,
-                    [fields.deletedAt]: new Date(),
-                    deletedBy: 'data-retention-system',
-                },
-            });
+            // Use raw SQL to avoid dynamic delegate casting
+            await this.prisma.$executeRawUnsafe(`
+                UPDATE "${tableName}"
+                SET 
+                  "${String(fields.isDeleted)}" = true,
+                  "${String(fields.deletedAt)}" = NOW(),
+                  "deletedBy" = 'data-retention-system'
+                WHERE id = '${record.id}'
+            `);
 
             return {
                 recordId: record.id,
@@ -398,9 +402,11 @@ export class DataRetentionDeletionService {
         tableName: string
     ): Promise<RecordDeletionResult> {
         try {
-            await (this.prisma as any)[tableName].delete({
-                where: { id: record.id },
-            });
+            // Use raw SQL to avoid dynamic delegate casting
+            await this.prisma.$executeRawUnsafe(`
+                DELETE FROM "${tableName}"
+                WHERE id = '${record.id}'
+            `);
 
             return {
                 recordId: record.id,
@@ -598,7 +604,7 @@ export class DataRetentionDeletionService {
      * Get deletion statistics
      */
     async getDeletionStatistics(): Promise<Record<DataType, BatchDeletionResult>> {
-        const stats: Record<DataType, BatchDeletionResult> = {} as any;
+        const stats: Record<DataType, BatchDeletionResult> = {} as Record<DataType, BatchDeletionResult>;
 
         for (const dataType of Object.values(DataType)) {
             try {
