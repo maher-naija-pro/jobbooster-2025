@@ -9,8 +9,27 @@ import { MetaButton } from '@/components/buttons/meta-button'
 import { Icons } from '@/components/icons'
 import { toast } from 'sonner'
 
+interface NotificationPreferencesShape {
+    notifications?: {
+        email?: boolean
+        marketing?: boolean
+        security?: boolean
+        updates?: boolean
+        push?: boolean
+        pushMarketing?: boolean
+        pushSecurity?: boolean
+        pushUpdates?: boolean
+        emailFrequency?: 'immediate' | 'daily' | 'weekly'
+        digestFrequency?: 'daily' | 'weekly' | 'monthly'
+        quietHours?: boolean
+        quietStart?: string
+        quietEnd?: string
+        quietDays?: string[]
+    }
+}
+
 interface NotificationSettingsProps {
-    profile: any
+    profile: { preferences?: NotificationPreferencesShape } | null
 }
 
 export function NotificationSettings({ profile }: NotificationSettingsProps) {

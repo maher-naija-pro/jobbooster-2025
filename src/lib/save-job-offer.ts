@@ -3,13 +3,13 @@
  * @param jobOfferContent - The job offer content to save
  * @param title - Optional job title
  * @param company - Optional company name
- * @returns Promise<{ success: boolean; jobData?: any; error?: string }>
+ * @returns Promise<{ success: boolean; jobData?: { id?: string; content?: string; title?: string; company?: string } | undefined; error?: string }>
  */
 export async function saveJobOfferToDatabase(
     jobOfferContent: string,
     title?: string,
     company?: string
-): Promise<{ success: boolean; jobData?: any; error?: string }> {
+): Promise<{ success: boolean; jobData?: { id?: string; content?: string; title?: string; company?: string } | undefined; error?: string }> {
     try {
         console.log('Saving job offer to database', {
             action: 'save_job_offer',
@@ -78,7 +78,7 @@ export async function saveJobOfferToDatabase(
             };
         }
 
-        const jobData = await response.json();
+        const jobData: { id?: string; content?: string; title?: string; company?: string } = await response.json();
         console.log('Job offer saved successfully via API:', {
             action: 'save_job_offer',
             step: 'success',
@@ -122,13 +122,11 @@ export async function isJobOfferAlreadySaved(jobOfferContent: string): Promise<b
             return false;
         }
 
-        const result = await response.json();
+        const result: { data?: Array<{ content?: string }> } = await response.json();
         const existingJobs = result.data || [];
 
         // Check if any existing job has the same content
-        const isDuplicate = existingJobs.some((job: any) =>
-            job.content === jobOfferContent.trim()
-        );
+        const isDuplicate = existingJobs.some((job) => job.content === jobOfferContent.trim());
 
         console.log('Duplicate check result:', { isDuplicate, totalJobs: existingJobs.length });
         return isDuplicate;

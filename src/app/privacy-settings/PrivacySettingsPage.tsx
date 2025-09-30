@@ -83,7 +83,15 @@ export function PrivacySettingsPage() {
         }
     }
 
-    const handleDelete = async (options: any) => {
+    const handleDelete = async (options: {
+        deleteProfile: boolean
+        deleteCvData: boolean
+        deleteActivityLogs: boolean
+        deleteCommunications: boolean
+        deleteSessions: boolean
+        reason: string
+        confirmDeletion: boolean
+    }) => {
         setIsDeleting(true)
         try {
             // Simulate API call
@@ -103,7 +111,15 @@ export function PrivacySettingsPage() {
         }
     }
 
-    const handleConsentSave = async (preferences: any) => {
+    const handleConsentSave = async (preferences: {
+        essential: boolean
+        analytics: boolean
+        marketing: boolean
+        preferences: boolean
+        emailNotifications: boolean
+        pushNotifications: boolean
+        dataProcessing: boolean
+    }) => {
         try {
             // Save consent preferences to your API
             console.log('Saving consent preferences:', preferences)

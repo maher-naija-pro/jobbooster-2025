@@ -1,4 +1,4 @@
-import ListSocial from "./socials-link"
+// Removed unused import
 
 export enum PopularPlanType {
   NO = 0,

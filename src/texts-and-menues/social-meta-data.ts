@@ -1,8 +1,5 @@
 import type { Metadata } from "next"
 import { Site_name } from "@/texts-and-menues/site-name"
-interface platformnameProps {
-  title: string
-}
 
 //add this after <GoogleTagManager gtmId="GTM-XYZ" />
 export const socialmetadata: Metadata = {

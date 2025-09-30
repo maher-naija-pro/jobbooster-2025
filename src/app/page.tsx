@@ -12,7 +12,7 @@ import { SavedCVSelector } from '../components/generator/saved-cv-selector';
 import { SavedOfferSelector } from '../components/generator/saved-offer-selector';
 
 import { ErrorBoundary } from '../components/error-boundary';
-import { Language } from '../lib/types';
+import { Language, CVData, JobData, CVAnalysisResult, GeneratedContent } from '../lib/types';
 import { useState, useEffect } from 'react';
 import { FeatureGate } from '../components/auth/feature-gate';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -21,7 +21,7 @@ import { saveJobOfferToDatabase, isJobOfferAlreadySaved } from '../lib/save-job-
 export default function Home() {
   const { state, dispatch } = useApp();
   const [streamingContent, setStreamingContent] = useState('');
-  const [debugApiResponse, setDebugApiResponse] = useState<any>(null);
+  const [debugApiResponse, setDebugApiResponse] = useState<Record<string, unknown> | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -161,12 +161,12 @@ export default function Home() {
   };
 
   // Handle CV selection from saved CVs
-  const handleCVSelect = (cvData: any) => {
+  const handleCVSelect = (cvData: CVData) => {
     dispatch({ type: 'SET_CV_DATA', payload: cvData });
   };
 
   // Handle job offer selection from saved offers
-  const handleOfferSelect = (offerData: any) => {
+  const handleOfferSelect = (offerData: { content: string }) => {
     dispatch({ type: 'SET_JOB_OFFER', payload: offerData.content });
   };
 
