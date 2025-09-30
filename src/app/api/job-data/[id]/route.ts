@@ -5,17 +5,20 @@ import { logger } from '@/lib/logger';
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const startTime = Date.now();
-    logger.info('Job data GET by ID request initiated', {
-        action: 'get_job_data_by_id',
-        timestamp: new Date().toISOString(),
-        jobDataId: params.id,
-        url: request.url
-    });
-
+    
     try {
+        const { id } = await params;
+        
+        logger.info('Job data GET by ID request initiated', {
+            action: 'get_job_data_by_id',
+            timestamp: new Date().toISOString(),
+            jobDataId: id,
+            url: request.url
+        });
+
         const supabase = await createClient();
         const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -23,7 +26,7 @@ export async function GET(
             logger.warn('Unauthorized job data GET by ID request', {
                 action: 'get_job_data_by_id',
                 step: 'authentication',
-                jobDataId: params.id,
+                jobDataId: id,
                 error: authError?.message || 'No user found',
                 hasAuthError: !!authError,
                 hasUser: !!user
@@ -35,17 +38,17 @@ export async function GET(
             action: 'get_job_data_by_id',
             step: 'authentication',
             userId: user.id,
-            jobDataId: params.id
+            jobDataId: id
         });
 
-        const jobData = await JobDataService.getById(params.id, user.id);
+        const jobData = await JobDataService.getById(id, user.id);
 
         if (!jobData) {
             logger.warn('Job data not found for GET by ID request', {
                 action: 'get_job_data_by_id',
                 step: 'data_retrieval',
                 userId: user.id,
-                jobDataId: params.id
+                jobDataId: id
             });
             return NextResponse.json({ error: 'Job data not found' }, { status: 404 });
         }
@@ -54,19 +57,19 @@ export async function GET(
             action: 'get_job_data_by_id',
             step: 'view_count_increment',
             userId: user.id,
-            jobDataId: params.id,
+            jobDataId: id,
             currentViewCount: jobData.viewCount || 0
         });
 
         // Increment view count
-        await JobDataService.incrementViewCount(params.id);
+        await JobDataService.incrementViewCount(id);
 
         const duration = Date.now() - startTime;
         logger.info('Job data GET by ID request completed successfully', {
             action: 'get_job_data_by_id',
             step: 'completion',
             userId: user.id,
-            jobDataId: params.id,
+            jobDataId: id,
             duration: `${duration}ms`,
             contentLength: jobData.content?.length || 0,
             hasTitle: !!jobData.title,
@@ -80,7 +83,6 @@ export async function GET(
         logger.error('Error fetching job data by ID', {
             action: 'get_job_data_by_id',
             step: 'error',
-            jobDataId: params.id,
             duration: `${duration}ms`,
             error: error instanceof Error ? error.message : 'Unknown error',
             stack: error instanceof Error ? error.stack : undefined
@@ -95,17 +97,20 @@ export async function GET(
 
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const startTime = Date.now();
-    logger.info('Job data PUT request initiated', {
-        action: 'update_job_data',
-        timestamp: new Date().toISOString(),
-        jobDataId: params.id,
-        url: request.url
-    });
-
+    
     try {
+        const { id } = await params;
+        
+        logger.info('Job data PUT request initiated', {
+            action: 'update_job_data',
+            timestamp: new Date().toISOString(),
+            jobDataId: id,
+            url: request.url
+        });
+
         const supabase = await createClient();
         const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -113,7 +118,7 @@ export async function PUT(
             logger.warn('Unauthorized job data PUT request', {
                 action: 'update_job_data',
                 step: 'authentication',
-                jobDataId: params.id,
+                jobDataId: id,
                 error: authError?.message || 'No user found',
                 hasAuthError: !!authError,
                 hasUser: !!user
@@ -125,7 +130,7 @@ export async function PUT(
             action: 'update_job_data',
             step: 'authentication',
             userId: user.id,
-            jobDataId: params.id
+            jobDataId: id
         });
 
         const body = await request.json();
@@ -135,7 +140,7 @@ export async function PUT(
             action: 'update_job_data',
             step: 'body_parsing',
             userId: user.id,
-            jobDataId: params.id,
+            jobDataId: id,
             updateFields: Object.keys(updateData),
             updateFieldsCount: Object.keys(updateData).length,
             hasContent: 'content' in updateData,
@@ -146,14 +151,14 @@ export async function PUT(
             companyLength: updateData.company?.length || 0
         });
 
-        const jobData = await JobDataService.update(params.id, user.id, updateData);
+        const jobData = await JobDataService.update(id, user.id, updateData);
 
         const duration = Date.now() - startTime;
         logger.info('Job data PUT request completed successfully', {
             action: 'update_job_data',
             step: 'completion',
             userId: user.id,
-            jobDataId: params.id,
+            jobDataId: id,
             duration: `${duration}ms`,
             updatedFields: Object.keys(updateData),
             contentLength: jobData.content?.length || 0,
@@ -167,7 +172,6 @@ export async function PUT(
         logger.error('Error updating job data', {
             action: 'update_job_data',
             step: 'error',
-            jobDataId: params.id,
             duration: `${duration}ms`,
             error: error instanceof Error ? error.message : 'Unknown error',
             stack: error instanceof Error ? error.stack : undefined,
@@ -186,17 +190,20 @@ export async function PUT(
 
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const startTime = Date.now();
-    logger.info('Job data DELETE request initiated', {
-        action: 'delete_job_data',
-        timestamp: new Date().toISOString(),
-        jobDataId: params.id,
-        url: request.url
-    });
-
+    
     try {
+        const { id } = await params;
+        
+        logger.info('Job data DELETE request initiated', {
+            action: 'delete_job_data',
+            timestamp: new Date().toISOString(),
+            jobDataId: id,
+            url: request.url
+        });
+
         const supabase = await createClient();
         const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -204,7 +211,7 @@ export async function DELETE(
             logger.warn('Unauthorized job data DELETE request', {
                 action: 'delete_job_data',
                 step: 'authentication',
-                jobDataId: params.id,
+                jobDataId: id,
                 error: authError?.message || 'No user found',
                 hasAuthError: !!authError,
                 hasUser: !!user
@@ -216,17 +223,17 @@ export async function DELETE(
             action: 'delete_job_data',
             step: 'authentication',
             userId: user.id,
-            jobDataId: params.id
+            jobDataId: id
         });
 
-        await JobDataService.delete(params.id, user.id);
+        await JobDataService.delete(id, user.id);
 
         const duration = Date.now() - startTime;
         logger.info('Job data DELETE request completed successfully', {
             action: 'delete_job_data',
             step: 'completion',
             userId: user.id,
-            jobDataId: params.id,
+            jobDataId: id,
             duration: `${duration}ms`
         });
 
@@ -236,7 +243,6 @@ export async function DELETE(
         logger.error('Error deleting job data', {
             action: 'delete_job_data',
             step: 'error',
-            jobDataId: params.id,
             duration: `${duration}ms`,
             error: error instanceof Error ? error.message : 'Unknown error',
             stack: error instanceof Error ? error.stack : undefined,

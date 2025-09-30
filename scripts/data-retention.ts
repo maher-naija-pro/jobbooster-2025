@@ -157,10 +157,21 @@ async function executeOperation(options: CliOptions): Promise<void> {
                     process.exit(1);
                 }
 
-                result = await deletionService.processDataRetention(
+                const batchResult = await deletionService.processDataRetention(
                     options.dataType as DataType,
                     options.adminUserId
                 );
+                
+                // Convert BatchDeletionResult to OperationResult
+                result = {
+                    success: batchResult.failed === 0,
+                    processingTimeMs: batchResult.processingTimeMs,
+                    totalRecordsProcessed: batchResult.totalProcessed,
+                    totalRecordsDeleted: batchResult.softDeleted + batchResult.hardDeleted,
+                    totalRecordsAnonymized: batchResult.anonymized,
+                    errors: batchResult.errors,
+                    dataTypesProcessed: [batchResult.dataType]
+                };
                 break;
 
             case 'list_policies':
