@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
+import type { Prisma } from '@prisma/client'
 
 export async function POST(request: NextRequest) {
     const startTime = Date.now()
@@ -152,7 +153,7 @@ export async function POST(request: NextRequest) {
     }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
     const startTime = Date.now()
     let userId: string | undefined
 
@@ -221,7 +222,7 @@ export async function GET(request: NextRequest) {
         })
 
         // Extract only the cookie preferences from the preferences JSON
-        const { lastUpdated, ...cookiePreferences } = profile.preferences as any
+        const { lastUpdated: _lastUpdated, ...cookiePreferences } = (profile.preferences as Prisma.JsonObject | null) ?? {}
 
         const duration = Date.now() - startTime
         logger.info('[GDPR Consent] Consent data fetched successfully', {

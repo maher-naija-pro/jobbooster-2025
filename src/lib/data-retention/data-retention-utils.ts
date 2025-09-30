@@ -6,7 +6,19 @@
  */
 
 import { DataType, getRetentionPolicy, calculateDeletionDate, calculateNotificationDate } from '../data-retention';
-import { getTableName, getFieldMappings, RETENTION_QUERIES } from './data-retention-schema';
+import { getTableName, getFieldMappings } from './data-retention-schema';
+
+// Minimal Prisma-like typings to avoid using `any` while supporting dynamic table access
+interface PrismaLikeModel {
+    count(args: { where?: unknown }): Promise<number>;
+    findMany(args: {
+        where?: unknown;
+        select?: Record<string, boolean>;
+        take?: number;
+    }): Promise<Array<Record<string, unknown>>>;
+}
+
+type PrismaLikeClient = Record<string, PrismaLikeModel>;
 
 /**
  * Data retention operation result
@@ -77,7 +89,7 @@ export function validateRetentionConfiguration(): { valid: boolean; errors: stri
  */
 export async function calculateRetentionStats(
     dataType: DataType,
-    prisma: any
+    prisma: PrismaLikeClient
 ): Promise<{
     totalRecords: number;
     eligibleForDeletion: number;
@@ -158,7 +170,7 @@ export async function calculateRetentionStats(
  */
 export async function getEligibleRecords(
     dataType: DataType,
-    prisma: any,
+    prisma: PrismaLikeClient,
     limit: number = 1000
 ): Promise<RetentionEligibleRecord[]> {
     const tableName = getTableName(dataType);
@@ -193,8 +205,8 @@ export async function getEligibleRecords(
         });
 
         return records.map(record => {
-            const createdAt = record[fields.createdAt];
-            const lastAccessedAt = record[fields.lastAccessedAt];
+            const createdAt = record[fields.createdAt] as Date;
+            const lastAccessedAt = record[fields.lastAccessedAt] as Date | undefined;
             const referenceDate = lastAccessedAt || createdAt;
 
             return {
@@ -218,7 +230,7 @@ export async function getEligibleRecords(
  */
 export async function getRecordsNeedingNotification(
     dataType: DataType,
-    prisma: any,
+    prisma: PrismaLikeClient,
     limit: number = 1000
 ): Promise<RetentionEligibleRecord[]> {
     const tableName = getTableName(dataType);
@@ -249,8 +261,8 @@ export async function getRecordsNeedingNotification(
         });
 
         return records.map(record => {
-            const createdAt = record[fields.createdAt];
-            const lastAccessedAt = record[fields.lastAccessedAt];
+            const createdAt = record[fields.createdAt] as Date;
+            const lastAccessedAt = record[fields.lastAccessedAt] as Date | undefined;
             const referenceDate = lastAccessedAt || createdAt;
 
             return {
@@ -273,7 +285,7 @@ export async function getRecordsNeedingNotification(
 export function logRetentionOperation(
     context: RetentionOperationContext,
     result: RetentionOperationResult,
-    additionalData?: Record<string, any>
+    additionalData?: Record<string, unknown>
 ): void {
     const logData = {
         timestamp: new Date().toISOString(),
@@ -342,7 +354,7 @@ export function formatRetentionPeriod(days: number): string {
 /**
  * Get data retention summary for all data types
  */
-export async function getDataRetentionSummary(prisma: any) {
+export async function getDataRetentionSummary(prisma: PrismaLikeClient) {
     const summary = [];
 
     for (const dataType of Object.values(DataType)) {

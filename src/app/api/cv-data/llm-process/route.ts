@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { createClient } from '@/lib/supabase/server';
 import { openai } from '@/lib/openai';
 import { logger } from '@/lib/logger';
-import { generateAnonymousSessionId, getAnonymousSessionId } from '@/lib/anonymous-session';
+import { generateAnonymousSessionId } from '@/lib/anonymous-session';
 
 // Environment validation
 const requiredEnvVars = {
@@ -14,7 +14,7 @@ const requiredEnvVars = {
 };
 
 const missingEnvVars = Object.entries(requiredEnvVars)
-    .filter(([_, value]) => !value)
+    .filter(([, value]) => !value)
     .map(([key]) => key);
 
 if (missingEnvVars.length > 0) {
@@ -41,7 +41,13 @@ export async function POST(request: NextRequest) {
     });
 
     try {
-        let body: any;
+        type LLMProcessRequestBody = {
+            cvId?: string;
+            forceReprocess?: boolean;
+            sessionId?: string;
+        };
+
+        let body: unknown;
         try {
             body = await request.json();
         } catch (parseError) {
@@ -64,7 +70,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const { cvId: requestCvId, forceReprocess = false, sessionId } = body;
+        const { cvId: requestCvId, forceReprocess = false, sessionId } = (body as Partial<LLMProcessRequestBody>);
         cvId = requestCvId;
 
         logger.info('LLM processing request details', {
@@ -175,12 +181,43 @@ export async function POST(request: NextRequest) {
             isAuthenticated
         });
 
+        interface CvData {
+            id: string;
+            userId: string;
+            fileName?: string | null;
+            processingStatus?: ProcessingStatus | string | null;
+            professionalSummary?: string | null;
+            extractedText?: string | null;
+            analysisCount?: number | null;
+            lastAnalyzedAt?: Date | null;
+            firstName?: string | null;
+            lastName?: string | null;
+            fullName?: string | null;
+            email?: string | null;
+            phone?: string | null;
+            nationality?: string | null;
+            linkedinUrl?: string | null;
+            websiteUrl?: string | null;
+            githubUrl?: string | null;
+            dateOfBirth?: Date | null;
+            technicalSkills?: unknown;
+            softSkills?: unknown;
+            languages?: unknown;
+            certifications?: unknown;
+            education?: unknown;
+            workExperience?: unknown;
+            projects?: unknown;
+            metadata?: unknown;
+        }
+
+        type ProcessingStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
+
         const cvData = await prisma.cvData.findFirst({
             where: {
                 id: cvId,
                 userId: currentUserId
             }
-        }) as any; // Type assertion to work around TypeScript issues
+        }) as CvData | null;
 
         if (!cvData) {
             logger.warn('CV not found or no permission to process', {
@@ -221,7 +258,7 @@ export async function POST(request: NextRequest) {
         await prisma.cvData.update({
             where: { id: cvId },
             data: {
-                processingStatus: 'PROCESSING' as any,
+                processingStatus: 'PROCESSING' as ProcessingStatus,
                 processingStartedAt: new Date(),
                 processingError: null
             }
@@ -403,7 +440,7 @@ Please provide a comprehensive analysis of this CV with individual skills listed
             await prisma.cvData.update({
                 where: { id: cvId },
                 data: {
-                    processingStatus: 'FAILED',
+                    processingStatus: 'FAILED' as ProcessingStatus,
                     processingError: 'OpenAI service unavailable',
                     processingCompletedAt: new Date()
                 }
@@ -443,7 +480,7 @@ Please provide a comprehensive analysis of this CV with individual skills listed
             await prisma.cvData.update({
                 where: { id: cvId },
                 data: {
-                    processingStatus: 'FAILED' as any,
+                    processingStatus: 'FAILED' as ProcessingStatus,
                     processingError: 'No response from AI service',
                     processingCompletedAt: new Date()
                 }
@@ -456,7 +493,55 @@ Please provide a comprehensive analysis of this CV with individual skills listed
         }
 
         // Parse the AI response
-        let analysisResult: any;
+        interface AnalysisResult {
+            personalInfo?: {
+                firstName?: string | null;
+                lastName?: string | null;
+                fullName?: string | null;
+                email?: string | null;
+                phone?: string | null;
+                nationality?: string | null;
+                linkedinUrl?: string | null;
+                websiteUrl?: string | null;
+                githubUrl?: string | null;
+                dateOfBirth?: string | null;
+            } | null;
+            professionalSummary?: string | null;
+            technicalSkills?: unknown[] | null;
+            softSkills?: unknown[] | null;
+            languages?: unknown[] | null;
+            certifications?: unknown[] | null;
+            education?: unknown[] | null;
+            workExperience?: unknown[] | null;
+            projects?: unknown[] | null;
+            publications?: unknown[] | null;
+            awards?: unknown[] | null;
+            volunteerWork?: unknown[] | null;
+            references?: unknown[] | null;
+            interests?: unknown[] | null;
+            analysis?: {
+                completenessScore?: number | null;
+                readabilityScore?: number | null;
+                atsScore?: number | null;
+                overallQuality?: number | string | null;
+                marketability?: unknown;
+                skillsGaps?: unknown;
+                careerProgression?: unknown;
+                careerLevel?: unknown;
+                industry?: unknown;
+                yearsOfExperience?: unknown;
+                keywordDensity?: unknown;
+                improvementSuggestions?: unknown;
+                templateTags?: unknown;
+                dataQuality?: unknown;
+            } | null;
+            metadata?: {
+                extractionVersion?: string | null;
+                [key: string]: unknown;
+            } | null;
+        }
+
+        let analysisResult: AnalysisResult;
         try {
             logger.debug('Parsing AI response', {
                 requestId,
@@ -497,7 +582,7 @@ Please provide a comprehensive analysis of this CV with individual skills listed
 
             jsonString = jsonString.substring(0, lastBraceIndex + 1);
 
-            analysisResult = JSON.parse(jsonString);
+            analysisResult = JSON.parse(jsonString) as AnalysisResult;
 
             // Validate that we have the expected structure
             if (!analysisResult || typeof analysisResult !== 'object') {
@@ -523,7 +608,7 @@ Please provide a comprehensive analysis of this CV with individual skills listed
             await prisma.cvData.update({
                 where: { id: cvId },
                 data: {
-                    processingStatus: 'FAILED' as any,
+                    processingStatus: 'FAILED' as ProcessingStatus,
                     processingError: 'Invalid response format from AI service',
                     processingCompletedAt: new Date()
                 }
@@ -536,8 +621,36 @@ Please provide a comprehensive analysis of this CV with individual skills listed
         }
 
         // Update CV data with LLM-generated fields
-        const updateData: any = {
-            processingStatus: 'COMPLETED' as any,
+        type CvDataUpdateInput = {
+            processingStatus: ProcessingStatus;
+            processingCompletedAt: Date;
+            processingTime: number;
+            processingError: null | string;
+            analysisCount: number;
+            lastAnalyzedAt: Date;
+            firstName?: string | null;
+            lastName?: string | null;
+            fullName?: string | null;
+            email?: string | null;
+            phone?: string | null;
+            nationality?: string | null;
+            linkedinUrl?: string | null;
+            websiteUrl?: string | null;
+            githubUrl?: string | null;
+            dateOfBirth?: Date | null;
+            professionalSummary?: string | null;
+            technicalSkills?: unknown[];
+            softSkills?: unknown[];
+            languages?: unknown[];
+            certifications?: unknown[];
+            education?: unknown[];
+            workExperience?: unknown[];
+            projects?: unknown[];
+            metadata: Record<string, unknown>;
+        };
+
+        const updateData: CvDataUpdateInput = {
+            processingStatus: 'COMPLETED' as ProcessingStatus,
             processingCompletedAt: new Date(),
             processingTime: openaiProcessingTime,
             processingError: null,
@@ -573,7 +686,7 @@ Please provide a comprehensive analysis of this CV with individual skills listed
 
             // Update metadata
             metadata: {
-                ...(cvData.metadata as Record<string, any> || {}),
+                ...((cvData.metadata as Record<string, unknown>) || {}),
                 llmProcessing: {
                     requestId,
                     model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
@@ -682,7 +795,7 @@ Please provide a comprehensive analysis of this CV with individual skills listed
                 await prisma.cvData.update({
                     where: { id: cvId },
                     data: {
-                        processingStatus: 'FAILED' as any,
+                        processingStatus: 'FAILED' as ProcessingStatus,
                         processingError: error instanceof Error ? error.message : String(error),
                         processingCompletedAt: new Date()
                     }

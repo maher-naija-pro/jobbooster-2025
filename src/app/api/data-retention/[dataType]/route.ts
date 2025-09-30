@@ -10,6 +10,7 @@ import { DataRetentionDeletionService } from '@/lib/data-retention/deletion-serv
 import { DataType, getRetentionPolicy, calculateRetentionStats } from '@/lib/data-retention';
 import { isDataRetentionEnabled } from '@/config/data-retention.config';
 import { logger } from '@/lib/logger';
+import { RetentionEligibleRecord } from '@/lib/data-retention/data-retention-utils';
 
 const prisma = new PrismaClient();
 
@@ -96,7 +97,7 @@ export async function GET(
             statistics: stats,
             eligibleRecords: {
                 count: eligibleRecords.length,
-                sample: eligibleRecords.slice(0, 10).map((record: any) => ({
+                sample: eligibleRecords.slice(0, 10).map((record: RetentionEligibleRecord) => ({
                     id: record.id,
                     createdAt: record.createdAt,
                     lastAccessedAt: record.lastAccessedAt,
