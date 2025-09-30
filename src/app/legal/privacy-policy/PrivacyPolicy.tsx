@@ -1,3 +1,4 @@
+/* eslint react/no-unescaped-entities: off */
 import { Site_name } from "@/texts-and-menues/site-name"
 import Link from "next/link"
 

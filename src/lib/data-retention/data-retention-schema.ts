@@ -218,16 +218,18 @@ export const RETENTION_QUERIES = {
  * Get retention days for a data type (helper function)
  */
 function getRetentionDays(dataType: DataType): number {
-    const { RETENTION_PERIODS } = require('./data-retention');
-    return RETENTION_PERIODS[dataType] || 365;
+    // import locally to avoid circular deps at module init time
+    const { RETENTION_PERIODS } = require('./data-retention') as typeof import('./data-retention');
+    return (RETENTION_PERIODS as Record<number, number>)[dataType] || 365;
 }
 
 /**
  * Get retention policy for a data type (helper function)
  */
 function getRetentionPolicy(dataType: DataType) {
-    const { getRetentionPolicy } = require('./data-retention');
-    return getRetentionPolicy(dataType);
+    // import locally to avoid circular deps at module init time
+    const mod = require('./data-retention') as typeof import('./data-retention');
+    return mod.getRetentionPolicy(dataType);
 }
 
 /**

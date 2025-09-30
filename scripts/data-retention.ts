@@ -130,7 +130,7 @@ async function executeOperation(options: CliOptions): Promise<void> {
     console.log('');
 
     try {
-        let result;
+        let result: OperationResult | void;
 
         switch (options.operation) {
             case 'daily_check':
@@ -182,7 +182,9 @@ async function executeOperation(options: CliOptions): Promise<void> {
         }
 
         // Display results
-        displayResult(result, options.verbose);
+        if (result) {
+            displayResult(result, options.verbose);
+        }
 
     } catch (error) {
         console.error('❌ Error executing operation:', error);
@@ -190,7 +192,18 @@ async function executeOperation(options: CliOptions): Promise<void> {
     }
 }
 
-function displayResult(result: any, verbose: boolean): void {
+interface OperationResult {
+    success: boolean;
+    jobId?: string;
+    processingTimeMs?: number;
+    totalRecordsProcessed?: number;
+    totalRecordsDeleted?: number;
+    totalRecordsAnonymized?: number;
+    errors?: string[];
+    dataTypesProcessed?: string[];
+}
+
+function displayResult(result: OperationResult, verbose: boolean): void {
     console.log('');
     console.log('📊 Operation Results:');
     console.log('==================');
@@ -226,13 +239,24 @@ function displayResult(result: any, verbose: boolean): void {
     console.log(result.success ? '✅ Operation completed successfully!' : '❌ Operation completed with errors');
 }
 
+interface PolicySummary {
+    dataType: string;
+    retentionPeriod: string | number;
+    notifyBeforeDeletion: boolean;
+    notificationDays?: number;
+    allowAnonymization: boolean;
+    legalBasis?: string;
+    requiresManualReview?: boolean;
+    description?: string;
+}
+
 async function listPolicies(): Promise<void> {
     console.log('📋 Data Retention Policies:');
     console.log('==========================');
 
-    const policies = getRetentionPoliciesSummary();
+    const policies = getRetentionPoliciesSummary() as PolicySummary[];
 
-    policies.forEach((policy: any) => {
+    policies.forEach((policy: PolicySummary) => {
         console.log('');
         console.log(`📄 ${policy.dataType}:`);
         console.log(`   Retention: ${policy.retentionPeriod}`);

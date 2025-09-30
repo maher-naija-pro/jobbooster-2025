@@ -17,7 +17,7 @@ const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || 'support@jobbooster.com'
 
 describe('Password Reset Email Tests', () => {
     let supabase: any
-    let testUserId: string | null = null
+    const testUserId: string | null = null
 
     beforeAll(() => {
         supabase = createClient(supabaseUrl, supabaseAnonKey)

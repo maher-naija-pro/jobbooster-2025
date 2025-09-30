@@ -77,7 +77,31 @@ class Logger {
 
     private sendToErrorTracking(entry: LogEntry): void {
         // In a real implementation, send to services like Sentry, LogRocket, etc.
-        console.error('Error logged to tracking service:', entry);
+        // Ensure we log a fully serializable payload so dev consoles don't collapse to {}
+        const serializeContext = (context: LogContext): unknown => {
+            if (context instanceof Error) {
+                return {
+                    name: context.name,
+                    message: context.message,
+                    stack: context.stack,
+                };
+            }
+            if (typeof context === 'object' && context !== null) {
+                return { ...context } as Record<string, unknown>;
+            }
+            return context;
+        };
+
+        const payload = {
+            level: entry.level,
+            message: entry.message,
+            timestamp: entry.timestamp instanceof Date ? entry.timestamp.toISOString() : String(entry.timestamp),
+            context: serializeContext(entry.context),
+            userId: entry.userId,
+            sessionId: entry.sessionId,
+        };
+
+        console.error('Error logged to tracking service:', payload);
     }
 
     // Public logging methods

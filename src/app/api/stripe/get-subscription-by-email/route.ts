@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
     });
 
     const customers = await stripeapi.customers.list({
-      // @ts-expect-error
+      // @ts-expect-error Stripe typings for list() do not include email filter though API supports it
       limit: 1,
       email: user.email
     })

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 interface TokenData {
@@ -149,18 +150,18 @@ export default function ConfirmHandler() {
                                 There was an issue verifying your email address. Please try again or contact support.
                             </p>
                             <div className="mt-6 space-y-3">
-                                <a
+                                <Link
                                     href="/auth/signup"
                                     className="w-full inline-flex justify-center items-center px-4 py-2 text-sm font-medium rounded-md shadow-sm bg-blue-600 text-white hover:bg-blue-700"
                                 >
                                     Try Again
-                                </a>
-                                <a
+                                </Link>
+                                <Link
                                     href="/"
                                     className="w-full inline-flex justify-center items-center px-4 py-2 text-sm font-medium rounded-md shadow-sm border border-gray-300 text-gray-700 hover:bg-gray-50"
                                 >
                                     Return to Home
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -196,12 +197,12 @@ export default function ConfirmHandler() {
                                 Your account is now active. Redirecting you to the homepage...
                             </p>
                             <div className="mt-6">
-                                <a
+                                <Link
                                     href="/"
                                     className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-md shadow-sm bg-blue-600 text-white hover:bg-blue-700"
                                 >
                                     Go to Homepage
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     </div>

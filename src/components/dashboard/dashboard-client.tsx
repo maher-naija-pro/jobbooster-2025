@@ -124,7 +124,7 @@ export function DashboardClient({ profile, user, subscription, preferences, init
             setIsUploading(false);
             setUploadProgress(0);
         }
-    }, []);
+    }, [refreshContent, refreshCvData]);
 
     const handleFileRemove = useCallback((cvId: string) => {
         // Refresh CV data from database after removal

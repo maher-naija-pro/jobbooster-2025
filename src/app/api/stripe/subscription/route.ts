@@ -51,7 +51,8 @@ export async function POST(req: NextRequest) {
     });
 
     const customers = await stripeapi.customers.list({
-      limit: 1, // @ts-ignore
+      // @ts-expect-error Stripe typings for list() do not include email filter though API supports it
+      limit: 1,
       email: user.email
     })
     if (!customers.data.length) {
@@ -109,7 +110,7 @@ export async function POST(req: NextRequest) {
       }, { status: 404 });
     }
 
-    // @ts-ignore
+    // @ts-expect-error subscription.latest_invoice may be expanded object; TS cannot infer
     const invoice = await stripeapi.invoices.retrieve(subscription.latest_invoice.id)
     logger.info('Stripe invoice retrieved successfully', {
       requestId,
@@ -128,7 +129,7 @@ export async function POST(req: NextRequest) {
       }, { status: 404 });
     }
 
-    // @ts-ignore
+    // @ts-expect-error invoice.payment_intent may be string or expanded object per Stripe API
     const paymentIntent = await stripeapi.paymentIntents.retrieve(invoice.payment_intent)
 
     logger.info('Stripe subscription creation completed successfully', {

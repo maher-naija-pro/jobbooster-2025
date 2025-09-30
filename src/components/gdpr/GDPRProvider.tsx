@@ -44,9 +44,9 @@ export function GDPRProvider({ children, testMode }: GDPRProviderProps) {
 
         // Load consent from database first, then localStorage as fallback
         loadConsentFromDatabase()
-    }, [testMode])
+    }, [loadConsentFromDatabase, testMode])
 
-    const loadConsentFromDatabase = async () => {
+    const loadConsentFromDatabase = useCallback(async () => {
         try {
             const response = await fetch('/api/gdpr/consent')
             if (response.ok) {
@@ -69,7 +69,7 @@ export function GDPRProvider({ children, testMode }: GDPRProviderProps) {
 
         // No fallback to localStorage - show banner for new users
         setShowConsentBanner(true)
-    }
+    }, [isTestMode])
 
     const updateConsent = (preferences: CookiePreferences) => {
         setConsent(preferences)

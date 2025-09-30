@@ -31,7 +31,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
 
-    const fetchProfile = async () => {
+    const fetchProfile = useCallback(async () => {
         if (!user) {
             setProfile(null)
             return
@@ -54,11 +54,11 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
         } finally {
             setLoading(false)
         }
-    }
+    }, [user])
 
     useEffect(() => {
         fetchProfile()
-    }, [user])
+    }, [fetchProfile, user])
 
     const refetch = async () => {
         await fetchProfile()

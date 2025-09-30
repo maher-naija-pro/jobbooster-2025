@@ -104,7 +104,7 @@ export default function DemoLLMProcessPage() {
         if (files.length > 0) {
             await processFile(files[0]);
         }
-    }, []);
+    }, [processFile]);
 
     const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
@@ -114,7 +114,7 @@ export default function DemoLLMProcessPage() {
                 fileInputRef.current.value = '';
             }
         }
-    }, []);
+    }, [processFile]);
 
     const processFile = useCallback(async (file: File) => {
         const validation = validateFile(file);

@@ -1,3 +1,4 @@
+/* eslint react/no-unescaped-entities: off */
 "use client"
 
 import { demo } from "@/app/company/contact/_action"

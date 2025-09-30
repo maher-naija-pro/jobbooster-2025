@@ -103,7 +103,7 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
     }
 
     setFieldErrors(errors)
-  }, [fieldErrors, isLogin])
+  }, [fieldErrors])
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target

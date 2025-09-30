@@ -1,3 +1,4 @@
+/* eslint react/no-unescaped-entities: off */
 import { Site_name } from "@/texts-and-menues/site-name"
 import Link from "next/link"
 
@@ -36,7 +37,7 @@ const TermsOfService = () => {
               })}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          
+
               <a
                 href="#toc"
                 className="inline-flex items-center px-4 py-2 text-primary hover:text-primary/80 transition-colors"

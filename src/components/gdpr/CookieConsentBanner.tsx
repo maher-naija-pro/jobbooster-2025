@@ -36,14 +36,14 @@ export function CookieConsentBanner({ onAccept, onReject, onCustomize, testMode 
     useEffect(() => {
         // Load existing preferences from database first (both test mode and normal mode)
         loadExistingPreferences()
-    }, [testMode])
+    }, [loadExistingPreferences, testMode])
 
     // Debug effect to track preference changes
     useEffect(() => {
         console.log('Preferences state updated:', preferences)
     }, [preferences])
 
-    const loadExistingPreferences = async () => {
+    const loadExistingPreferences = useCallback(async () => {
         try {
             const response = await fetch('/api/gdpr/consent')
             console.log('API Response status:', response.status)
@@ -87,7 +87,7 @@ export function CookieConsentBanner({ onAccept, onReject, onCustomize, testMode 
         // No fallback to localStorage - show banner for new users or in test mode
         setShowBanner(true)
         setIsLoading(false)
-    }
+    }, [testMode])
 
     const handleAcceptAll = async () => {
         const allAccepted = {

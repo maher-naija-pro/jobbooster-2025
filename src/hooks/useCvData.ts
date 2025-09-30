@@ -21,7 +21,7 @@ interface DatabaseCVData {
     isPublic: boolean | null;
     isLatest: boolean | null;
     version: number;
-    metadata: any;
+    metadata: Record<string, unknown> | null;
 }
 
 interface CvDataStats {
@@ -57,7 +57,7 @@ export function useCvData() {
                 dbCv.processingStatus === 'PROCESSING' ? 'processing' :
                     dbCv.processingStatus === 'UPLOADED' ? 'completed' : 'completed',
             fileUrl: dbCv.fileUrl || undefined,
-            processingStatus: dbCv.processingStatus.toLowerCase() as any,
+            processingStatus: dbCv.processingStatus as CVData['processingStatus'],
             processingStartedAt: dbCv.processingStartedAt ? new Date(dbCv.processingStartedAt) : undefined,
             processingCompletedAt: dbCv.processingCompletedAt ? new Date(dbCv.processingCompletedAt) : undefined,
             processingError: dbCv.processingError || undefined,

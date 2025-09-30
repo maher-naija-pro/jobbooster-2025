@@ -9,7 +9,7 @@ import { getSessionAnalytics } from '@/lib/auth/session-manager'
 
 export async function getProfile(userId: string) {
   try {
-    let profile = await prisma.profile.findUnique({
+    const profile = await prisma.profile.findUnique({
       where: { userId },
       include: {
         userSessions: {
