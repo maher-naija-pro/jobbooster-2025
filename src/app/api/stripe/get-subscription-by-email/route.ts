@@ -45,7 +45,8 @@ export async function GET(req: NextRequest) {
     });
 
     const customers = await stripeapi.customers.list({
-      limit: 1, // @ts-ignore
+      // @ts-expect-error
+      limit: 1,
       email: user.email
     })
     if (!customers.data.length) {

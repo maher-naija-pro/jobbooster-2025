@@ -27,7 +27,7 @@ const Footer = () => {
                   </h4>
                   <ul className="space-y-2">
                     {
-                      //@ts-ignore
+                      // @ts-expect-error typing for templates index is not declared
                       templates[template_name].items.map(item => {
                         return (
                           <li key={item.name}>

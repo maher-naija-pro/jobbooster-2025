@@ -16,7 +16,7 @@ export async function ensureAvatarsBucket() {
             console.log('Avatars bucket not found, creating it...')
 
             // Create the avatars bucket using admin client
-            const { data: newBucket, error: createError } = await adminSupabase.storage.createBucket('avatars', {
+            const { error: createError } = await adminSupabase.storage.createBucket('avatars', {
                 public: true,
                 allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
                 fileSizeLimit: 5 * 1024 * 1024 // 5MB

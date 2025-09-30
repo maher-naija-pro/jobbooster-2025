@@ -19,9 +19,9 @@ export default function PaymentForm() {
     if (!clientSecret) {
       return
     }
-    // @ts-ignore
+    // @ts-expect-error Stripe retrievePaymentIntent typing mismatch in SSR context
     stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
-      // @ts-ignore
+      // @ts-expect-error paymentIntent union lacks narrowed status at this point
       switch (paymentIntent.status) {
         case "succeeded":
           setMessage("Payment succeeded!")

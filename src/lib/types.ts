@@ -14,7 +14,7 @@ export interface CVData {
   processingError?: string;
   processingTime?: number; // Processing time in milliseconds
   modelUsed?: string; // AI model used for analysis
-  parameters?: Record<string, any>; // Analysis parameters used
+  parameters?: Record<string, unknown>; // Analysis parameters used
   errorMessage?: string; // Specific error message if analysis failed
   analysisId?: string;
   analysisVersion?: string;
@@ -25,8 +25,8 @@ export interface CVData {
   // CV-Specific Extracted Data Fields
   extractedSkills?: string[]; // Array of skills extracted from CV
   extractedExperience?: number; // Years of experience extracted
-  extractedEducation?: Record<string, any>; // Education details (degrees, institutions)
-  extractedCertifications?: Record<string, any>; // Professional certifications found
+  extractedEducation?: Record<string, unknown>; // Education details (degrees, institutions)
+  extractedCertifications?: Record<string, unknown>; // Professional certifications found
   extractedLanguages?: string[]; // Languages mentioned in CV
 
   // Job-Related Fields (from job_data table)
@@ -77,7 +77,7 @@ export interface JobData {
   processingError?: string;
   processingTime?: number;
   modelUsed?: string;
-  parameters?: any;
+  parameters?: Record<string, unknown>;
   errorMessage?: string;
   analysisId?: string;
   analysisVersion?: string;
@@ -89,11 +89,11 @@ export interface JobData {
 
   // CV-Related Fields (from cv_data table)
   extractedExperience?: number; // Years of experience extracted
-  extractedEducation?: Record<string, any>; // Education details (degrees, institutions)
-  extractedCertifications?: Record<string, any>; // Professional certifications found
+  extractedEducation?: Record<string, unknown>; // Education details (degrees, institutions)
+  extractedCertifications?: Record<string, unknown>; // Professional certifications found
   extractedLanguages?: string[]; // Languages mentioned
   originalFilename?: string; // Original filename
-  metadata?: Record<string, any>; // Additional metadata
+  metadata?: Record<string, unknown>; // Additional metadata
 
   // Job-Specific Metadata Fields
   jobType?: 'full-time' | 'part-time' | 'contract' | 'internship';

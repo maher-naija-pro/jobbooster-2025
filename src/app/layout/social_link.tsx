@@ -15,12 +15,10 @@ export const Social_links = () => {
   return (
     <div className="flex gap-4 mt-4 justify-center lg:justify-start">
       {" "}
-      {Object.keys(ListSocial).map(item => {
-        // @ts-ignore
+      {(Object.keys(ListSocial) as Array<keyof typeof ListSocial>).map(item => {
+        // @ts-expect-error dynamic icon map typing not declared
         const Icon = Icons[ListSocial[item].icon] || Icons.arrowRight
-        // @ts-ignore
         const Href = ListSocial[item].href || "/"
-        // @ts-ignore
         const name = ListSocial[item].name || "/"
         return (
           <div key={name} className="flex group">

@@ -92,11 +92,10 @@ const Mobile_sidebar = () => {
           {/* Navigation Links */}
           <div className="flex-1 mt-8">
             <nav className="space-y-1">
-              {Object.keys(routeList).map(template_name => {
-                //@ts-ignore
+              {(Object.keys(routeList) as Array<keyof typeof routeList>).map(template_name => {
                 const route = routeList[template_name]
+                if (!route) return null
 
-                //@ts-ignore
                 if (route.menu == "false") {
                   return (
                     <Link
