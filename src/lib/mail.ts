@@ -1,7 +1,21 @@
 import { Resend } from "resend";
 import { Site_name } from "@/texts-and-menues/site-name"
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Create Resend instance with fallback for build time
+const createResendInstance = () => {
+  if (!process.env.RESEND_API_KEY) {
+    // Return a mock Resend instance for build time
+    return {
+      emails: {
+        send: async () => ({ id: 'mock-email-id' }),
+      },
+    } as any;
+  }
+
+  return new Resend(process.env.RESEND_API_KEY);
+};
+
+const resend = createResendInstance();
 
 
 export const sendPasswordResetEmail = async (

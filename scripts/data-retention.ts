@@ -250,27 +250,17 @@ function displayResult(result: OperationResult, verbose: boolean): void {
     console.log(result.success ? '✅ Operation completed successfully!' : '❌ Operation completed with errors');
 }
 
-interface PolicySummary {
-    dataType: string;
-    retentionPeriod: string | number;
-    notifyBeforeDeletion: boolean;
-    notificationDays?: number;
-    allowAnonymization: boolean;
-    legalBasis?: string;
-    requiresManualReview?: boolean;
-    description?: string;
-}
 
 async function listPolicies(): Promise<void> {
     console.log('📋 Data Retention Policies:');
     console.log('==========================');
 
-    const policies = getRetentionPoliciesSummary() as any[];
+    const policies = getRetentionPoliciesSummary();
 
-    policies.forEach((policy: PolicySummary) => {
+    policies.forEach((policy) => {
         console.log('');
         console.log(`📄 ${policy.dataType}:`);
-        console.log(`   Retention: ${policy.retentionPeriod}`);
+        console.log(`   Retention: ${policy.retentionDays} days (${policy.retentionYears} years)`);
         console.log(`   Notify Before Deletion: ${policy.notifyBeforeDeletion ? 'Yes' : 'No'}`);
         if (policy.notifyBeforeDeletion) {
             console.log(`   Notification Days: ${policy.notificationDays}`);

@@ -109,7 +109,6 @@ export async function POST(req: NextRequest) {
       }, { status: 404 });
     }
 
-    // @ts-expect-error subscription.latest_invoice may be expanded object; TS cannot infer
     const invoice = await stripeapi.invoices.retrieve(subscription.latest_invoice.id)
     logger.info('Stripe invoice retrieved successfully', {
       requestId,

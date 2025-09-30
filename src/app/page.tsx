@@ -13,12 +13,13 @@ import { SavedOfferSelector } from '../components/generator/saved-offer-selector
 
 import { ErrorBoundary } from '../components/error-boundary';
 import { Language, CVData, JobData, CVAnalysisResult, GeneratedContent } from '../lib/types';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { FeatureGate } from '../components/auth/feature-gate';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { saveJobOfferToDatabase, isJobOfferAlreadySaved } from '../lib/save-job-offer';
 
-export default function Home() {
+// Component that handles search params - needs to be wrapped in Suspense
+function HomeContent() {
   const { state, dispatch } = useApp();
   const [streamingContent, setStreamingContent] = useState('');
   const [debugApiResponse, setDebugApiResponse] = useState<Record<string, unknown> | null>(null);
@@ -657,5 +658,14 @@ export default function Home() {
         )}
       </div>
     </div>
+  );
+}
+
+// Main component with Suspense boundary
+export default function Home() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HomeContent />
+    </Suspense>
   );
 }
