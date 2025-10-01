@@ -18,10 +18,12 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { registerSchema } from '@/lib/auth/validation'
 import { prisma } from '@/lib/prisma'
 import { logger } from '@/lib/logger'
 import { checkUserExists } from '@/lib/auth/profile-utils'
+import { isEmailVerificationRequired } from '@/lib/feature-flags'
 
 /**
  * Handles user registration with comprehensive validation and logging
@@ -149,6 +151,60 @@ export async function register(formData: FormData) {
             supabaseError: error
         })
         throw new Error(error.message)
+    }
+
+    // If email verification is disabled, manually confirm the user's email
+    if (!isEmailVerificationRequired() && signUpData.user) {
+        try {
+            logger.info('Email verification disabled - manually confirming user email', {
+                action: 'register',
+                step: 'manual_email_confirmation',
+                userId: signUpData.user.id ? `${signUpData.user.id.substring(0, 8)}...` : 'null',
+                email: validatedData.email ? `${validatedData.email.substring(0, 3)}***@${validatedData.email.split('@')[1]}` : 'null'
+            })
+
+            // Create service role client to confirm email
+            const supabaseService = createServiceClient(
+                process.env.NEXT_PUBLIC_SUPABASE_URL!,
+                process.env.SUPABASE_SERVICE_ROLE_KEY!,
+                {
+                    auth: {
+                        autoRefreshToken: false,
+                        persistSession: false
+                    }
+                }
+            )
+
+            // Confirm the user's email
+            const { data: confirmData, error: confirmError } = await supabaseService.auth.admin.updateUserById(
+                signUpData.user.id,
+                { email_confirm: true }
+            )
+
+            if (confirmError) {
+                logger.error('Failed to manually confirm user email during registration', {
+                    action: 'register',
+                    step: 'manual_email_confirmation_failed',
+                    error: confirmError.message,
+                    userId: signUpData.user.id ? `${signUpData.user.id.substring(0, 8)}...` : 'null'
+                })
+                // Don't throw error - registration can still succeed, just without email confirmation
+            } else {
+                logger.info('User email manually confirmed during registration', {
+                    action: 'register',
+                    step: 'manual_email_confirmation_success',
+                    userId: signUpData.user.id ? `${signUpData.user.id.substring(0, 8)}...` : 'null'
+                })
+            }
+        } catch (confirmError) {
+            logger.warn('Email confirmation bypass failed during registration', {
+                action: 'register',
+                step: 'email_confirmation_bypass_failed',
+                error: confirmError instanceof Error ? confirmError.message : 'Unknown confirm error',
+                userId: signUpData.user?.id ? `${signUpData.user.id.substring(0, 8)}...` : 'null'
+            })
+            // Don't throw error - registration can still succeed
+        }
     }
 
     // Log successful Supabase signup

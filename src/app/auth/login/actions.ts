@@ -2,10 +2,12 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { loginSchema } from '@/lib/auth/validation'
 import { createUserSession } from '@/lib/auth/session-manager'
 import { headers } from 'next/headers'
 import { logger } from '@/lib/logger'
+import { isEmailVerificationRequired } from '@/lib/feature-flags'
 
 export async function login(formData: FormData) {
     const startTime = Date.now()
@@ -50,7 +52,7 @@ export async function login(formData: FormData) {
             email: validatedData.email ? `${validatedData.email.substring(0, 3)}***@${validatedData.email.split('@')[1]}` : 'null'
         })
 
-        const { data: authData, error } = await supabase.auth.signInWithPassword(validatedData)
+        let { data: authData, error } = await supabase.auth.signInWithPassword(validatedData)
 
         if (error) {
             logger.warn('Supabase authentication failed', {
@@ -61,9 +63,108 @@ export async function login(formData: FormData) {
                 email: validatedData.email ? `${validatedData.email.substring(0, 3)}***@${validatedData.email.split('@')[1]}` : 'null',
                 supabaseError: error
             })
-            // Map Supabase errors to user-friendly messages
-            const userFriendlyMessage = mapAuthErrorToMessage(error.message)
-            throw new Error(userFriendlyMessage)
+
+            // Check if email verification is disabled and handle "Email not confirmed" error
+            if (error.message === 'Email not confirmed' && !isEmailVerificationRequired()) {
+                logger.info('Email verification disabled - attempting to confirm user and retry login', {
+                    action: 'login',
+                    step: 'email_verification_bypassed',
+                    email: validatedData.email ? `${validatedData.email.substring(0, 3)}***@${validatedData.email.split('@')[1]}` : 'null'
+                })
+
+                try {
+                    // Create service role client to bypass email verification
+                    const supabaseService = createServiceClient(
+                        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+                        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+                        {
+                            auth: {
+                                autoRefreshToken: false,
+                                persistSession: false
+                            }
+                        }
+                    )
+
+                    // Find user by email and confirm their email
+                    const { data: users, error: listError } = await supabaseService.auth.admin.listUsers()
+
+                    if (listError) {
+                        logger.error('Failed to list users for email confirmation', {
+                            action: 'login',
+                            step: 'list_users_failed',
+                            error: listError.message
+                        })
+                        throw new Error('Failed to verify user. Please try again.')
+                    }
+
+                    const user = users.users.find(u => u.email === validatedData.email)
+                    if (!user) {
+                        logger.error('User not found for email confirmation', {
+                            action: 'login',
+                            step: 'user_not_found',
+                            email: validatedData.email ? `${validatedData.email.substring(0, 3)}***@${validatedData.email.split('@')[1]}` : 'null'
+                        })
+                        throw new Error('User not found. Please check your email address.')
+                    }
+
+                    // Confirm the user's email
+                    const { data: confirmData, error: confirmError } = await supabaseService.auth.admin.updateUserById(
+                        user.id,
+                        { email_confirm: true }
+                    )
+
+                    if (confirmError) {
+                        logger.error('Failed to manually confirm user email', {
+                            action: 'login',
+                            step: 'manual_email_confirmation_failed',
+                            error: confirmError.message,
+                            userId: user.id ? `${user.id.substring(0, 8)}...` : 'null'
+                        })
+                        throw new Error('Failed to confirm email address. Please try again.')
+                    }
+
+                    logger.info('User email manually confirmed, retrying login', {
+                        action: 'login',
+                        step: 'manual_email_confirmation_success',
+                        userId: user.id ? `${user.id.substring(0, 8)}...` : 'null'
+                    })
+
+                    // Retry the login after confirming email
+                    const { data: retryAuthData, error: retryError } = await supabase.auth.signInWithPassword(validatedData)
+
+                    if (retryError) {
+                        logger.error('Login retry failed after email confirmation', {
+                            action: 'login',
+                            step: 'login_retry_failed',
+                            error: retryError.message,
+                            userId: user.id ? `${user.id.substring(0, 8)}...` : 'null'
+                        })
+                        const userFriendlyMessage = mapAuthErrorToMessage(retryError.message)
+                        throw new Error(userFriendlyMessage)
+                    }
+
+                    // Update authData with the successful retry
+                    authData = retryAuthData
+                    logger.info('Login successful after email confirmation bypass', {
+                        action: 'login',
+                        step: 'login_retry_success',
+                        userId: user.id ? `${user.id.substring(0, 8)}...` : 'null'
+                    })
+
+                } catch (bypassError) {
+                    logger.error('Email verification bypass failed', {
+                        action: 'login',
+                        step: 'email_verification_bypass_failed',
+                        error: bypassError instanceof Error ? bypassError.message : 'Unknown bypass error',
+                        email: validatedData.email ? `${validatedData.email.substring(0, 3)}***@${validatedData.email.split('@')[1]}` : 'null'
+                    })
+                    throw bypassError
+                }
+            } else {
+                // Map Supabase errors to user-friendly messages
+                const userFriendlyMessage = mapAuthErrorToMessage(error.message)
+                throw new Error(userFriendlyMessage)
+            }
         }
 
         logger.info('Supabase authentication successful', {

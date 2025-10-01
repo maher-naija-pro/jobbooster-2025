@@ -119,3 +119,11 @@ export function isAnonymousAccessEnabled(): boolean {
 export function isNotificationsEnabled(): boolean {
     return getFeatureFlag('ENABLE_NOTIFICATIONS');
 }
+
+/**
+ * Check if email verification is required
+ * Convenience function for email verification feature flag
+ */
+export function isEmailVerificationRequired(): boolean {
+    return getFeatureFlag('REQUIRE_EMAIL_VERIFICATION');
+}
