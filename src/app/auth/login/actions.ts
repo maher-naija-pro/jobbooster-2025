@@ -52,7 +52,7 @@ export async function login(formData: FormData) {
             email: validatedData.email ? `${validatedData.email.substring(0, 3)}***@${validatedData.email.split('@')[1]}` : 'null'
         })
 
-        const { data: authData, error } = await supabase.auth.signInWithPassword(validatedData)
+        let { data: authData, error } = await supabase.auth.signInWithPassword(validatedData)
 
         if (error) {
             logger.warn('Supabase authentication failed', {
