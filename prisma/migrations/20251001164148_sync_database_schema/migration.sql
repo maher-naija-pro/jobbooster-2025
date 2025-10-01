@@ -1,44 +1,44 @@
 -- CreateEnum
-CREATE TYPE "public"."ProcessingStatus" AS ENUM ('UPLOADED', 'PROCESSING', 'COMPLETED', 'FAILED', 'ARCHIVED');
+CREATE TYPE "ProcessingStatus" AS ENUM ('UPLOADED', 'PROCESSING', 'COMPLETED', 'FAILED', 'ARCHIVED');
 
 -- CreateEnum
-CREATE TYPE "public"."MatchStatus" AS ENUM ('PENDING', 'ANALYZING', 'COMPLETED', 'FAILED', 'ARCHIVED');
+CREATE TYPE "MatchStatus" AS ENUM ('PENDING', 'ANALYZING', 'COMPLETED', 'FAILED', 'ARCHIVED');
 
 -- CreateEnum
-CREATE TYPE "public"."JobType" AS ENUM ('FULL_TIME', 'PART_TIME', 'CONTRACT', 'TEMPORARY', 'INTERNSHIP', 'FREELANCE', 'VOLUNTEER');
+CREATE TYPE "JobType" AS ENUM ('FULL_TIME', 'PART_TIME', 'CONTRACT', 'TEMPORARY', 'INTERNSHIP', 'FREELANCE', 'VOLUNTEER');
 
 -- CreateEnum
-CREATE TYPE "public"."RemoteType" AS ENUM ('ONSITE', 'REMOTE', 'HYBRID', 'FLEXIBLE');
+CREATE TYPE "RemoteType" AS ENUM ('ONSITE', 'REMOTE', 'HYBRID', 'FLEXIBLE');
 
 -- CreateEnum
-CREATE TYPE "public"."ExperienceLevel" AS ENUM ('ENTRY_LEVEL', 'JUNIOR', 'MID_LEVEL', 'SENIOR', 'LEAD', 'EXECUTIVE');
+CREATE TYPE "ExperienceLevel" AS ENUM ('ENTRY_LEVEL', 'JUNIOR', 'MID_LEVEL', 'SENIOR', 'LEAD', 'EXECUTIVE');
 
 -- CreateEnum
-CREATE TYPE "public"."CompanySize" AS ENUM ('STARTUP', 'SMALL', 'MEDIUM', 'LARGE', 'ENTERPRISE');
+CREATE TYPE "CompanySize" AS ENUM ('STARTUP', 'SMALL', 'MEDIUM', 'LARGE', 'ENTERPRISE');
 
 -- CreateEnum
-CREATE TYPE "public"."NotificationType" AS ENUM ('SYSTEM', 'JOB_MATCH', 'ANALYSIS_COMPLETE', 'REMINDER', 'PROMOTIONAL', 'SECURITY');
+CREATE TYPE "NotificationType" AS ENUM ('SYSTEM', 'JOB_MATCH', 'ANALYSIS_COMPLETE', 'REMINDER', 'PROMOTIONAL', 'SECURITY');
 
 -- CreateEnum
-CREATE TYPE "public"."GeneratedContentType" AS ENUM ('COVER_LETTER', 'CV_OPTIMIZATION', 'INTERVIEW_PREP', 'SKILL_ANALYSIS', 'JOB_RECOMMENDATIONS', 'CAREER_ADVICE');
+CREATE TYPE "GeneratedContentType" AS ENUM ('COVER_LETTER', 'CV_OPTIMIZATION', 'INTERVIEW_PREP', 'SKILL_ANALYSIS', 'JOB_RECOMMENDATIONS', 'CAREER_ADVICE');
 
 -- CreateEnum
-CREATE TYPE "public"."ApplicationStatus" AS ENUM ('APPLIED', 'VIEWED', 'INTERVIEWED', 'REJECTED', 'OFFERED', 'ACCEPTED', 'WITHDRAWN');
+CREATE TYPE "ApplicationStatus" AS ENUM ('APPLIED', 'VIEWED', 'INTERVIEWED', 'REJECTED', 'OFFERED', 'ACCEPTED', 'WITHDRAWN');
 
 -- CreateEnum
-CREATE TYPE "public"."CareerLevel" AS ENUM ('ENTRY_LEVEL', 'JUNIOR', 'MID_LEVEL', 'SENIOR', 'LEAD', 'EXECUTIVE', 'C_LEVEL');
+CREATE TYPE "CareerLevel" AS ENUM ('ENTRY_LEVEL', 'JUNIOR', 'MID_LEVEL', 'SENIOR', 'LEAD', 'EXECUTIVE', 'C_LEVEL');
 
 -- CreateEnum
-CREATE TYPE "public"."CareerStage" AS ENUM ('EARLY_CAREER', 'MID_CAREER', 'LATE_CAREER', 'TRANSITION');
+CREATE TYPE "CareerStage" AS ENUM ('EARLY_CAREER', 'MID_CAREER', 'LATE_CAREER', 'TRANSITION');
 
 -- CreateEnum
-CREATE TYPE "public"."CompanyGrowthStage" AS ENUM ('STARTUP', 'SCALE_UP', 'MATURE', 'DECLINING');
+CREATE TYPE "CompanyGrowthStage" AS ENUM ('STARTUP', 'SCALE_UP', 'MATURE', 'DECLINING');
 
 -- CreateEnum
-CREATE TYPE "public"."LearningGoalType" AS ENUM ('SKILL_DEVELOPMENT', 'CERTIFICATION', 'DEGREE', 'COURSE', 'WORKSHOP', 'CONFERENCE');
+CREATE TYPE "LearningGoalType" AS ENUM ('SKILL_DEVELOPMENT', 'CERTIFICATION', 'DEGREE', 'COURSE', 'WORKSHOP', 'CONFERENCE');
 
 -- CreateTable
-CREATE TABLE "public"."profiles" (
+CREATE TABLE "profiles" (
     "id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
     "email" VARCHAR(255) NOT NULL,
@@ -85,7 +85,7 @@ CREATE TABLE "public"."profiles" (
     "career_goals" TEXT,
     "skill_interests" JSONB,
     "industry_preferences" JSONB,
-    "career_stage" "public"."CareerStage",
+    "career_stage" "CareerStage",
     "skill_gaps" JSONB,
     "subscription_status" VARCHAR(50),
     "subscription_start_date" TIMESTAMP(3),
@@ -101,7 +101,7 @@ CREATE TABLE "public"."profiles" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."user_sessions" (
+CREATE TABLE "user_sessions" (
     "id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
     "session_token" TEXT NOT NULL,
@@ -125,7 +125,7 @@ CREATE TABLE "public"."user_sessions" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."user_activity" (
+CREATE TABLE "user_activity" (
     "id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
     "action" TEXT,
@@ -149,14 +149,14 @@ CREATE TABLE "public"."user_activity" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."cv_data" (
+CREATE TABLE "cv_data" (
     "id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
     "file_name" VARCHAR(255),
     "file_url" VARCHAR(500),
     "file_size" INTEGER,
     "mime_type" VARCHAR(100),
-    "processing_status" "public"."ProcessingStatus" NOT NULL DEFAULT 'UPLOADED',
+    "processing_status" "ProcessingStatus" NOT NULL DEFAULT 'UPLOADED',
     "is_active" BOOLEAN DEFAULT true,
     "is_archived" BOOLEAN DEFAULT false,
     "is_deleted" BOOLEAN DEFAULT false,
@@ -210,12 +210,12 @@ CREATE TABLE "public"."cv_data" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."generated_content" (
+CREATE TABLE "generated_content" (
     "id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
     "cv_data_id" TEXT,
     "job_data_id" TEXT,
-    "type" "public"."GeneratedContentType" NOT NULL,
+    "type" "GeneratedContentType" NOT NULL,
     "title" VARCHAR(255),
     "content" TEXT,
     "metadata" JSONB,
@@ -223,7 +223,7 @@ CREATE TABLE "public"."generated_content" (
     "quality_score" DECIMAL(3,2),
     "word_count" INTEGER,
     "reading_time" INTEGER,
-    "processing_status" "public"."ProcessingStatus" NOT NULL DEFAULT 'UPLOADED',
+    "processing_status" "ProcessingStatus" NOT NULL DEFAULT 'UPLOADED',
     "is_active" BOOLEAN NOT NULL DEFAULT true,
     "is_archived" BOOLEAN NOT NULL DEFAULT false,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
@@ -270,7 +270,7 @@ CREATE TABLE "public"."generated_content" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."cv_uploads" (
+CREATE TABLE "cv_uploads" (
     "id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
     "file_name" TEXT NOT NULL,
@@ -288,7 +288,7 @@ CREATE TABLE "public"."cv_uploads" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."password_reset_tokens" (
+CREATE TABLE "password_reset_tokens" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "token" TEXT NOT NULL,
@@ -299,7 +299,7 @@ CREATE TABLE "public"."password_reset_tokens" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."auth_providers" (
+CREATE TABLE "auth_providers" (
     "id" TEXT NOT NULL,
     "provider" TEXT NOT NULL,
     "client_id" TEXT NOT NULL,
@@ -313,7 +313,7 @@ CREATE TABLE "public"."auth_providers" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."user_auth_methods" (
+CREATE TABLE "user_auth_methods" (
     "id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
     "provider" TEXT NOT NULL,
@@ -327,10 +327,10 @@ CREATE TABLE "public"."user_auth_methods" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."user_notifications" (
+CREATE TABLE "user_notifications" (
     "id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
-    "type" "public"."NotificationType" NOT NULL,
+    "type" "NotificationType" NOT NULL,
     "title" TEXT,
     "message" TEXT,
     "is_read" BOOLEAN NOT NULL DEFAULT false,
@@ -351,7 +351,7 @@ CREATE TABLE "public"."user_notifications" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."contact_messages" (
+CREATE TABLE "contact_messages" (
     "id" TEXT NOT NULL,
     "name" TEXT,
     "email" TEXT,
@@ -372,7 +372,7 @@ CREATE TABLE "public"."contact_messages" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."newsletter" (
+CREATE TABLE "newsletter" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -391,7 +391,7 @@ CREATE TABLE "public"."newsletter" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."job_data" (
+CREATE TABLE "job_data" (
     "id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
     "content" TEXT,
@@ -399,14 +399,14 @@ CREATE TABLE "public"."job_data" (
     "company_name" VARCHAR(255),
     "company_description" TEXT,
     "company_logo_url" VARCHAR(500),
-    "company_size" "public"."CompanySize",
+    "company_size" "CompanySize",
     "industry" VARCHAR(100),
     "department" VARCHAR(100),
-    "job_type" "public"."JobType",
-    "remote_type" "public"."RemoteType",
+    "job_type" "JobType",
+    "remote_type" "RemoteType",
     "location" VARCHAR(255),
     "salary_range" VARCHAR(100),
-    "experience_level" "public"."ExperienceLevel",
+    "experience_level" "ExperienceLevel",
     "application_deadline" TIMESTAMP(3),
     "benefits" JSONB,
     "recruiter_info" JSONB,
@@ -416,7 +416,7 @@ CREATE TABLE "public"."job_data" (
     "soft_requirements" JSONB,
     "soft_skill_requirements" JSONB,
     "technical_requirements" JSONB,
-    "processing_status" "public"."ProcessingStatus" NOT NULL DEFAULT 'UPLOADED',
+    "processing_status" "ProcessingStatus" NOT NULL DEFAULT 'UPLOADED',
     "is_active" BOOLEAN NOT NULL DEFAULT true,
     "is_archived" BOOLEAN NOT NULL DEFAULT false,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
@@ -462,7 +462,7 @@ CREATE TABLE "public"."job_data" (
     "benefits_score" DECIMAL(3,2),
     "company_rating" DECIMAL(3,2),
     "company_size_category" VARCHAR(50),
-    "company_growth_stage" "public"."CompanyGrowthStage",
+    "company_growth_stage" "CompanyGrowthStage",
     "company_culture" JSONB,
     "diversity_score" DECIMAL(3,2),
     "last_health_check" TIMESTAMP(3),
@@ -473,7 +473,7 @@ CREATE TABLE "public"."job_data" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."cv_job_matches" (
+CREATE TABLE "cv_job_matches" (
     "id" TEXT NOT NULL,
     "cv_data_id" TEXT NOT NULL,
     "job_data_id" TEXT NOT NULL,
@@ -497,7 +497,7 @@ CREATE TABLE "public"."cv_job_matches" (
     "model_used" TEXT,
     "analysis_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "analysis_duration" INTEGER,
-    "processing_status" "public"."ProcessingStatus" NOT NULL DEFAULT 'UPLOADED',
+    "processing_status" "ProcessingStatus" NOT NULL DEFAULT 'UPLOADED',
     "is_active" BOOLEAN NOT NULL DEFAULT true,
     "is_archived" BOOLEAN NOT NULL DEFAULT false,
     "is_deleted" BOOLEAN NOT NULL DEFAULT false,
@@ -533,7 +533,7 @@ CREATE TABLE "public"."cv_job_matches" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."feature_usage" (
+CREATE TABLE "feature_usage" (
     "id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
     "feature_name" VARCHAR(100) NOT NULL,
@@ -562,7 +562,7 @@ CREATE TABLE "public"."feature_usage" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."market_trends" (
+CREATE TABLE "market_trends" (
     "id" TEXT NOT NULL,
     "skill" VARCHAR(100) NOT NULL,
     "industry" VARCHAR(100),
@@ -580,7 +580,7 @@ CREATE TABLE "public"."market_trends" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."performance_metrics" (
+CREATE TABLE "performance_metrics" (
     "id" TEXT NOT NULL,
     "table_name" VARCHAR(100) NOT NULL,
     "operation" VARCHAR(50) NOT NULL,
@@ -596,7 +596,7 @@ CREATE TABLE "public"."performance_metrics" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."archived_cv_data" (
+CREATE TABLE "archived_cv_data" (
     "id" TEXT NOT NULL,
     "original_id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
@@ -604,7 +604,7 @@ CREATE TABLE "public"."archived_cv_data" (
     "file_url" VARCHAR(500),
     "file_size" INTEGER,
     "mime_type" VARCHAR(100),
-    "processing_status" "public"."ProcessingStatus" NOT NULL,
+    "processing_status" "ProcessingStatus" NOT NULL,
     "archived_at" TIMESTAMP(3) NOT NULL,
     "archive_reason" VARCHAR(100) NOT NULL,
     "archived_by" VARCHAR(50),
@@ -617,7 +617,7 @@ CREATE TABLE "public"."archived_cv_data" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."archived_job_data" (
+CREATE TABLE "archived_job_data" (
     "id" TEXT NOT NULL,
     "original_id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
@@ -633,7 +633,7 @@ CREATE TABLE "public"."archived_job_data" (
 );
 
 -- CreateTable
-CREATE TABLE "public"."schema_versions" (
+CREATE TABLE "schema_versions" (
     "id" TEXT NOT NULL,
     "version" VARCHAR(20) NOT NULL,
     "migration_id" VARCHAR(50),
@@ -646,367 +646,367 @@ CREATE TABLE "public"."schema_versions" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "profiles_user_id_key" ON "public"."profiles"("user_id");
+CREATE UNIQUE INDEX "profiles_user_id_key" ON "profiles"("user_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "profiles_email_key" ON "public"."profiles"("email");
+CREATE UNIQUE INDEX "profiles_email_key" ON "profiles"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "profiles_username_key" ON "public"."profiles"("username");
+CREATE UNIQUE INDEX "profiles_username_key" ON "profiles"("username");
 
 -- CreateIndex
-CREATE INDEX "profiles_last_login_at_idx" ON "public"."profiles"("last_login_at");
+CREATE INDEX "profiles_last_login_at_idx" ON "profiles"("last_login_at");
 
 -- CreateIndex
-CREATE INDEX "profiles_subscription_status_idx" ON "public"."profiles"("subscription_status");
+CREATE INDEX "profiles_subscription_status_idx" ON "profiles"("subscription_status");
 
 -- CreateIndex
-CREATE INDEX "profiles_is_trial_user_idx" ON "public"."profiles"("is_trial_user");
+CREATE INDEX "profiles_is_trial_user_idx" ON "profiles"("is_trial_user");
 
 -- CreateIndex
-CREATE INDEX "profiles_last_active_at_idx" ON "public"."profiles"("last_active_at");
+CREATE INDEX "profiles_last_active_at_idx" ON "profiles"("last_active_at");
 
 -- CreateIndex
-CREATE INDEX "profiles_is_active_idx" ON "public"."profiles"("is_active");
+CREATE INDEX "profiles_is_active_idx" ON "profiles"("is_active");
 
 -- CreateIndex
-CREATE INDEX "profiles_is_deleted_idx" ON "public"."profiles"("is_deleted");
+CREATE INDEX "profiles_is_deleted_idx" ON "profiles"("is_deleted");
 
 -- CreateIndex
-CREATE INDEX "profiles_last_login_at_is_active_idx" ON "public"."profiles"("last_login_at", "is_active");
+CREATE INDEX "profiles_last_login_at_is_active_idx" ON "profiles"("last_login_at", "is_active");
 
 -- CreateIndex
-CREATE INDEX "profiles_subscription_status_subscription_end_date_idx" ON "public"."profiles"("subscription_status", "subscription_end_date");
+CREATE INDEX "profiles_subscription_status_subscription_end_date_idx" ON "profiles"("subscription_status", "subscription_end_date");
 
 -- CreateIndex
-CREATE INDEX "profiles_is_trial_user_trial_ends_at_idx" ON "public"."profiles"("is_trial_user", "trial_ends_at");
+CREATE INDEX "profiles_is_trial_user_trial_ends_at_idx" ON "profiles"("is_trial_user", "trial_ends_at");
 
 -- CreateIndex
-CREATE INDEX "profiles_is_active_is_deleted_created_at_idx" ON "public"."profiles"("is_active", "is_deleted", "created_at");
+CREATE INDEX "profiles_is_active_is_deleted_created_at_idx" ON "profiles"("is_active", "is_deleted", "created_at");
 
 -- CreateIndex
-CREATE INDEX "profiles_last_active_at_is_active_idx" ON "public"."profiles"("last_active_at", "is_active");
+CREATE INDEX "profiles_last_active_at_is_active_idx" ON "profiles"("last_active_at", "is_active");
 
 -- CreateIndex
-CREATE INDEX "profiles_career_stage_is_active_idx" ON "public"."profiles"("career_stage", "is_active");
+CREATE INDEX "profiles_career_stage_is_active_idx" ON "profiles"("career_stage", "is_active");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "user_sessions_session_token_key" ON "public"."user_sessions"("session_token");
+CREATE UNIQUE INDEX "user_sessions_session_token_key" ON "user_sessions"("session_token");
 
 -- CreateIndex
-CREATE INDEX "user_sessions_is_deleted_idx" ON "public"."user_sessions"("is_deleted");
+CREATE INDEX "user_sessions_is_deleted_idx" ON "user_sessions"("is_deleted");
 
 -- CreateIndex
-CREATE INDEX "user_sessions_deleted_at_idx" ON "public"."user_sessions"("deleted_at");
+CREATE INDEX "user_sessions_deleted_at_idx" ON "user_sessions"("deleted_at");
 
 -- CreateIndex
-CREATE INDEX "user_sessions_retention_date_idx" ON "public"."user_sessions"("retention_date");
+CREATE INDEX "user_sessions_retention_date_idx" ON "user_sessions"("retention_date");
 
 -- CreateIndex
-CREATE INDEX "user_activity_is_deleted_idx" ON "public"."user_activity"("is_deleted");
+CREATE INDEX "user_activity_is_deleted_idx" ON "user_activity"("is_deleted");
 
 -- CreateIndex
-CREATE INDEX "user_activity_deleted_at_idx" ON "public"."user_activity"("deleted_at");
+CREATE INDEX "user_activity_deleted_at_idx" ON "user_activity"("deleted_at");
 
 -- CreateIndex
-CREATE INDEX "user_activity_retention_date_idx" ON "public"."user_activity"("retention_date");
+CREATE INDEX "user_activity_retention_date_idx" ON "user_activity"("retention_date");
 
 -- CreateIndex
-CREATE INDEX "cv_data_user_id_idx" ON "public"."cv_data"("user_id");
+CREATE INDEX "cv_data_user_id_idx" ON "cv_data"("user_id");
 
 -- CreateIndex
-CREATE INDEX "cv_data_created_at_idx" ON "public"."cv_data"("created_at");
+CREATE INDEX "cv_data_created_at_idx" ON "cv_data"("created_at");
 
 -- CreateIndex
-CREATE INDEX "generated_content_user_id_idx" ON "public"."generated_content"("user_id");
+CREATE INDEX "generated_content_user_id_idx" ON "generated_content"("user_id");
 
 -- CreateIndex
-CREATE INDEX "generated_content_cv_data_id_idx" ON "public"."generated_content"("cv_data_id");
+CREATE INDEX "generated_content_cv_data_id_idx" ON "generated_content"("cv_data_id");
 
 -- CreateIndex
-CREATE INDEX "generated_content_job_data_id_idx" ON "public"."generated_content"("job_data_id");
+CREATE INDEX "generated_content_job_data_id_idx" ON "generated_content"("job_data_id");
 
 -- CreateIndex
-CREATE INDEX "generated_content_type_idx" ON "public"."generated_content"("type");
+CREATE INDEX "generated_content_type_idx" ON "generated_content"("type");
 
 -- CreateIndex
-CREATE INDEX "generated_content_is_active_idx" ON "public"."generated_content"("is_active");
+CREATE INDEX "generated_content_is_active_idx" ON "generated_content"("is_active");
 
 -- CreateIndex
-CREATE INDEX "generated_content_is_archived_idx" ON "public"."generated_content"("is_archived");
+CREATE INDEX "generated_content_is_archived_idx" ON "generated_content"("is_archived");
 
 -- CreateIndex
-CREATE INDEX "generated_content_is_deleted_idx" ON "public"."generated_content"("is_deleted");
+CREATE INDEX "generated_content_is_deleted_idx" ON "generated_content"("is_deleted");
 
 -- CreateIndex
-CREATE INDEX "generated_content_created_at_idx" ON "public"."generated_content"("created_at");
+CREATE INDEX "generated_content_created_at_idx" ON "generated_content"("created_at");
 
 -- CreateIndex
-CREATE INDEX "generated_content_is_latest_idx" ON "public"."generated_content"("is_latest");
+CREATE INDEX "generated_content_is_latest_idx" ON "generated_content"("is_latest");
 
 -- CreateIndex
-CREATE INDEX "generated_content_confidence_score_idx" ON "public"."generated_content"("confidence_score");
+CREATE INDEX "generated_content_confidence_score_idx" ON "generated_content"("confidence_score");
 
 -- CreateIndex
-CREATE INDEX "generated_content_quality_score_idx" ON "public"."generated_content"("quality_score");
+CREATE INDEX "generated_content_quality_score_idx" ON "generated_content"("quality_score");
 
 -- CreateIndex
-CREATE INDEX "generated_content_effectiveness_score_idx" ON "public"."generated_content"("effectiveness_score");
+CREATE INDEX "generated_content_effectiveness_score_idx" ON "generated_content"("effectiveness_score");
 
 -- CreateIndex
-CREATE INDEX "generated_content_user_rating_idx" ON "public"."generated_content"("user_rating");
+CREATE INDEX "generated_content_user_rating_idx" ON "generated_content"("user_rating");
 
 -- CreateIndex
-CREATE INDEX "generated_content_user_id_is_active_created_at_idx" ON "public"."generated_content"("user_id", "is_active", "created_at");
+CREATE INDEX "generated_content_user_id_is_active_created_at_idx" ON "generated_content"("user_id", "is_active", "created_at");
 
 -- CreateIndex
-CREATE INDEX "generated_content_processing_status_created_at_idx" ON "public"."generated_content"("processing_status", "created_at");
+CREATE INDEX "generated_content_processing_status_created_at_idx" ON "generated_content"("processing_status", "created_at");
 
 -- CreateIndex
-CREATE INDEX "generated_content_is_active_is_archived_created_at_idx" ON "public"."generated_content"("is_active", "is_archived", "created_at");
+CREATE INDEX "generated_content_is_active_is_archived_created_at_idx" ON "generated_content"("is_active", "is_archived", "created_at");
 
 -- CreateIndex
-CREATE INDEX "generated_content_confidence_score_quality_score_created_at_idx" ON "public"."generated_content"("confidence_score", "quality_score", "created_at");
+CREATE INDEX "generated_content_confidence_score_quality_score_created_at_idx" ON "generated_content"("confidence_score", "quality_score", "created_at");
 
 -- CreateIndex
-CREATE INDEX "generated_content_type_is_active_created_at_idx" ON "public"."generated_content"("type", "is_active", "created_at");
+CREATE INDEX "generated_content_type_is_active_created_at_idx" ON "generated_content"("type", "is_active", "created_at");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "password_reset_tokens_token_key" ON "public"."password_reset_tokens"("token");
+CREATE UNIQUE INDEX "password_reset_tokens_token_key" ON "password_reset_tokens"("token");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "auth_providers_provider_key" ON "public"."auth_providers"("provider");
+CREATE UNIQUE INDEX "auth_providers_provider_key" ON "auth_providers"("provider");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "user_auth_methods_user_id_provider_key" ON "public"."user_auth_methods"("user_id", "provider");
+CREATE UNIQUE INDEX "user_auth_methods_user_id_provider_key" ON "user_auth_methods"("user_id", "provider");
 
 -- CreateIndex
-CREATE INDEX "user_notifications_is_deleted_idx" ON "public"."user_notifications"("is_deleted");
+CREATE INDEX "user_notifications_is_deleted_idx" ON "user_notifications"("is_deleted");
 
 -- CreateIndex
-CREATE INDEX "user_notifications_deleted_at_idx" ON "public"."user_notifications"("deleted_at");
+CREATE INDEX "user_notifications_deleted_at_idx" ON "user_notifications"("deleted_at");
 
 -- CreateIndex
-CREATE INDEX "user_notifications_retention_date_idx" ON "public"."user_notifications"("retention_date");
+CREATE INDEX "user_notifications_retention_date_idx" ON "user_notifications"("retention_date");
 
 -- CreateIndex
-CREATE INDEX "contact_messages_is_deleted_idx" ON "public"."contact_messages"("is_deleted");
+CREATE INDEX "contact_messages_is_deleted_idx" ON "contact_messages"("is_deleted");
 
 -- CreateIndex
-CREATE INDEX "contact_messages_deleted_at_idx" ON "public"."contact_messages"("deleted_at");
+CREATE INDEX "contact_messages_deleted_at_idx" ON "contact_messages"("deleted_at");
 
 -- CreateIndex
-CREATE INDEX "contact_messages_retention_date_idx" ON "public"."contact_messages"("retention_date");
+CREATE INDEX "contact_messages_retention_date_idx" ON "contact_messages"("retention_date");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "newsletter_email_key" ON "public"."newsletter"("email");
+CREATE UNIQUE INDEX "newsletter_email_key" ON "newsletter"("email");
 
 -- CreateIndex
-CREATE INDEX "newsletter_is_deleted_idx" ON "public"."newsletter"("is_deleted");
+CREATE INDEX "newsletter_is_deleted_idx" ON "newsletter"("is_deleted");
 
 -- CreateIndex
-CREATE INDEX "newsletter_deleted_at_idx" ON "public"."newsletter"("deleted_at");
+CREATE INDEX "newsletter_deleted_at_idx" ON "newsletter"("deleted_at");
 
 -- CreateIndex
-CREATE INDEX "newsletter_retention_date_idx" ON "public"."newsletter"("retention_date");
+CREATE INDEX "newsletter_retention_date_idx" ON "newsletter"("retention_date");
 
 -- CreateIndex
-CREATE INDEX "job_data_user_id_idx" ON "public"."job_data"("user_id");
+CREATE INDEX "job_data_user_id_idx" ON "job_data"("user_id");
 
 -- CreateIndex
-CREATE INDEX "job_data_processing_status_idx" ON "public"."job_data"("processing_status");
+CREATE INDEX "job_data_processing_status_idx" ON "job_data"("processing_status");
 
 -- CreateIndex
-CREATE INDEX "job_data_is_active_idx" ON "public"."job_data"("is_active");
+CREATE INDEX "job_data_is_active_idx" ON "job_data"("is_active");
 
 -- CreateIndex
-CREATE INDEX "job_data_is_archived_idx" ON "public"."job_data"("is_archived");
+CREATE INDEX "job_data_is_archived_idx" ON "job_data"("is_archived");
 
 -- CreateIndex
-CREATE INDEX "job_data_is_deleted_idx" ON "public"."job_data"("is_deleted");
+CREATE INDEX "job_data_is_deleted_idx" ON "job_data"("is_deleted");
 
 -- CreateIndex
-CREATE INDEX "job_data_created_at_idx" ON "public"."job_data"("created_at");
+CREATE INDEX "job_data_created_at_idx" ON "job_data"("created_at");
 
 -- CreateIndex
-CREATE INDEX "job_data_industry_idx" ON "public"."job_data"("industry");
+CREATE INDEX "job_data_industry_idx" ON "job_data"("industry");
 
 -- CreateIndex
-CREATE INDEX "job_data_job_type_idx" ON "public"."job_data"("job_type");
+CREATE INDEX "job_data_job_type_idx" ON "job_data"("job_type");
 
 -- CreateIndex
-CREATE INDEX "job_data_location_idx" ON "public"."job_data"("location");
+CREATE INDEX "job_data_location_idx" ON "job_data"("location");
 
 -- CreateIndex
-CREATE INDEX "job_data_experience_level_idx" ON "public"."job_data"("experience_level");
+CREATE INDEX "job_data_experience_level_idx" ON "job_data"("experience_level");
 
 -- CreateIndex
-CREATE INDEX "job_data_version_is_latest_idx" ON "public"."job_data"("version", "is_latest");
+CREATE INDEX "job_data_version_is_latest_idx" ON "job_data"("version", "is_latest");
 
 -- CreateIndex
-CREATE INDEX "job_data_company_name_idx" ON "public"."job_data"("company_name");
+CREATE INDEX "job_data_company_name_idx" ON "job_data"("company_name");
 
 -- CreateIndex
-CREATE INDEX "job_data_title_idx" ON "public"."job_data"("title");
+CREATE INDEX "job_data_title_idx" ON "job_data"("title");
 
 -- CreateIndex
-CREATE INDEX "job_data_application_deadline_idx" ON "public"."job_data"("application_deadline");
+CREATE INDEX "job_data_application_deadline_idx" ON "job_data"("application_deadline");
 
 -- CreateIndex
-CREATE INDEX "job_data_market_demand_idx" ON "public"."job_data"("market_demand");
+CREATE INDEX "job_data_market_demand_idx" ON "job_data"("market_demand");
 
 -- CreateIndex
-CREATE INDEX "job_data_competition_level_idx" ON "public"."job_data"("competition_level");
+CREATE INDEX "job_data_competition_level_idx" ON "job_data"("competition_level");
 
 -- CreateIndex
-CREATE INDEX "job_data_job_quality_score_idx" ON "public"."job_data"("job_quality_score");
+CREATE INDEX "job_data_job_quality_score_idx" ON "job_data"("job_quality_score");
 
 -- CreateIndex
-CREATE INDEX "job_data_company_rating_idx" ON "public"."job_data"("company_rating");
+CREATE INDEX "job_data_company_rating_idx" ON "job_data"("company_rating");
 
 -- CreateIndex
-CREATE INDEX "job_data_company_growth_stage_idx" ON "public"."job_data"("company_growth_stage");
+CREATE INDEX "job_data_company_growth_stage_idx" ON "job_data"("company_growth_stage");
 
 -- CreateIndex
-CREATE INDEX "job_data_user_id_is_active_created_at_idx" ON "public"."job_data"("user_id", "is_active", "created_at");
+CREATE INDEX "job_data_user_id_is_active_created_at_idx" ON "job_data"("user_id", "is_active", "created_at");
 
 -- CreateIndex
-CREATE INDEX "job_data_processing_status_priority_created_at_idx" ON "public"."job_data"("processing_status", "priority", "created_at");
+CREATE INDEX "job_data_processing_status_priority_created_at_idx" ON "job_data"("processing_status", "priority", "created_at");
 
 -- CreateIndex
-CREATE INDEX "job_data_is_active_is_archived_created_at_idx" ON "public"."job_data"("is_active", "is_archived", "created_at");
+CREATE INDEX "job_data_is_active_is_archived_created_at_idx" ON "job_data"("is_active", "is_archived", "created_at");
 
 -- CreateIndex
-CREATE INDEX "job_data_processing_status_created_at_idx" ON "public"."job_data"("processing_status", "created_at");
+CREATE INDEX "job_data_processing_status_created_at_idx" ON "job_data"("processing_status", "created_at");
 
 -- CreateIndex
-CREATE INDEX "cv_job_matches_user_id_idx" ON "public"."cv_job_matches"("user_id");
+CREATE INDEX "cv_job_matches_user_id_idx" ON "cv_job_matches"("user_id");
 
 -- CreateIndex
-CREATE INDEX "cv_job_matches_cv_data_id_idx" ON "public"."cv_job_matches"("cv_data_id");
+CREATE INDEX "cv_job_matches_cv_data_id_idx" ON "cv_job_matches"("cv_data_id");
 
 -- CreateIndex
-CREATE INDEX "cv_job_matches_job_data_id_idx" ON "public"."cv_job_matches"("job_data_id");
+CREATE INDEX "cv_job_matches_job_data_id_idx" ON "cv_job_matches"("job_data_id");
 
 -- CreateIndex
-CREATE INDEX "cv_job_matches_overall_match_score_idx" ON "public"."cv_job_matches"("overall_match_score");
+CREATE INDEX "cv_job_matches_overall_match_score_idx" ON "cv_job_matches"("overall_match_score");
 
 -- CreateIndex
-CREATE INDEX "cv_job_matches_analysis_date_idx" ON "public"."cv_job_matches"("analysis_date");
+CREATE INDEX "cv_job_matches_analysis_date_idx" ON "cv_job_matches"("analysis_date");
 
 -- CreateIndex
-CREATE INDEX "cv_job_matches_is_active_idx" ON "public"."cv_job_matches"("is_active");
+CREATE INDEX "cv_job_matches_is_active_idx" ON "cv_job_matches"("is_active");
 
 -- CreateIndex
-CREATE INDEX "cv_job_matches_is_archived_idx" ON "public"."cv_job_matches"("is_archived");
+CREATE INDEX "cv_job_matches_is_archived_idx" ON "cv_job_matches"("is_archived");
 
 -- CreateIndex
-CREATE INDEX "cv_job_matches_is_deleted_idx" ON "public"."cv_job_matches"("is_deleted");
+CREATE INDEX "cv_job_matches_is_deleted_idx" ON "cv_job_matches"("is_deleted");
 
 -- CreateIndex
-CREATE INDEX "cv_job_matches_user_id_is_active_created_at_idx" ON "public"."cv_job_matches"("user_id", "is_active", "created_at");
+CREATE INDEX "cv_job_matches_user_id_is_active_created_at_idx" ON "cv_job_matches"("user_id", "is_active", "created_at");
 
 -- CreateIndex
-CREATE INDEX "cv_job_matches_processing_status_created_at_idx" ON "public"."cv_job_matches"("processing_status", "created_at");
+CREATE INDEX "cv_job_matches_processing_status_created_at_idx" ON "cv_job_matches"("processing_status", "created_at");
 
 -- CreateIndex
-CREATE INDEX "cv_job_matches_is_active_is_archived_created_at_idx" ON "public"."cv_job_matches"("is_active", "is_archived", "created_at");
+CREATE INDEX "cv_job_matches_is_active_is_archived_created_at_idx" ON "cv_job_matches"("is_active", "is_archived", "created_at");
 
 -- CreateIndex
-CREATE INDEX "cv_job_matches_overall_match_score_is_active_created_at_idx" ON "public"."cv_job_matches"("overall_match_score", "is_active", "created_at");
+CREATE INDEX "cv_job_matches_overall_match_score_is_active_created_at_idx" ON "cv_job_matches"("overall_match_score", "is_active", "created_at");
 
 -- CreateIndex
-CREATE INDEX "cv_job_matches_analysis_date_overall_match_score_idx" ON "public"."cv_job_matches"("analysis_date", "overall_match_score");
+CREATE INDEX "cv_job_matches_analysis_date_overall_match_score_idx" ON "cv_job_matches"("analysis_date", "overall_match_score");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "cv_job_matches_cv_data_id_job_data_id_key" ON "public"."cv_job_matches"("cv_data_id", "job_data_id");
+CREATE UNIQUE INDEX "cv_job_matches_cv_data_id_job_data_id_key" ON "cv_job_matches"("cv_data_id", "job_data_id");
 
 -- CreateIndex
-CREATE INDEX "feature_usage_user_id_idx" ON "public"."feature_usage"("user_id");
+CREATE INDEX "feature_usage_user_id_idx" ON "feature_usage"("user_id");
 
 -- CreateIndex
-CREATE INDEX "feature_usage_feature_name_idx" ON "public"."feature_usage"("feature_name");
+CREATE INDEX "feature_usage_feature_name_idx" ON "feature_usage"("feature_name");
 
 -- CreateIndex
-CREATE INDEX "feature_usage_is_deleted_idx" ON "public"."feature_usage"("is_deleted");
+CREATE INDEX "feature_usage_is_deleted_idx" ON "feature_usage"("is_deleted");
 
 -- CreateIndex
-CREATE INDEX "feature_usage_deleted_at_idx" ON "public"."feature_usage"("deleted_at");
+CREATE INDEX "feature_usage_deleted_at_idx" ON "feature_usage"("deleted_at");
 
 -- CreateIndex
-CREATE INDEX "feature_usage_retention_date_idx" ON "public"."feature_usage"("retention_date");
+CREATE INDEX "feature_usage_retention_date_idx" ON "feature_usage"("retention_date");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "feature_usage_user_id_feature_name_key" ON "public"."feature_usage"("user_id", "feature_name");
+CREATE UNIQUE INDEX "feature_usage_user_id_feature_name_key" ON "feature_usage"("user_id", "feature_name");
 
 -- CreateIndex
-CREATE INDEX "market_trends_skill_industry_location_idx" ON "public"."market_trends"("skill", "industry", "location");
+CREATE INDEX "market_trends_skill_industry_location_idx" ON "market_trends"("skill", "industry", "location");
 
 -- CreateIndex
-CREATE INDEX "market_trends_period_created_at_idx" ON "public"."market_trends"("period", "created_at");
+CREATE INDEX "market_trends_period_created_at_idx" ON "market_trends"("period", "created_at");
 
 -- CreateIndex
-CREATE INDEX "market_trends_demand_score_created_at_idx" ON "public"."market_trends"("demand_score", "created_at");
+CREATE INDEX "market_trends_demand_score_created_at_idx" ON "market_trends"("demand_score", "created_at");
 
 -- CreateIndex
-CREATE INDEX "performance_metrics_table_name_operation_idx" ON "public"."performance_metrics"("table_name", "operation");
+CREATE INDEX "performance_metrics_table_name_operation_idx" ON "performance_metrics"("table_name", "operation");
 
 -- CreateIndex
-CREATE INDEX "performance_metrics_execution_time_created_at_idx" ON "public"."performance_metrics"("execution_time", "created_at");
+CREATE INDEX "performance_metrics_execution_time_created_at_idx" ON "performance_metrics"("execution_time", "created_at");
 
 -- CreateIndex
-CREATE INDEX "performance_metrics_user_id_created_at_idx" ON "public"."performance_metrics"("user_id", "created_at");
+CREATE INDEX "performance_metrics_user_id_created_at_idx" ON "performance_metrics"("user_id", "created_at");
 
 -- CreateIndex
-CREATE INDEX "archived_cv_data_original_id_idx" ON "public"."archived_cv_data"("original_id");
+CREATE INDEX "archived_cv_data_original_id_idx" ON "archived_cv_data"("original_id");
 
 -- CreateIndex
-CREATE INDEX "archived_cv_data_user_id_archived_at_idx" ON "public"."archived_cv_data"("user_id", "archived_at");
+CREATE INDEX "archived_cv_data_user_id_archived_at_idx" ON "archived_cv_data"("user_id", "archived_at");
 
 -- CreateIndex
-CREATE INDEX "archived_cv_data_archive_reason_archived_at_idx" ON "public"."archived_cv_data"("archive_reason", "archived_at");
+CREATE INDEX "archived_cv_data_archive_reason_archived_at_idx" ON "archived_cv_data"("archive_reason", "archived_at");
 
 -- CreateIndex
-CREATE INDEX "archived_job_data_original_id_idx" ON "public"."archived_job_data"("original_id");
+CREATE INDEX "archived_job_data_original_id_idx" ON "archived_job_data"("original_id");
 
 -- CreateIndex
-CREATE INDEX "archived_job_data_user_id_archived_at_idx" ON "public"."archived_job_data"("user_id", "archived_at");
+CREATE INDEX "archived_job_data_user_id_archived_at_idx" ON "archived_job_data"("user_id", "archived_at");
 
 -- CreateIndex
-CREATE INDEX "archived_job_data_archive_reason_archived_at_idx" ON "public"."archived_job_data"("archive_reason", "archived_at");
+CREATE INDEX "archived_job_data_archive_reason_archived_at_idx" ON "archived_job_data"("archive_reason", "archived_at");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "schema_versions_version_key" ON "public"."schema_versions"("version");
+CREATE UNIQUE INDEX "schema_versions_version_key" ON "schema_versions"("version");
 
 -- AddForeignKey
-ALTER TABLE "public"."user_sessions" ADD CONSTRAINT "user_sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("user_id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "user_sessions" ADD CONSTRAINT "user_sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "profiles"("user_id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."user_activity" ADD CONSTRAINT "user_activity_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("user_id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "user_activity" ADD CONSTRAINT "user_activity_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "profiles"("user_id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."cv_data" ADD CONSTRAINT "cv_data_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("user_id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "cv_data" ADD CONSTRAINT "cv_data_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "profiles"("user_id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."generated_content" ADD CONSTRAINT "generated_content_cv_data_id_fkey" FOREIGN KEY ("cv_data_id") REFERENCES "public"."cv_data"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "generated_content" ADD CONSTRAINT "generated_content_cv_data_id_fkey" FOREIGN KEY ("cv_data_id") REFERENCES "cv_data"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."generated_content" ADD CONSTRAINT "generated_content_job_data_id_fkey" FOREIGN KEY ("job_data_id") REFERENCES "public"."job_data"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "generated_content" ADD CONSTRAINT "generated_content_job_data_id_fkey" FOREIGN KEY ("job_data_id") REFERENCES "job_data"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."generated_content" ADD CONSTRAINT "generated_content_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("user_id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "generated_content" ADD CONSTRAINT "generated_content_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "profiles"("user_id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."job_data" ADD CONSTRAINT "job_data_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("user_id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "job_data" ADD CONSTRAINT "job_data_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "profiles"("user_id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."cv_job_matches" ADD CONSTRAINT "cv_job_matches_cv_data_id_fkey" FOREIGN KEY ("cv_data_id") REFERENCES "public"."cv_data"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "cv_job_matches" ADD CONSTRAINT "cv_job_matches_cv_data_id_fkey" FOREIGN KEY ("cv_data_id") REFERENCES "cv_data"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."cv_job_matches" ADD CONSTRAINT "cv_job_matches_job_data_id_fkey" FOREIGN KEY ("job_data_id") REFERENCES "public"."job_data"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "cv_job_matches" ADD CONSTRAINT "cv_job_matches_job_data_id_fkey" FOREIGN KEY ("job_data_id") REFERENCES "job_data"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."cv_job_matches" ADD CONSTRAINT "cv_job_matches_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("user_id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "cv_job_matches" ADD CONSTRAINT "cv_job_matches_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "profiles"("user_id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."feature_usage" ADD CONSTRAINT "feature_usage_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("user_id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "feature_usage" ADD CONSTRAINT "feature_usage_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "profiles"("user_id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { useFormStatus } from 'react-dom'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -14,8 +13,11 @@ interface AvatarUploadProps {
   profile: any
 }
 
-function SingleUploadButton({ onError }: { onError: (error: string) => void }) {
-  const { pending } = useFormStatus()
+function SingleUploadButton({ onError, onUpload, isUploading }: { 
+  onError: (error: string) => void
+  onUpload: (file: File) => void
+  isUploading: boolean
+}) {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleClick = () => {
@@ -39,11 +41,8 @@ function SingleUploadButton({ onError }: { onError: (error: string) => void }) {
         return
       }
 
-      // Auto-submit the form when file is selected
-      const form = e.target.closest('form')
-      if (form) {
-        form.requestSubmit()
-      }
+      // Call the upload handler directly
+      onUpload(file)
     }
   }
 
@@ -60,10 +59,10 @@ function SingleUploadButton({ onError }: { onError: (error: string) => void }) {
       <Button
         type="button"
         onClick={handleClick}
-        disabled={pending}
+        disabled={isUploading}
         className="w-full"
       >
-        {pending ? (
+        {isUploading ? (
           <>
             <Icons.Loader2 className="h-4 w-4 mr-2 animate-spin" />
             Uploading...
@@ -115,6 +114,7 @@ export function AvatarUpload({ profile }: AvatarUploadProps) {
   const { refetch } = useProfile()
   const [error, setError] = useState('')
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
 
   const handleDelete = async () => {
     setError('')
@@ -146,8 +146,14 @@ export function AvatarUpload({ profile }: AvatarUploadProps) {
     setIsErrorModalOpen(true)
   }
 
-  const handleFormSubmit = async (formData: FormData) => {
+  const handleFileUpload = async (file: File) => {
+    setIsUploading(true)
+    setError('')
+
     try {
+      const formData = new FormData()
+      formData.append('avatar', file)
+
       const response = await fetch('/api/user/avatar', {
         method: 'POST',
         body: formData
@@ -171,6 +177,8 @@ export function AvatarUpload({ profile }: AvatarUploadProps) {
       setError(errorMessage)
       setIsErrorModalOpen(true)
       toast.error(errorMessage)
+    } finally {
+      setIsUploading(false)
     }
   }
 
@@ -195,9 +203,13 @@ export function AvatarUpload({ profile }: AvatarUploadProps) {
           </div>
         </div>
 
-        <form action={handleFormSubmit} className="space-y-3">
+        <div className="space-y-3">
           <div className="space-y-2">
-            <SingleUploadButton onError={handleUploadError} />
+            <SingleUploadButton 
+              onError={handleUploadError} 
+              onUpload={handleFileUpload}
+              isUploading={isUploading}
+            />
           </div>
 
           {profile?.avatarUrl && (
@@ -205,7 +217,7 @@ export function AvatarUpload({ profile }: AvatarUploadProps) {
               <DeleteButton onDelete={handleDelete} />
             </div>
           )}
-        </form>
+        </div>
       </div>
 
       {/* Error Modal */}
