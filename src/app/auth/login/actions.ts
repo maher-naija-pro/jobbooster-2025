@@ -84,7 +84,9 @@ export async function login(formData: FormData) {
                 })
 
                 const headersList = await headers()
-                const request = new Request('http://localhost', {
+                // Use environment variable for base URL, fallback to localhost for development
+                const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://localhost:3000'
+                const request = new Request(baseUrl, {
                     headers: headersList
                 })
                 await createUserSession(authData.user, authData.session.access_token, request)
