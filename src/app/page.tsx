@@ -517,7 +517,7 @@ function HomeContent() {
           // Centered layout for initial state
           <div className="flex justify-center">
             <div className="w-full max-w-2xl">
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 mt-6">
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 mt-6 mb-10">
                 <div className="space-y-6">
                   {/* Main Header with Title and Description */}
                   <UploadHeader />
@@ -581,7 +581,7 @@ function HomeContent() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Column - Input Form (1/3 width) */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mt-6">
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mt-6 mb-10">
                 <div className="space-y-4">
                   {/* CV Upload */}
                   <CVUpload
@@ -640,7 +640,7 @@ function HomeContent() {
             {/* Right Column - Content Display (2/3 width) */}
             <div className="lg:col-span-2 space-y-6">
               {/* Main Content Generator */}
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 mt-6">
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 mt-6 mb-10">
                 <ContentGenerator
                   content={state.generatedContent}
                   isGenerating={state.isGenerating}
