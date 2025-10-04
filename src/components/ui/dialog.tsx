@@ -54,6 +54,16 @@ function DialogContent({
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
 }) {
+  // Check if children contains a DialogTitle
+  const hasDialogTitle = React.Children.toArray(children).some(
+    child => React.isValidElement(child) &&
+      (child.type === DialogTitle ||
+        (child.type === DialogHeader &&
+          React.Children.toArray(child.props.children).some(
+            headerChild => React.isValidElement(headerChild) && headerChild.type === DialogTitle
+          )))
+  )
+
   return (
     <DialogPortal data-slot="dialog-portal">
       <DialogOverlay />
@@ -65,6 +75,12 @@ function DialogContent({
         )}
         {...props}
       >
+        {/* Automatically add a hidden DialogTitle if none is provided for accessibility */}
+        {!hasDialogTitle && (
+          <DialogTitle className="sr-only">
+            Dialog
+          </DialogTitle>
+        )}
         {children}
         {showCloseButton && (
           <DialogPrimitive.Close

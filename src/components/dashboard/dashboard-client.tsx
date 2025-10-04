@@ -15,6 +15,7 @@ import { Icons } from '@/components/icons'
 import { useJobData } from '@/hooks/useJobData'
 import { useCvData } from '@/hooks/useCvData'
 import { useGeneratedContent } from '@/hooks/useGeneratedContent'
+import { isPricingEnabled } from '@/lib/feature-flags'
 
 interface DashboardClientProps {
     profile: any;
@@ -187,12 +188,15 @@ export function DashboardClient({ profile, user, subscription, preferences, init
                         </div>
 
                         <div className="flex flex-wrap items-center gap-3">
-                            <Badge
-                                variant={subscription.plan === 'free' ? 'secondary' : 'default'}
-                                className="px-4 py-2 text-sm font-medium"
-                            >
-                                {subscription.plan.toUpperCase()} Plan
-                            </Badge>
+                            {/* Only show plan badge if pricing is enabled */}
+                            {isPricingEnabled() && (
+                                <Badge
+                                    variant={subscription.plan === 'free' ? 'secondary' : 'default'}
+                                    className="px-4 py-2 text-sm font-medium"
+                                >
+                                    {subscription.plan.toUpperCase()} Plan
+                                </Badge>
+                            )}
                             <span className="text-sm text-slate-500 flex items-center gap-2">
                                 <Icons.calendar className="h-4 w-4" />
                                 Member since {new Date(profile?.createdAt || user.created_at).toLocaleDateString('en-US', {
