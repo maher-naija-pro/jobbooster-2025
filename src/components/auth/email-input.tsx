@@ -116,7 +116,7 @@ export const EmailInput = forwardRef<HTMLInputElement, EmailInputProps>(({
                     aria-invalid={ariaInvalid === 'true' || ariaInvalid === true}
                     aria-describedby={ariaDescribedby}
                     className={cn(
-                        'w-full pl-10 pr-3 py-2 border rounded-md shadow-sm transition-colors',
+                        'w-full pl-10 pr-3 py-1.5 border rounded-md shadow-sm transition-colors',
                         'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
                         'disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed',
                         hasErrors && hasValue && 'border-red-300 focus:border-red-500 focus:ring-red-500',

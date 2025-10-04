@@ -132,7 +132,7 @@ export function AuthModal({ isOpen, onClose, feature, onTestModeToggle }: AuthMo
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-3 mt-3">
+          <div className="space-y-1 mt-1">
             {!isResetPassword && (
               <>
                 <OAuthButtons onError={handleOAuthError} onClose={handleDirectClose} />

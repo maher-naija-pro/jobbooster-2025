@@ -266,7 +266,7 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
   }
 
   return (
-    <form ref={formRef} action={handleSubmit} className="space-y-4" noValidate>
+    <form ref={formRef} action={handleSubmit} className="space-y-2" noValidate>
       {error && (
         <div
           className="text-sm text-red-700 dark:text-red-300 bg-gradient-to-r from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 p-2 rounded-lg border border-red-200 dark:border-red-800/30 shadow-sm"
@@ -326,7 +326,7 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
         </div>
       )}
 
-      <div className="space-y-1">
+      <div className="space-y-0">
         <Label
           htmlFor="email"
           className="text-base font-semibold text-slate-700 dark:text-slate-300"
@@ -354,7 +354,7 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
             }`}
         />
         {isFieldInvalid('email') && (
-          <p id="email-error" className="text-sm text-red-600 dark:text-red-400 mt-1" role="alert">
+          <p id="email-error" className="text-sm text-red-600 dark:text-red-400 mt-0.5" role="alert">
             {getFieldError('email')}
           </p>
         )}
@@ -362,7 +362,7 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
 
       {!isResetPassword && (
         <>
-          <div className="space-y-1">
+          <div className="space-y-0">
             <Label
               htmlFor="password"
               className="text-base font-semibold text-slate-700 dark:text-slate-300"
@@ -396,12 +396,12 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
               constraints={DEFAULT_PASSWORD_CONSTRAINTS}
             />
             {isFieldInvalid('password') && (
-              <p id="password-error" className="text-sm text-red-600 dark:text-red-400 mt-1" role="alert">
+              <p id="password-error" className="text-sm text-red-600 dark:text-red-400 mt-0.5" role="alert">
                 {getFieldError('password')}
               </p>
             )}
             {isLogin && (
-              <div className="mt-2">
+              <div className="mt-0.5">
                 <button
                   type="button"
                   onClick={onResetPassword}
@@ -415,7 +415,7 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
           </div>
 
           {!isLogin && (
-            <div className="space-y-1">
+            <div className="space-y-0">
               <Label
                 htmlFor="confirmPassword"
                 className="text-base font-semibold text-slate-700 dark:text-slate-300"
@@ -449,7 +449,7 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
                 constraints={DEFAULT_PASSWORD_CONSTRAINTS}
               />
               {isFieldInvalid('confirmPassword') && (
-                <p id="confirmPassword-error" className="text-sm text-red-600 dark:text-red-400 mt-1" role="alert">
+                <p id="confirmPassword-error" className="text-sm text-red-600 dark:text-red-400 mt-0.5" role="alert">
                   {getFieldError('confirmPassword')}
                 </p>
               )}
@@ -460,30 +460,30 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
 
       {/* Toggle section above submit button */}
       {!isResetPassword && (
-        <div className="text-center py-1 border-t border-slate-200 dark:border-slate-700">
+        <div className="text-center py-0 border-t border-slate-200 dark:border-slate-700">
           {isLogin ? (
-            <div className="space-y-1">
-              <p className="text-base text-slate-600 dark:text-slate-400 font-medium">
+            <div className="space-y-0">
+              <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">
                 Don't have an account?
               </p>
               <button
                 type="button"
                 onClick={onToggleMode}
-                className="text-base font-semibold text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 rounded-sm "
+                className="text-sm font-semibold text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 rounded-sm "
                 aria-label="Switch to create account mode"
               >
                 Sign up
               </button>
             </div>
           ) : (
-            <div className="space-y-1">
-              <p className="text-base text-slate-600 dark:text-slate-400 font-medium">
+            <div className="space-y-0">
+              <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">
                 Already have an account?
               </p>
               <button
                 type="button"
                 onClick={onToggleMode}
-                className="text-base font-semibold text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 rounded-sm"
+                className="text-sm font-semibold text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 rounded-sm"
                 aria-label="Switch to sign in mode"
               >
                 Sign in
@@ -557,7 +557,7 @@ export function AuthForm({ isLogin, isResetPassword = false, onToggleMode, onRes
       {/* Reset password back to login link */}
       {isResetPassword && (
         <div className="text-center pt-4 border-t border-slate-200 dark:border-slate-700">
-          <div className="space-y-1">
+          <div className="space-y-0">
             <p className="text-base text-slate-600 dark:text-slate-400 font-medium">
               Remember your password?
             </p>

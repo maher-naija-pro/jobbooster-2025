@@ -114,7 +114,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
                     required={required}
                     autoComplete={autoComplete}
                     className={cn(
-                        'w-full px-3 py-2 pr-20 border rounded-md shadow-sm transition-colors',
+                        'w-full px-3 py-1.5 pr-20 border rounded-md shadow-sm transition-colors',
                         'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
                         'disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed',
                         hasErrors && hasValue && 'border-red-300 focus:border-red-500 focus:ring-red-500',
