@@ -25,7 +25,6 @@ interface JobOfferInputProps {
 
 const MIN_LENGTH = 100;
 const MAX_LENGTH = 10000;
-const WARNING_THRESHOLD = 8000; // Show warning when approaching max length
 
 export function JobOfferInput({
     value,
@@ -39,7 +38,6 @@ export function JobOfferInput({
     onBlur,
     onFocus
 }: JobOfferInputProps) {
-    const [characterCount, setCharacterCount] = useState(0);
     const [isTooltipOpen, setIsTooltipOpen] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
     const [isTouched, setIsTouched] = useState(false);
@@ -49,22 +47,14 @@ export function JobOfferInput({
     const validationState = useMemo(() => {
         const trimmedLength = value.trim().length;
         const isValid = trimmedLength >= MIN_LENGTH && trimmedLength <= MAX_LENGTH;
-        const isWarning = trimmedLength > WARNING_THRESHOLD && trimmedLength < MAX_LENGTH;
         const isError = trimmedLength > MAX_LENGTH || (isTouched && trimmedLength < MIN_LENGTH);
 
         return {
             isValid,
-            isWarning,
-            isError,
-            progress: Math.min((trimmedLength / MIN_LENGTH) * 100, 100),
-            remaining: MAX_LENGTH - trimmedLength,
-            isNearLimit: trimmedLength > WARNING_THRESHOLD
+            isError
         };
     }, [value, isTouched]);
 
-    useEffect(() => {
-        setCharacterCount(value.length);
-    }, [value]);
 
     useEffect(() => {
         let timer: NodeJS.Timeout;
@@ -136,13 +126,6 @@ export function JobOfferInput({
             };
         }
 
-        if (validationState.isNearLimit) {
-            return {
-                type: 'warning',
-                message: `${validationState.remaining} characters remaining`,
-                icon: AlertCircle
-            };
-        }
 
         return {
             type: 'success',
@@ -156,13 +139,13 @@ export function JobOfferInput({
     return (
         <div className={className}>
             {/* Modern Header with Label and Clear Button */}
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-1.5">
                 <Label
                     htmlFor="job-content"
-                    className="text-sm font-semibold text-gray-900 flex items-center gap-2"
+                    className="text-xs font-semibold text-gray-900 flex items-center gap-1"
                 >
-                    <div className="w-6 h-6 bg-blue-100 rounded-md flex items-center justify-center">
-                        <FileText className="w-3 h-3 text-blue-600" aria-hidden="true" />
+                    <div className="w-4 h-4 bg-blue-100 rounded flex items-center justify-center">
+                        <FileText className="w-2.5 h-2.5 text-blue-600" aria-hidden="true" />
                     </div>
                     Job Offer Content
                 </Label>
@@ -173,13 +156,13 @@ export function JobOfferInput({
                         size="sm"
                         width="fit"
                         showIcon={false}
-                        className="px-3 py-2 text-gray-500 hover:text-red-600 hover:bg-red-50 transition-all duration-200 rounded-lg font-medium"
+                        className="px-1.5 py-0.5 text-gray-500 hover:text-red-600 hover:bg-red-50 transition-all duration-200 rounded font-medium text-xs"
                         tooltip="Clear content"
                     />
                 )}
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-1.5">
                 {/* Textarea with Enhanced Styling */}
                 <div className="relative">
                     <Tooltip open={isTooltipOpen} onOpenChange={setIsTooltipOpen}>
@@ -194,18 +177,17 @@ export function JobOfferInput({
                                 onMouseLeave={() => setIsTooltipOpen(false)}
                                 placeholder="Paste your job offer here...&#10;&#10;Include job title, company name, requirements, responsibilities, and any other relevant details from the job posting."
                                 className={cn(
-                                    "w-full min-h-[150px] p-3 border-2 rounded-lg resize-vertical transition-all duration-300",
-                                    "focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none",
-                                    "hover:shadow-md hover:border-gray-400",
-                                    "text-sm leading-relaxed font-medium",
+                                    "w-full min-h-[80px] p-1.5 border rounded resize-vertical transition-all duration-300",
+                                    "focus:ring-1 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none",
+                                    "hover:shadow-sm hover:border-gray-400",
+                                    "text-xs leading-relaxed font-medium",
                                     "placeholder:text-gray-400 placeholder:font-normal",
                                     // Validation states
                                     validationState.isError && "border-red-400 focus:ring-red-500/20 focus:border-red-500",
-                                    validationState.isWarning && !validationState.isError && "border-yellow-400 focus:ring-yellow-500/20 focus:border-yellow-500",
-                                    validationState.isValid && !validationState.isWarning && "border-green-400 focus:ring-green-500/20 focus:border-green-500",
-                                    !validationState.isError && !validationState.isWarning && !validationState.isValid && "border-gray-300 focus:border-blue-500"
+                                    validationState.isValid && !validationState.isError && "border-green-400 focus:ring-green-500/20 focus:border-green-500",
+                                    !validationState.isError && !validationState.isValid && "border-gray-300 focus:border-blue-500"
                                 )}
-                                style={{ minHeight: '150px', maxHeight: '300px' }}
+                                style={{ minHeight: '80px', maxHeight: '150px' }}
                                 aria-invalid={validationState.isError ? 'true' : 'false'}
                                 aria-describedby={validationMessage ? 'job-content-validation' : undefined}
                             />
@@ -228,61 +210,27 @@ export function JobOfferInput({
                     </Tooltip>
                 </div>
 
-                {/* Modern Progress Bar and Character Count */}
-                {value && (
-                    <div className="space-y-3">
-                        <div className="flex items-center justify-between text-sm text-gray-700">
-                            <span className="font-medium">Character count: {characterCount}</span>
-                            <span className={cn(
-                                "font-semibold",
-                                validationState.isNearLimit && "text-yellow-600",
-                                validationState.isError && "text-red-600"
-                            )}>
-                                {validationState.remaining < 0 ? `Over by ${Math.abs(validationState.remaining)}` : `${validationState.remaining} remaining`}
-                            </span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                            <div
-                                className={cn(
-                                    "h-3 rounded-full transition-all duration-500 ease-out",
-                                    validationState.isError && "bg-gradient-to-r from-red-500 to-red-600",
-                                    validationState.isWarning && !validationState.isError && "bg-gradient-to-r from-yellow-500 to-yellow-600",
-                                    validationState.isValid && !validationState.isWarning && "bg-gradient-to-r from-green-500 to-green-600",
-                                    !validationState.isError && !validationState.isWarning && !validationState.isValid && "bg-gradient-to-r from-blue-500 to-blue-600"
-                                )}
-                                style={{ width: `${Math.min(validationState.progress, 100)}%` }}
-                                role="progressbar"
-                                aria-valuenow={validationState.progress}
-                                aria-valuemin={0}
-                                aria-valuemax={100}
-                                aria-label={`Character count progress: ${Math.round(validationState.progress)}%`}
-                            />
-                        </div>
-                    </div>
-                )}
 
                 {/* Modern Validation Message */}
                 {validationMessage && (
                     <div
                         id="job-content-validation"
                         className={cn(
-                            "flex items-center gap-3 text-sm p-4 rounded-xl transition-all duration-300 shadow-sm",
-                            validationMessage.type === 'error' && "bg-red-50 text-red-800 border-2 border-red-200",
-                            validationMessage.type === 'warning' && "bg-yellow-50 text-yellow-800 border-2 border-yellow-200",
-                            validationMessage.type === 'success' && "bg-green-50 text-green-800 border-2 border-green-200",
-                            validationMessage.type === 'info' && "bg-blue-50 text-blue-800 border-2 border-blue-200"
+                            "flex items-center gap-1.5 text-xs p-1.5 rounded transition-all duration-300 shadow-sm",
+                            validationMessage.type === 'error' && "bg-red-50 text-red-800 border border-red-200",
+                            validationMessage.type === 'success' && "bg-green-50 text-green-800 border border-green-200",
+                            validationMessage.type === 'info' && "bg-blue-50 text-blue-800 border border-blue-200"
                         )}
                         role="alert"
                         aria-live="polite"
                     >
                         <div className={cn(
-                            "w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0",
+                            "w-3 h-3 rounded-full flex items-center justify-center flex-shrink-0",
                             validationMessage.type === 'error' && "bg-red-100",
-                            validationMessage.type === 'warning' && "bg-yellow-100",
                             validationMessage.type === 'success' && "bg-green-100",
                             validationMessage.type === 'info' && "bg-blue-100"
                         )}>
-                            <validationMessage.icon className="w-4 h-4" aria-hidden="true" />
+                            <validationMessage.icon className="w-2.5 h-2.5" aria-hidden="true" />
                         </div>
                         <span className="font-medium">{validationMessage.message}</span>
                     </div>

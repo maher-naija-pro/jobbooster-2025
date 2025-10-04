@@ -516,9 +516,9 @@ function HomeContent() {
         {!state.isGenerating && !state.generatedContent && !state.cvAnalysis ? (
           // Centered layout for initial state
           <div className="flex justify-center">
-            <div className="w-full max-w-2xl">
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 mt-6 mb-10">
-                <div className="space-y-6">
+            <div className="w-full max-w-xl">
+              <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mt-4 mb-6">
+                <div className="space-y-4">
                   {/* Main Header with Title and Description */}
                   <UploadHeader />
 
@@ -578,11 +578,11 @@ function HomeContent() {
           </div>
         ) : (
           // Two Column Layout when generating content
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {/* Left Column - Input Form (1/3 width) */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mt-6 mb-10">
-                <div className="space-y-4">
+              <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-4 mt-4 mb-6">
+                <div className="space-y-3">
                   {/* CV Upload */}
                   <CVUpload
                     onFileUpload={handleFileUpload}
@@ -638,9 +638,9 @@ function HomeContent() {
             </div>
 
             {/* Right Column - Content Display (2/3 width) */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-2 space-y-4">
               {/* Main Content Generator */}
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 mt-6 mb-10">
+              <div className="bg-white rounded-xl shadow-lg border border-gray-200 mt-4 mb-6">
                 <ContentGenerator
                   content={state.generatedContent}
                   isGenerating={state.isGenerating}

@@ -71,19 +71,19 @@ export function ActionButtons({
     return (
         <div className={className}>
             {/* Modern Action Buttons */}
-            <div className="space-y-3">
+            <div className="space-y-1.5">
                 {/* Generate Cover Letter Button - Feature Flag Controlled */}
                 {isCoverLetterGenerationEnabled() && (
                     <MetaButton
                         onClick={handleGenerateLetterClick}
                         disabled={isDisabled || (isGenerating && !isGeneratingLetter)}
                         variant={isDisabled ? "secondary" : isGeneratingLetter ? "danger" : "primary"}
-                        size="lg"
+                        size="sm"
                         width="full"
                         isLoading={false}
                         showLoadingIcon={false}
                         icon={isGeneratingLetter ? Square : FileDown}
-                        className="gap-3 text-sm font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:ring-4 focus:ring-blue-500/20"
+                        className="gap-1.5 text-xs font-medium rounded transition-all duration-300 hover:shadow-sm hover:scale-[1.005] focus:ring-1 focus:ring-blue-500/20"
                     >
                         {isGeneratingLetter ? "Stop Generation" : "Generate Cover Letter"}
                     </MetaButton>
@@ -95,12 +95,12 @@ export function ActionButtons({
                         onClick={handleGenerateMailClick}
                         disabled={isDisabled || (isGenerating && !isGeneratingEmail)}
                         variant={isDisabled ? "secondary" : isGeneratingEmail ? "danger" : "success"}
-                        size="lg"
+                        size="sm"
                         width="full"
                         isLoading={false}
                         showLoadingIcon={false}
                         icon={isGeneratingEmail ? Square : Mail}
-                        className="gap-3 text-sm font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:ring-4 focus:ring-green-500/20"
+                        className="gap-1.5 text-xs font-medium rounded transition-all duration-300 hover:shadow-sm hover:scale-[1.005] focus:ring-1 focus:ring-green-500/20"
                     >
                         {isGeneratingEmail ? "Stop Generation" : "Generate Email"}
                     </MetaButton>
@@ -113,12 +113,12 @@ export function ActionButtons({
                             onClick={handleAnalyzeCVClick}
                             disabled={isDisabled || (isGenerating && !isAnalyzingCV)}
                             variant={isDisabled ? "secondary" : isAnalyzingCV ? "danger" : "primary"}
-                            size="lg"
+                            size="sm"
                             width="full"
                             isLoading={false}
                             showLoadingIcon={false}
                             icon={isAnalyzingCV ? Square : BarChart3}
-                            className="gap-3 text-sm font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:ring-4 focus:ring-purple-500/20"
+                            className="gap-1.5 text-xs font-medium rounded transition-all duration-300 hover:shadow-sm hover:scale-[1.005] focus:ring-1 focus:ring-purple-500/20"
                         >
                             {isAnalyzingCV ? "Stop Analysis" : "Analyze CV"}
                         </MetaButton>

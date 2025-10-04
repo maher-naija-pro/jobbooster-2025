@@ -52,16 +52,30 @@ export async function POST(request: NextRequest) {
             jobOfferLength: jobOffer.length
         });
 
+        // Test connection to OpenAI/Ollama before making the actual request
+        try {
+            logger.debug('Testing connection to OpenAI/Ollama service');
+            await openai.models.list();
+            logger.debug('Connection test successful');
+        } catch (connectionError) {
+            logger.error('Connection test failed', {
+                error: connectionError instanceof Error ? connectionError.message : String(connectionError),
+                baseURL: process.env.OPENAI_BASE_URL || 'http://localhost:11434/v1',
+                model: process.env.OPENAI_MODEL || 'llama3:latest'
+            });
+            throw new Error(`Connection error: Unable to connect to AI service at ${process.env.OPENAI_BASE_URL || 'http://localhost:11434/v1'}`);
+        }
+
         // Use OpenAI streaming API with unified prompt
         logger.info('Initiating single OpenAI API call for job analysis and cover letter generation', {
-            model: process.env.OPENAI_MODEL || 'gpt-oss',
+            model: process.env.OPENAI_MODEL || 'llama3:latest',
             language: language.nativeName,
             maxTokens: 3000,
             temperature: 0.7
         });
 
         const stream = await openai.chat.completions.create({
-            model: process.env.OPENAI_MODEL || 'gpt-oss',
+            model: process.env.OPENAI_MODEL || 'llama3:latest',
             messages: [
                 {
                     role: 'system',
@@ -86,8 +100,22 @@ export async function POST(request: NextRequest) {
 
         const readable = new ReadableStream({
             async start(controller) {
+                let timeoutId: NodeJS.Timeout | null = null;
+
                 try {
                     logger.debug('Starting to process OpenAI streaming chunks');
+
+                    // Set up timeout for the streaming operation
+                    const timeout = parseInt(process.env.OPENAI_TIMEOUT || '30000');
+                    timeoutId = setTimeout(() => {
+                        logger.error('OpenAI streaming timeout exceeded', {
+                            timeout,
+                            chunkCount,
+                            totalContentLength,
+                            processingTime: Date.now() - startTime
+                        });
+                        controller.error(new Error('Streaming timeout exceeded'));
+                    }, timeout);
 
                     for await (const chunk of stream) {
                         const content = chunk.choices[0]?.delta?.content;
@@ -100,6 +128,11 @@ export async function POST(request: NextRequest) {
                         }
                     }
 
+                    // Clear timeout if streaming completes successfully
+                    if (timeoutId) {
+                        clearTimeout(timeoutId);
+                    }
+
                     logger.info('OpenAI streaming completed successfully', {
                         totalChunks: chunkCount,
                         totalContentLength: totalContentLength,
@@ -110,13 +143,25 @@ export async function POST(request: NextRequest) {
                     controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true })}\n\n`));
                     controller.close();
                 } catch (error) {
+                    // Clear timeout on error
+                    if (timeoutId) {
+                        clearTimeout(timeoutId);
+                    }
+
                     logger.error('Error during OpenAI streaming', {
                         error: error instanceof Error ? error.message : String(error),
+                        stack: error instanceof Error ? error.stack : undefined,
                         chunkCount,
                         totalContentLength,
                         processingTime: Date.now() - startTime
                     });
-                    controller.error(error);
+
+                    // Send error to client
+                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+                        error: 'Connection error during streaming',
+                        message: error instanceof Error ? error.message : String(error)
+                    })}\n\n`));
+                    controller.close();
                 }
             },
         });

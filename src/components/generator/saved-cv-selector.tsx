@@ -117,24 +117,24 @@ export function SavedCVSelector({
     }
 
     return (
-        <div className={`space-y-3 ${className}`}>
+        <div className={`space-y-1.5 ${className}`}>
             {/* Header with toggle button */}
             <div
-                className={`flex items-center justify-between p-3 rounded-lg border transition-all duration-200 cursor-pointer group ${isExpanded
+                className={`flex items-center justify-between p-1.5 rounded border transition-all duration-200 cursor-pointer group ${isExpanded
                     ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700'
                     : 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-600'
                     }`}
                 onClick={() => setIsExpanded(!isExpanded)}
             >
-                <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-700 dark:group-hover:text-blue-300">
+                <div className="flex items-center gap-1">
+                    <h3 className="text-xs font-medium text-gray-700 dark:text-gray-300 group-hover:text-blue-700 dark:group-hover:text-blue-300">
                         Saved CVs ({cvsData?.length || 0})
                     </h3>
                     <Badge variant="outline" className="text-xs group-hover:border-blue-400 group-hover:text-blue-600">
-                        {isExpanded ? 'Click to hide' : 'Click to select'}
+                        {isExpanded ? 'Hide' : 'Select'}
                     </Badge>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-0.5">
                     <Button
                         variant="ghost"
                         size="sm"
@@ -143,20 +143,20 @@ export function SavedCVSelector({
                             handleRefresh();
                         }}
                         disabled={isRefreshing}
-                        className="h-8 w-8 p-0"
+                        className="h-5 w-5 p-0"
                         title="Refresh CV list"
                     >
                         {isRefreshing ? (
-                            <Loader2 className="h-3 w-3 animate-spin" />
+                            <Loader2 className="h-2.5 w-2.5 animate-spin" />
                         ) : (
-                            <FileText className="h-3 w-3" />
+                            <FileText className="h-2.5 w-2.5" />
                         )}
                     </Button>
-                    <div className="h-8 w-8 flex items-center justify-center">
+                    <div className="h-5 w-5 flex items-center justify-center">
                         {isExpanded ? (
-                            <ChevronUp className="h-3 w-3 text-gray-500 group-hover:text-blue-500" />
+                            <ChevronUp className="h-2.5 w-2.5 text-gray-500 group-hover:text-blue-500" />
                         ) : (
-                            <ChevronDown className="h-3 w-3 text-gray-500 group-hover:text-blue-500" />
+                            <ChevronDown className="h-2.5 w-2.5 text-gray-500 group-hover:text-blue-500" />
                         )}
                     </div>
                 </div>
@@ -164,11 +164,11 @@ export function SavedCVSelector({
 
             {/* Error state */}
             {cvError && (
-                <div className="rounded-md bg-gray-50 p-3">
+                <div className="rounded bg-gray-50 p-1.5">
                     <div className="flex">
-                        <AlertCircle className="h-4 w-4 text-gray-400" />
-                        <div className="ml-2">
-                            <p className="text-sm text-gray-800">
+                        <AlertCircle className="h-2.5 w-2.5 text-gray-400" />
+                        <div className="ml-1">
+                            <p className="text-xs text-gray-800">
                                 Failed to load saved CVs: {cvError}
                             </p>
                         </div>
@@ -178,16 +178,16 @@ export function SavedCVSelector({
 
             {/* CV List */}
             {isExpanded && (
-                <div className="space-y-2 max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-lg p-2 bg-gray-50 dark:bg-gray-800/50">
+                <div className="space-y-0.5 max-h-40 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded p-1 bg-gray-50 dark:bg-gray-800/50">
                     {cvLoading ? (
-                        <div className="flex items-center justify-center p-4">
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                            <span className="ml-2 text-sm text-gray-500">Loading CVs...</span>
+                        <div className="flex items-center justify-center p-1.5">
+                            <Loader2 className="h-2.5 w-2.5 animate-spin" />
+                            <span className="ml-1 text-xs text-gray-500">Loading CVs...</span>
                         </div>
                     ) : (
                         <>
                             {/* Instructions */}
-                            <div className="text-xs text-gray-600 dark:text-gray-400 mb-2 px-2 py-1 bg-blue-50 dark:bg-blue-900/20 rounded border-l-2 border-blue-300 dark:border-blue-600">
+                            <div className="text-xs text-gray-600 dark:text-gray-400 mb-0.5 px-1 py-0.5 bg-blue-50 dark:bg-blue-900/20 rounded border-l-2 border-blue-300 dark:border-blue-600">
                                 💡 Click on any CV below to select it
                             </div>
 
@@ -199,33 +199,33 @@ export function SavedCVSelector({
                                 return (
                                     <Card
                                         key={cv.id}
-                                        className={`cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] group ${isSelected
-                                            ? 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-md'
+                                        className={`cursor-pointer transition-all duration-200 hover:shadow-sm hover:scale-[1.005] group ${isSelected
+                                            ? 'ring-1 ring-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-sm'
                                             : 'hover:bg-white dark:hover:bg-gray-700 hover:border-blue-300 dark:hover:border-blue-600'
                                             }`}
                                         onClick={() => handleCVSelect(cv)}
                                     >
-                                        <CardContent className="p-3">
+                                        <CardContent className="p-1.5">
                                             <div className="flex items-start justify-between">
                                                 <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center gap-2 mb-1">
-                                                        <FileText className={`h-4 w-4 flex-shrink-0 transition-colors ${isSelected ? 'text-blue-500' : 'text-gray-500 group-hover:text-blue-500'}`} />
-                                                        <p className={`text-sm font-medium truncate transition-colors ${isSelected ? 'text-blue-900 dark:text-blue-100' : 'text-gray-900 dark:text-gray-100 group-hover:text-blue-900 dark:group-hover:text-blue-100'}`}>
+                                                    <div className="flex items-center gap-1 mb-0.5">
+                                                        <FileText className={`h-2.5 w-2.5 flex-shrink-0 transition-colors ${isSelected ? 'text-blue-500' : 'text-gray-500 group-hover:text-blue-500'}`} />
+                                                        <p className={`text-xs font-medium truncate transition-colors ${isSelected ? 'text-blue-900 dark:text-blue-100' : 'text-gray-900 dark:text-gray-100 group-hover:text-blue-900 dark:group-hover:text-blue-100'}`}>
                                                             {cv.filename}
                                                         </p>
                                                     </div>
 
-                                                    <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                                                        <Calendar className="h-3 w-3" />
+                                                    <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                                                        <Calendar className="h-2.5 w-2.5" />
                                                         <span>{formatDate(cv.uploadDate)}</span>
                                                     </div>
 
-                                                    <div className="flex items-center gap-2 mt-1">
+                                                    <div className="flex items-center gap-1 mt-0.5">
                                                         <Badge
                                                             variant="secondary"
                                                             className={`text-xs ${statusInfo.bgColor} ${statusInfo.color}`}
                                                         >
-                                                            <StatusIcon className="h-3 w-3 mr-1" />
+                                                            <StatusIcon className="h-2 w-2 mr-0.5" />
                                                             {cv.status}
                                                         </Badge>
 
@@ -237,11 +237,11 @@ export function SavedCVSelector({
                                                     </div>
                                                 </div>
 
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex items-center gap-0.5">
                                                     {isSelected && (
-                                                        <CheckCircle className="h-4 w-4 text-blue-500 flex-shrink-0" />
+                                                        <CheckCircle className="h-2.5 w-2.5 text-blue-500 flex-shrink-0" />
                                                     )}
-                                                    <div className={`w-2 h-2 rounded-full transition-colors ${isSelected ? 'bg-blue-500' : 'bg-gray-300 group-hover:bg-blue-400'}`} />
+                                                    <div className={`w-1 h-1 rounded-full transition-colors ${isSelected ? 'bg-blue-500' : 'bg-gray-300 group-hover:bg-blue-400'}`} />
                                                 </div>
                                             </div>
                                         </CardContent>
