@@ -114,7 +114,7 @@ export function SettingsPageClient({ profile, message }: SettingsPageClientProps
 
 
                     {/* Main Settings Tabs */}
-                    <Tabs defaultValue="profile" className="space-y-6">
+                    <Tabs defaultValue="privacy" className="space-y-6">
                         <TabsList className={`grid w-full ${notificationsEnabled ? 'grid-cols-4' : 'grid-cols-3'}`}>
 
 
