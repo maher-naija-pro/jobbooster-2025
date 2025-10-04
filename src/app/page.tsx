@@ -150,6 +150,7 @@ function HomeContent() {
   };
 
   const handleLanguageChange = (language: Language) => {
+    console.log('Language changed in page:', language.nativeName, language.code);
     dispatch({ type: 'SET_LANGUAGE', payload: language });
   };
 
@@ -185,6 +186,8 @@ function HomeContent() {
 
     try {
       const endpoint = type === 'cover-letter' ? '/api/generate-letter' : '/api/generate-email';
+
+      console.log('Sending API request with language:', state.language.nativeName, state.language.code);
 
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -322,6 +325,8 @@ function HomeContent() {
         jobOffer: state.jobOffer,
         language: state.language,
       });
+
+      console.log('Sending CV analysis API request with language:', state.language.nativeName, state.language.code);
 
       const response = await fetch('/api/analyze-cv', {
         method: 'POST',

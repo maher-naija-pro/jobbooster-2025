@@ -20,6 +20,7 @@ export function LanguageSelector({
     const [isOpen, setIsOpen] = useState(false);
 
     const handleLanguageSelect = (language: Language) => {
+        console.log('Language selected:', language.nativeName, language.code);
         onLanguageChange(language);
         setIsOpen(false);
     };
