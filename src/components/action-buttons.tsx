@@ -33,10 +33,28 @@ export function ActionButtons({
     generationType,
     className
 }: ActionButtonsProps) {
-    const isDisabled = !isCVUploaded || !isJobOfferProvided;
+    // Check if basic requirements are met
+    const hasBasicRequirements = isCVUploaded && isJobOfferProvided;
+    // Disable buttons only when missing basic requirements AND not currently generating
+    const isDisabled = !hasBasicRequirements && !isGenerating;
     const isGeneratingLetter = isGenerating && generationType === 'cover-letter';
     const isGeneratingEmail = isGenerating && generationType === 'email';
     const isAnalyzingCV = isGenerating && generationType === 'cv-analysis';
+
+    // Debug logging
+    console.log('ActionButtons Debug:', {
+        isCVUploaded,
+        isJobOfferProvided,
+        hasBasicRequirements,
+        isGenerating,
+        generationType,
+        isDisabled,
+        isGeneratingLetter,
+        isGeneratingEmail,
+        isAnalyzingCV,
+        coverLetterDisabled: isDisabled || (isGenerating && !isGeneratingLetter),
+        emailDisabled: isDisabled || (isGenerating && !isGeneratingEmail)
+    });
 
     const handleGenerateLetterClick = () => {
         if (isGeneratingLetter) {
@@ -82,6 +100,7 @@ export function ActionButtons({
                         width="full"
                         isLoading={false}
                         showLoadingIcon={false}
+                        resetClicked={isGeneratingLetter}
                         icon={isGeneratingLetter ? Square : FileDown}
                         className="gap-1.5 text-xs font-medium rounded transition-all duration-300 hover:shadow-sm hover:scale-[1.005] focus:ring-1 focus:ring-blue-500/20"
                     >
@@ -99,6 +118,7 @@ export function ActionButtons({
                         width="full"
                         isLoading={false}
                         showLoadingIcon={false}
+                        resetClicked={isGeneratingEmail}
                         icon={isGeneratingEmail ? Square : Mail}
                         className="gap-1.5 text-xs font-medium rounded transition-all duration-300 hover:shadow-sm hover:scale-[1.005] focus:ring-1 focus:ring-green-500/20"
                     >
@@ -117,6 +137,7 @@ export function ActionButtons({
                             width="full"
                             isLoading={false}
                             showLoadingIcon={false}
+                            resetClicked={isAnalyzingCV}
                             icon={isAnalyzingCV ? Square : BarChart3}
                             className="gap-1.5 text-xs font-medium rounded transition-all duration-300 hover:shadow-sm hover:scale-[1.005] focus:ring-1 focus:ring-purple-500/20"
                         >
