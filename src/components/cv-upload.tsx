@@ -155,7 +155,7 @@ export function CVUpload({
                                     )}>
                                         {isDragOver ? "Drop to Upload" : cvDataList.length > 0 ? "Upload Another CV" : "Drop to Upload CV/Resume"}
                                     </h3>
-                                    <p className="text-xs text-gray-600 group-hover:text-gray-700">
+                                    <p className="text-xs text-gray-600 group-hover:text-gray-700 mb-2">
                                         or <span className="text-blue-600 hover:text-blue-700 font-medium cursor-pointer transition-colors underline decoration-2 underline-offset-2">click to browse</span>
                                     </p>
                                 </div>
