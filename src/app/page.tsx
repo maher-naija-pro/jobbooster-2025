@@ -17,10 +17,12 @@ import { useState, useEffect, Suspense } from 'react';
 import { FeatureGate } from '../components/auth/feature-gate';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { saveJobOfferToDatabase, isJobOfferAlreadySaved } from '../lib/save-job-offer';
+import { useAuth } from '@/components/auth/auth-provider';
 
 // Component that handles search params - needs to be wrapped in Suspense
 function HomeContent() {
   const { state, dispatch } = useApp();
+  const { user, loading: authLoading } = useAuth();
   const [streamingContent, setStreamingContent] = useState('');
   const [debugApiResponse, setDebugApiResponse] = useState<Record<string, unknown> | null>(null);
   const router = useRouter();
@@ -463,6 +465,12 @@ function HomeContent() {
   const handleSaveJobOffer = async () => {
     if (!state.jobOffer || state.jobOffer.trim().length < 100) {
       console.warn('Job offer content too short to save');
+      return;
+    }
+
+    // Check if user is authenticated before attempting to save
+    if (!user) {
+      console.log('User not authenticated, skipping job offer save');
       return;
     }
 

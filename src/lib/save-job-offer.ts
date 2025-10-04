@@ -72,6 +72,14 @@ export async function saveJobOfferToDatabase(
                 errorData: errorData
             });
 
+            // Handle specific error cases
+            if (response.status === 401) {
+                return {
+                    success: false,
+                    error: 'Authentication required to save job offers'
+                };
+            }
+
             return {
                 success: false,
                 error: errorData?.error || `HTTP ${response.status}: ${response.statusText}` || 'Failed to save job offer'
@@ -118,7 +126,14 @@ export async function isJobOfferAlreadySaved(jobOfferContent: string): Promise<b
         const response = await fetch('/api/job-data?limit=100');
 
         if (!response.ok) {
-            console.error('Failed to fetch job data for duplicate check');
+            if (response.status === 401) {
+                console.log('User not authenticated, skipping duplicate check');
+                return false;
+            }
+            console.error('Failed to fetch job data for duplicate check', {
+                status: response.status,
+                statusText: response.statusText
+            });
             return false;
         }
 
