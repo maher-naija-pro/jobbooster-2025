@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react'
 import { CookieConsentBanner } from './CookieConsentBanner'
+import { useAuth } from '@/components/auth/auth-provider'
 
 interface CookiePreferences {
     essential: boolean
@@ -26,12 +27,19 @@ interface GDPRProviderProps {
 }
 
 export function GDPRProvider({ children, testMode }: GDPRProviderProps) {
+    const { user, loading: authLoading } = useAuth()
     const [consent, setConsent] = useState<CookiePreferences | null>(null)
     const [hasConsent, setHasConsent] = useState(false)
     const [showConsentBanner, setShowConsentBanner] = useState(false)
     const [isTestMode, setIsTestMode] = useState(false)
 
     const loadConsentFromDatabase = useCallback(async () => {
+        // Don't load consent if user is not authenticated
+        if (!user) {
+            setShowConsentBanner(false)
+            return
+        }
+
         try {
             const response = await fetch('/api/gdpr/consent')
             if (response.ok) {
@@ -52,24 +60,40 @@ export function GDPRProvider({ children, testMode }: GDPRProviderProps) {
             console.error('Failed to load consent from database:', error)
         }
 
-        // No fallback to localStorage - show banner for new users
-        setShowConsentBanner(true)
-    }, [isTestMode])
+        // Show banner for logged-in users who haven't accepted cookies yet
+        if (user) {
+            setShowConsentBanner(true)
+        }
+    }, [isTestMode, user])
 
     useEffect(() => {
         // Determine test mode on client side to avoid hydration mismatch
-        const clientTestMode = testMode ?? (process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_COOKIE_TEST_MODE === 'true')
+        const clientTestMode = testMode ?? (process.env.NEXT_PUBLIC_ENABLE_TEST_MODE === 'true')
         setIsTestMode(clientTestMode)
 
-        // In test mode, always show the banner
+        // In test mode, always show the banner (regardless of authentication status)
         if (clientTestMode) {
             setShowConsentBanner(true)
             return
         }
 
-        // Load consent from database first, then localStorage as fallback
-        loadConsentFromDatabase()
-    }, [loadConsentFromDatabase, testMode])
+        // Don't show banner if user is not logged in
+        if (!user && !authLoading) {
+            setShowConsentBanner(false)
+            return
+        }
+
+        // Don't show banner if still loading authentication
+        if (authLoading) {
+            setShowConsentBanner(false)
+            return
+        }
+
+        // Only load consent if user is logged in
+        if (user) {
+            loadConsentFromDatabase()
+        }
+    }, [loadConsentFromDatabase, testMode, user, authLoading])
 
     const updateConsent = (preferences: CookiePreferences) => {
         setConsent(preferences)
