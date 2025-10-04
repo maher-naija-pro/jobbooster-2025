@@ -21,6 +21,12 @@ export interface FeatureFlags {
     ENABLE_SOCIAL_ICONS: boolean;
     /** Enable/disable notification settings functionality */
     ENABLE_NOTIFICATIONS: boolean;
+    /** Enable/disable cover letter generation feature */
+    ENABLE_COVER_LETTER_GENERATION: boolean;
+    /** Enable/disable email generation feature */
+    ENABLE_EMAIL_GENERATION: boolean;
+    /** Enable/disable CV analysis feature */
+    ENABLE_CV_ANALYSIS: boolean;
 }
 
 /**
@@ -35,6 +41,9 @@ const DEFAULT_FEATURE_FLAGS: FeatureFlags = {
     ALLOW_DISPOSABLE_EMAILS: false,
     ENABLE_SOCIAL_ICONS: false,
     ENABLE_NOTIFICATIONS: false,
+    ENABLE_COVER_LETTER_GENERATION: true,
+    ENABLE_EMAIL_GENERATION: true,
+    ENABLE_CV_ANALYSIS: true,
 };
 
 /**
@@ -82,6 +91,18 @@ export function getFeatureFlags(): FeatureFlags {
             process.env.NEXT_PUBLIC_ENABLE_NOTIFICATIONS,
             DEFAULT_FEATURE_FLAGS.ENABLE_NOTIFICATIONS
         ),
+        ENABLE_COVER_LETTER_GENERATION: parseBooleanEnvVar(
+            process.env.NEXT_PUBLIC_ENABLE_COVER_LETTER_GENERATION,
+            DEFAULT_FEATURE_FLAGS.ENABLE_COVER_LETTER_GENERATION
+        ),
+        ENABLE_EMAIL_GENERATION: parseBooleanEnvVar(
+            process.env.NEXT_PUBLIC_ENABLE_EMAIL_GENERATION,
+            DEFAULT_FEATURE_FLAGS.ENABLE_EMAIL_GENERATION
+        ),
+        ENABLE_CV_ANALYSIS: parseBooleanEnvVar(
+            process.env.NEXT_PUBLIC_ENABLE_CV_ANALYSIS,
+            DEFAULT_FEATURE_FLAGS.ENABLE_CV_ANALYSIS
+        ),
     };
 }
 
@@ -126,4 +147,28 @@ export function isNotificationsEnabled(): boolean {
  */
 export function isEmailVerificationRequired(): boolean {
     return getFeatureFlag('REQUIRE_EMAIL_VERIFICATION');
+}
+
+/**
+ * Check if cover letter generation is enabled
+ * Convenience function for cover letter generation feature flag
+ */
+export function isCoverLetterGenerationEnabled(): boolean {
+    return getFeatureFlag('ENABLE_COVER_LETTER_GENERATION');
+}
+
+/**
+ * Check if email generation is enabled
+ * Convenience function for email generation feature flag
+ */
+export function isEmailGenerationEnabled(): boolean {
+    return getFeatureFlag('ENABLE_EMAIL_GENERATION');
+}
+
+/**
+ * Check if CV analysis is enabled
+ * Convenience function for CV analysis feature flag
+ */
+export function isCVAnalysisEnabled(): boolean {
+    return getFeatureFlag('ENABLE_CV_ANALYSIS');
 }

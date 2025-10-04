@@ -4,6 +4,11 @@ import React from 'react';
 import { FileDown, Mail, Square, BarChart3 } from 'lucide-react';
 import { MetaButton } from './buttons/meta-button';
 import { FeatureGate } from './auth/feature-gate';
+import {
+    isCoverLetterGenerationEnabled,
+    isEmailGenerationEnabled,
+    isCVAnalysisEnabled
+} from '@/lib/feature-flags';
 
 interface ActionButtonsProps {
     isCVUploaded: boolean;
@@ -67,52 +72,58 @@ export function ActionButtons({
         <div className={className}>
             {/* Modern Action Buttons */}
             <div className="space-y-3">
-                {/* Generate Cover Letter Button */}
-                <MetaButton
-                    onClick={handleGenerateLetterClick}
-                    disabled={isDisabled || (isGenerating && !isGeneratingLetter)}
-                    variant={isDisabled ? "secondary" : isGeneratingLetter ? "danger" : "primary"}
-                    size="lg"
-                    width="full"
-                    isLoading={false}
-                    showLoadingIcon={false}
-                    icon={isGeneratingLetter ? Square : FileDown}
-                    className="gap-3 text-sm font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:ring-4 focus:ring-blue-500/20"
-                >
-                    {isGeneratingLetter ? "Stop Generation" : "Generate Cover Letter"}
-                </MetaButton>
-
-                {/* Generate Email Button */}
-                <MetaButton
-                    onClick={handleGenerateMailClick}
-                    disabled={isDisabled || (isGenerating && !isGeneratingEmail)}
-                    variant={isDisabled ? "secondary" : isGeneratingEmail ? "danger" : "success"}
-                    size="lg"
-                    width="full"
-                    isLoading={false}
-                    showLoadingIcon={false}
-                    icon={isGeneratingEmail ? Square : Mail}
-                    className="gap-3 text-sm font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:ring-4 focus:ring-green-500/20"
-                >
-                    {isGeneratingEmail ? "Stop Generation" : "Generate Email"}
-                </MetaButton>
-
-                {/* Analyze CV Button - Protected Feature */}
-                <FeatureGate feature="CV Analysis">
+                {/* Generate Cover Letter Button - Feature Flag Controlled */}
+                {isCoverLetterGenerationEnabled() && (
                     <MetaButton
-                        onClick={handleAnalyzeCVClick}
-                        disabled={isDisabled || (isGenerating && !isAnalyzingCV)}
-                        variant={isDisabled ? "secondary" : isAnalyzingCV ? "danger" : "primary"}
+                        onClick={handleGenerateLetterClick}
+                        disabled={isDisabled || (isGenerating && !isGeneratingLetter)}
+                        variant={isDisabled ? "secondary" : isGeneratingLetter ? "danger" : "primary"}
                         size="lg"
                         width="full"
                         isLoading={false}
                         showLoadingIcon={false}
-                        icon={isAnalyzingCV ? Square : BarChart3}
-                        className="gap-3 text-sm font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:ring-4 focus:ring-purple-500/20"
+                        icon={isGeneratingLetter ? Square : FileDown}
+                        className="gap-3 text-sm font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:ring-4 focus:ring-blue-500/20"
                     >
-                        {isAnalyzingCV ? "Stop Analysis" : "Analyze CV"}
+                        {isGeneratingLetter ? "Stop Generation" : "Generate Cover Letter"}
                     </MetaButton>
-                </FeatureGate>
+                )}
+
+                {/* Generate Email Button - Feature Flag Controlled */}
+                {isEmailGenerationEnabled() && (
+                    <MetaButton
+                        onClick={handleGenerateMailClick}
+                        disabled={isDisabled || (isGenerating && !isGeneratingEmail)}
+                        variant={isDisabled ? "secondary" : isGeneratingEmail ? "danger" : "success"}
+                        size="lg"
+                        width="full"
+                        isLoading={false}
+                        showLoadingIcon={false}
+                        icon={isGeneratingEmail ? Square : Mail}
+                        className="gap-3 text-sm font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:ring-4 focus:ring-green-500/20"
+                    >
+                        {isGeneratingEmail ? "Stop Generation" : "Generate Email"}
+                    </MetaButton>
+                )}
+
+                {/* Analyze CV Button - Feature Flag Controlled + Protected Feature */}
+                {isCVAnalysisEnabled() && (
+                    <FeatureGate feature="CV Analysis">
+                        <MetaButton
+                            onClick={handleAnalyzeCVClick}
+                            disabled={isDisabled || (isGenerating && !isAnalyzingCV)}
+                            variant={isDisabled ? "secondary" : isAnalyzingCV ? "danger" : "primary"}
+                            size="lg"
+                            width="full"
+                            isLoading={false}
+                            showLoadingIcon={false}
+                            icon={isAnalyzingCV ? Square : BarChart3}
+                            className="gap-3 text-sm font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-[1.02] focus:ring-4 focus:ring-purple-500/20"
+                        >
+                            {isAnalyzingCV ? "Stop Analysis" : "Analyze CV"}
+                        </MetaButton>
+                    </FeatureGate>
+                )}
             </div>
         </div>
     );
