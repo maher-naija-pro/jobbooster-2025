@@ -127,17 +127,7 @@ export const EmailInput = forwardRef<HTMLInputElement, EmailInputProps>(({
                 />
             </div>
 
-            {/* Error messages */}
-            {hasErrors && hasValue && (
-                <div className="space-y-1">
-                    {validationResult?.errors.map((error, index) => (
-                        <div key={index} className="flex items-center text-sm text-red-600">
-                            <AlertCircle className="w-4 h-4 mr-1 flex-shrink-0" />
-                            <span>{error}</span>
-                        </div>
-                    ))}
-                </div>
-            )}
+            {/* Error messages are handled by the parent form component */}
 
             {/* Success message */}
             {validationResult?.isValid && hasValue && (
